@@ -5,13 +5,15 @@ Simple easy to use, maximal performance database layer with connection to Doctri
 
 This package install Doctrine automatically to your project with stable run.
 
+**READY FOR NETTE 3.0!**
+
 How to install
 --------------
 
 Simple call Composer command:
 
 ```shell
-composer require baraja/doctrine
+composer require baraja-core/doctrine
 ```
 
 In project `common.neon` you must define database credentials. Fully works example configuration is in `config.neon` file in this package.
@@ -33,6 +35,24 @@ parameters:
 ```
 
 Package support to one database in specific moment now.
+
+Generate database structure from entities
+-----------------------------------------
+
+This package implements bridge for automatically call Doctrine commands.
+
+For example you can simple call:
+
+```shell
+php www/index.php o:s:u -f --dump-sql
+```
+
+Command `o:s:u` means `orm:schema-tool:update`.
+
+- `-f` is `flush` for execute changes SQL,
+- `--dump-sql` render list of SQL commands what will be executed.
+
+If everything works fine, commands create table `core__database_slow_query` which is defined in this package and ready for logging slow queries.
 
 Best performance
 ----------------
@@ -89,5 +109,5 @@ Package defines DIC service `DoctrineHelper` with super useful methods.
 - `remapEntityToBestType($from)`
 - `remapEntity($from, $to)`
 
-
+More information is in method doc comment.
 
