@@ -1,0 +1,56 @@
+parameters:
+	database:
+		primary:
+			host: 127.0.0.1
+			dbname: sandbox
+			user: root
+			password: root
+			driver: mysqli
+		journal:
+			enable: true
+			deleteOlderThan: 3 years
+			keepMaxRecords: 1500000
+
+extensions:
+	console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+	dbal: Baraja\Doctrine\DBAL\DI\DbalExtension
+	dbal.console: Baraja\Doctrine\DBAL\DI\DbalConsoleExtension(%consoleMode%)
+	orm: Baraja\Doctrine\ORM\DI\OrmExtension
+	orm.console: Baraja\Doctrine\ORM\DI\OrmConsoleExtension
+	orm.annotations: Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension
+	baraja.database: Baraja\Doctrine\DatabaseExtension
+
+dbal:
+	debug: %debugMode%
+	connection:
+		host: %database.primary.host%
+		driver: %database.primary.driver%
+		dbname: %database.primary.dbname%
+		user: %database.primary.user%
+		password: %database.primary.password%
+
+orm:
+	entityManagerClass: Baraja\Doctrine\EntityManager
+
+baraja.database:
+	types:
+		uuid: Baraja\Doctrine\UUID\UuidType
+
+orm.annotations:
+	paths:
+		App: %appDir%
+		Model: %appDir%
+		Baraja: %rootDir%/vendor/baraja
+	ignore: []
+
+console:
+    name: Baraja sandbox
+    version: '3.0'
+    catchExceptions: true
+    autoExit: true
+    url: http://baraja.cz
+    lazy: false
+
+services:
+	- Baraja\Doctrine\DoctrineHelper
+	- Baraja\Doctrine\DoctrineHelperAccessor

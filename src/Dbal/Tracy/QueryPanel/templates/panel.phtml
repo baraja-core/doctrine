@@ -1,0 +1,148 @@
+<?php
+
+use Baraja\Doctrine\DBAL\Utils\QueryUtils;
+
+$qs = '';
+$qExpress = '';
+$isTransaction = false;
+$select = 0;
+$insert = 0;
+$update = 0;
+$delete = 0;
+$other = 0;
+$queryId = 1;
+$timeBlocks = [];
+
+foreach ($queries ?? [] as $query) {
+	$background = null;
+
+	if ($query->sql === '"START TRANSACTION"') {
+		$isTransaction = true;
+		$background = 'rgb(204,255,204)';
+	}
+
+	if ($query->sql === '"COMMIT"' || $query->sql === '"ROLLBACK"') {
+		$isTransaction = false;
+		$background = 'rgb(253,169,157)';
+	}
+
+	if ($isTransaction === true && $background === null) {
+		$background = 'rgb(255,244,204)';
+	}
+
+	$queryParser = explode(' ', strtoupper(trim($query->sql)), 2);
+	$durationMs = isset($query->duration) ? $query->duration * 1000 : null;
+
+	if (isset($queryParser[1])) {
+		switch ($queryParser[0]) {
+			case 'SELECT':
+				$select++;
+				break;
+			case 'INSERT':
+				$insert++;
+				break;
+			case 'UPDATE':
+				$update++;
+				break;
+			case 'DELETE':
+				$delete++;
+				break;
+			default:
+				$other++;
+				break;
+		}
+	}
+
+	$durationColor = Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel::getPanelDurationColor($durationMs);
+	$renderedQuery = '<tr id="doctrineQuery_' . $queryId . '">'
+		. '<td' . ($durationColor !== null ? ' style="' . $durationColor . '"' : '') . '>'
+		. ($durationMs !== null ? number_format($durationMs, 3, '.', ' ') : 'Error')
+		. ($isTransaction ? '<br><span style="color:red">•</span>' : '')
+		. '</td>'
+		. '<td class="tracy-dbal-sql" ' . ($background ? ' style="background:' . $background . ' !important"' : '') . '>'
+		. ($query->location !== null
+			? '<span style="color:#888">' . $query->location['file'] . ':' . $query->location['line'] . '</span><hr>'
+			: ''
+		) . (isset($query->duration) === false ? '<span style="color:#b70000">Error with processing this query.</span><hr>' : '')
+		. QueryUtils::highlight($query->sql)
+		. '</td>'
+		. '</tr>';
+	$timeBlocks[] = '<td style="text-align:center;padding:0;' . ($durationColor !== null ? '' . $durationColor . '' : 'width:15px') . '">'
+		. '<a href="#doctrineQuery_' . $queryId . '">' . ((int) round($durationMs)) . '</a>'
+		. '</td>';
+
+	if (isset($query->duration)) {
+		$qs .= $renderedQuery;
+	} else {
+		$qExpress .= $renderedQuery;
+	}
+
+	$queryId++;
+}
+
+?>
+<style>
+	#tracy-debug td.tracy-dbal-sql {
+		background: white !important
+	}
+
+	#tracy-debug .tracy-dbal-source {
+		color: #999 !important
+	}
+
+	#tracy-debug .tracy-dbal tr table {
+		margin: 8px 0;
+		max-height: 150px;
+	}
+</style>
+
+<?php
+if (\count($this->queries) <= 0) {
+	echo '<h1>No queries</h1>';
+} else {
+	?>
+	<h1>Queries:
+	  <?php
+	  $queriesDurationColor = Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel::getPanelDurationColor($totalTime ?? 0 * 1000);
+	  echo ($queriesCount ?? '0')
+		  . (isset($totalTime) && $totalTime === null
+			  ? ''
+			  : ', <span' . ($queriesDurationColor ? ' style="' . $queriesDurationColor . ';padding:0 5px"' : '') . '>time: '
+			  . number_format($totalTime ?? 0 * 1000, 1, '.', ' ')
+			  . ' ms</span>'
+		  ) . ' [' . trim(
+			  ($select > 0 ? $select . '<span style="font-size:14pt">&times;select</span> ' : '')
+			  . ($update > 0 ? $update . '<span style="font-size:14pt">&times;update</span> ' : '')
+			  . ($insert > 0 ? $insert . '<span style="font-size:14pt">&times;insert</span> ' : '')
+			  . ($delete > 0 ? $delete . '<span style="font-size:14pt">&times;delete</span> ' : '')
+			  . ($other > 0 ? $other . '<span style="font-size:14pt">&times;other</span>' : '')
+		  ) . ']';
+	  ?>
+	</h1>
+<?php } ?>
+
+<div class="tracy-inner nettrine-dbal">
+	<?= ($timeBlocks !== []
+		? '<table><tr>' . implode('', $timeBlocks) . '</tr></table>'
+		: '');
+	?>
+	<table>
+		<tr>
+			<th>Time&nbsp;ms</th>
+			<th>
+				SQL Statement
+				(<?= ($invalidCache ?? false
+				  ? '<span style="color:red">invalid cache!</span>'
+				  : 'Cache: ' . get_class($cache ?? null)); ?>)
+			</th>
+		</tr>
+	  <?= $qExpress . $qs ?>
+	</table>
+	<?php
+	if (\count($queries ?? []) < ($queriesCount ?? 0)) {
+		echo '<div style="text-align:center;padding:48px">'
+			. 'And more...'
+			. '</div>';
+	}
+	?>
+</div>
