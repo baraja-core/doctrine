@@ -6,10 +6,6 @@ parameters:
 			user: root
 			password: root
 			driver: mysqli
-		journal:
-			enable: true
-			deleteOlderThan: 3 years
-			keepMaxRecords: 1500000
 
 extensions:
 	console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
@@ -40,7 +36,7 @@ orm.annotations:
 	paths:
 		App: %appDir%
 		Model: %appDir%
-		Baraja: %rootDir%/vendor/baraja
+		Baraja: %appDir%/../vendor/baraja-core
 	ignore: []
 
 console:
