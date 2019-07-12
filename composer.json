@@ -1,0 +1,30 @@
+{
+	"name": "baraja-core/doctrine",
+	"description": "Doctrine port to Nette 3.0 with maximal performance.",
+	"homepage": "https://github.com/baraja-core/doctrine",
+	"authors": [
+		{
+			"name": "Jan Barášek",
+			"homepage": "http://baraja.cz"
+		}
+	],
+	"require": {
+		"php": ">=7.1.0",
+		"ext-json": "*",
+		"ext-PDO": "*",
+		"ext-tokenizer": "*",
+		"symfony/console": "^4.2.3",
+		"contributte/console": "^0.6.0",
+		"nette/di": "^3.0",
+		"nette/utils": "^3.0",
+		"nette/finder": "^2.5",
+		"janbarasek/doctrine-pro": "~1.0",
+		"ramsey/uuid": "^3.0"
+	},
+	"autoload": {
+		"classmap": [
+			"src/"
+		]
+	},
+	"minimum-stability": "stable"
+}
