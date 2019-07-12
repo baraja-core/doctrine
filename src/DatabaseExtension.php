@@ -37,6 +37,9 @@ class DatabaseExtension extends CompilerExtension
 			. '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
 			. '$entityManager->buildCache();' . "\n"
 			. $initialize->getBody()
+			. (PHP_SAPI === 'cli' ? "\n"
+				. OrmSchemaUpdateTool::class . '::setContainer($this);' . "\n"
+				. 'register_shutdown_function([' . OrmSchemaUpdateTool::class . '::class, \'run\']);' : '')
 		);
 	}
 
