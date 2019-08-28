@@ -23,6 +23,8 @@ class OrmSchemaUpdateTool
 	public static function run(): void
 	{
 		if (self::$container === null) {
+			echo 'Error: Container was not set.';
+
 			return;
 		}
 
@@ -31,13 +33,16 @@ class OrmSchemaUpdateTool
 				/** @var Application $application */
 				$application = self::$container->getByType(Application::class);
 
-				exit($application->run());
+				$runCode = $application->run();
+				echo "\n" . 'Exit with code #' . $runCode;
+				exit($runCode);
 			} catch (\Throwable $e) {
 				Debugger::log($e);
-
 				echo $e->getMessage();
 
-				exit($e->getCode() ? : 1);
+				$exitCode = $e->getCode() ? : 1;
+				echo "\n" . 'Exit with code #' . $exitCode;
+				exit($exitCode);
 			}
 		}
 	}
