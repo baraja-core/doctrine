@@ -6,6 +6,9 @@ namespace Baraja\Doctrine;
 
 
 use Contributte\Console\Application;
+use Nette\Application\IPresenter;
+use Nette\Application\Responses\VoidResponse;
+use Nette\Application\UI\Presenter;
 use Nette\DI\Container;
 use Tracy\Debugger;
 
@@ -44,6 +47,17 @@ class OrmSchemaUpdateTool
 	 */
 	public static function setContainer(Container $container): void
 	{
+		/** @var \Nette\Application\Application $application */
+		$application = $container->getByType(\Nette\Application\Application::class);
+
+		$application->onPresenter[] = function (\Nette\Application\Application $application, IPresenter $presenter): void {
+			if ($presenter instanceof Presenter) {
+				$presenter->onStartup[] = function (Presenter $presenter): void {
+					$presenter->sendResponse(new VoidResponse);
+				};
+			}
+		};
+
 		self::$container = $container;
 	}
 
