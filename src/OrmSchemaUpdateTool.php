@@ -10,6 +10,7 @@ use Nette\Application\IPresenter;
 use Nette\Application\Responses\VoidResponse;
 use Nette\Application\UI\Presenter;
 use Nette\DI\Container;
+use Nette\Utils\Finder;
 use Tracy\Debugger;
 
 class OrmSchemaUpdateTool
@@ -29,6 +30,8 @@ class OrmSchemaUpdateTool
 		}
 
 		if (PHP_SAPI === 'cli' && preg_match('/^or?m?:sc?h?e?m?a?-?t?o?o?l?:up?d?a?t?e?$/', $_SERVER['argv'][1] ?? '')) {
+			self::classChecker(self::$container);
+
 			try {
 				/** @var Application $application */
 				$application = self::$container->getByType(Application::class);
@@ -64,6 +67,28 @@ class OrmSchemaUpdateTool
 		};
 
 		self::$container = $container;
+	}
+
+	/**
+	 * @param Container $container
+	 */
+	private static function classChecker(Container $container): void
+	{
+		echo 'Checking...' . "\n";
+		$loadedFiles = get_included_files();
+
+		foreach (Finder::find('*.php')->from(\dirname($container->getParameters()['wwwDir'])) as $path => $file) {
+			if (\in_array($path, $loadedFiles, true)) {
+				continue;
+			}
+
+			if (strpos((string) file_get_contents($path), '@ORM\Entity') !== false) {
+				echo preg_replace('/^.*\/([^\/]+)$/', '$1', str_replace('\\', '/', $path)) . "\n";
+				require $path;
+			}
+		}
+
+		echo "\n\n" . 'All files are OK.' . "\n\n";
 	}
 
 }
