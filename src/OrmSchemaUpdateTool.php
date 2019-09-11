@@ -21,6 +21,9 @@ class OrmSchemaUpdateTool
 	 */
 	private static $container;
 
+	/**
+	 * @internal
+	 */
 	public static function run(): void
 	{
 		if (self::$container === null) {
