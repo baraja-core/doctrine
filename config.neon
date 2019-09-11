@@ -44,7 +44,7 @@ console:
     version: '3.0'
     catchExceptions: true
     autoExit: true
-    url: http://baraja.cz
+    url: https://baraja.cz
     lazy: false
 
 services:
