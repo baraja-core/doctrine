@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
+use Baraja\PackageManager\Console;
 use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\SQLite3Cache;
 use Nette\DI\CompilerExtension;
@@ -37,7 +38,7 @@ class DatabaseExtension extends CompilerExtension
 			. '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
 			. '$entityManager->buildCache();' . "\n"
 			. $initialize->getBody()
-			. (PHP_SAPI === 'cli' ? "\n"
+			. (PHP_SAPI === 'cli' && class_exists(Console::class) === false ? "\n"
 				. OrmSchemaUpdateTool::class . '::setContainer($this);' . "\n"
 				. 'register_shutdown_function([' . OrmSchemaUpdateTool::class . '::class, \'run\']);' : '')
 		);
