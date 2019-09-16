@@ -9,16 +9,16 @@ This package automatically installs Doctrine (also setting everything up in the 
 
 How to install
 --------------
+This package can be installed using PackageRegistrator which is also part of the Baraja Sandbox(https://github.com/baraja-core/sandbox).If you are not using it, you have to install the package manually following this guide. 
+A model configuration can be found in the config.neon file inside the root of the package.
 
-To install the package call Composer and execute the following command:
+To manually install the package call Composer and execute the following command:
 
 ```shell
 composer require baraja-core/doctrine
 ```
 
 In the projects `common.neon` you have to define the database credentials. A fully working example of configuration can be found in the `config.neon` file inside this package.
-
-This package support automatically install by PackageRegistrator. If you haven't, you should install manually by this manual.
 
 You can define the configuration simply using parameters (stored in the super-global array `parameters`).
 
