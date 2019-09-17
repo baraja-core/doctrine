@@ -1,26 +1,26 @@
 Baraja Doctrine database
 ========================
 
-Simple easy to use, maximal performance database layer with connection to Doctrine and support for Nette 3.0.
+A simple and easy to use, maximum performance database layer with connection to Doctrine, which allows you to use all the advantages of OOP and also has support for Nette 3.0.
 
-This package install Doctrine automatically to your project with stable run.
+This package automatically installs Doctrine (also setting everything up in the configuration) to your project and runs stably.
 
 **READY FOR NETTE 3.0!**
 
 How to install
 --------------
+This package can be installed using PackageRegistrator which is also part of the Baraja Sandbox(https://github.com/baraja-core/sandbox). If you are not using it, you have to install the package manually following this guide. 
+A model configuration can be found in the config.neon file inside the root of the package.
 
-Simple call Composer command:
+To manually install the package call Composer and execute the following command:
 
 ```shell
 composer require baraja-core/doctrine
 ```
 
-In project `common.neon` you must define database credentials. Fully works example configuration is in `config.neon` file in this package.
+In the projects `common.neon` you have to define the database credentials. A fully working example of configuration can be found in the `config.neon` file inside this package.
 
-This package support automatically install by PackageRegistrator. If you haven't, you should install manually by this manual.
-
-All configuration you can define simply by parameters (stored in super-global array `parameters`).
+You can define the configuration simply using parameters (stored in the super-global array `parameters`).
 
 For example:
 
@@ -34,43 +34,43 @@ parameters:
 			password: root
 ```
 
-Package support to one database in specific moment now.
+For now the package supports only the connection to one database.
 
 Generate database structure from entities
 -----------------------------------------
 
-This package implements bridge for automatically call Doctrine commands.
+This package implements a bridge to automatically execute Doctrine commands.
 
-For example you can simple call:
+For example you can simply call:
 
 ```shell
 php www/index.php o:s:u -f --dump-sql
 ```
 
-Command `o:s:u` means `orm:schema-tool:update`.
+The command `o:s:u` means `orm:schema-tool:update`.
 
-- `-f` is `flush` for execute changes SQL,
-- `--dump-sql` render list of SQL commands what will be executed.
+- `-f` is `flush` to execute changes in SQL,
+- `--dump-sql` renders the list of SQL commands that will be executed.
 
-If everything works fine, commands create table `core__database_slow_query` which is defined in this package and ready for logging slow queries.
+If everything will work fine, the command will create the table `core__database_slow_query` which is defined in this package and is ready for logging slow queries.
 
 Best performance
 ----------------
 
 When Doctrine is used poorly, it can be unnecessarily slow.
 
-More details (Czech language): https://ondrej.mirtes.cz/doctrine-2-neni-pomala
+For more details (in Czech language): https://ondrej.mirtes.cz/doctrine-2-neni-pomala
 
-This package use best-practices to performance increase. Set automatically `autoGenerateProxyClasses` to `false`, ProxyClasses will be generated when Doctrine needs.
+This package uses best-practices to increase the performance. It sets automatically `autoGenerateProxyClasses` to `false`, ProxyClasses will be generated when needed by Doctrine.
 
-For maximal performance is best save your generated meta data about entities to Redis: https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/caching.html
+For maximum performance is best to save the generated meta data about your entities using Redis: https://www.doctrine-project.org/projects/doctrine-orm/en/latest/reference/caching.html
 
 UUID
 ----
 
-For unique record (entity) identification package defines trait `UuidIdentifier` with defined all basic best-practice configuration for your entity. ID will be generated automatically.
+For unique record (entity) identification the package defines the trait `UuidIdentifier` with already defined all basic best-practice configurations for your entity.The ID will be generated automatically.
 
-For better experience please insert two traits to all entities in project:
+For a better experience please insert two traits to all the entities in your project:
 
 ```php
 <?php
@@ -95,11 +95,10 @@ class DatabaseEntity
 ```
 
 UUID will be generated automatically in PHP.
-
-Manipulation with entities
+Entities manipulation
 --------------------------
 
-Package defines DIC service `DoctrineHelper` with super useful methods.
+The package defines a DIC service `DoctrineHelper` with super useful methods.
 
 - `getEntityVariants(string $entity, array $exclude = null): array`
 - `getBestOfType(string $entity): string`
@@ -109,5 +108,5 @@ Package defines DIC service `DoctrineHelper` with super useful methods.
 - `remapEntityToBestType($from)`
 - `remapEntity($from, $to)`
 
-More information is in method doc comment.
+More information is in the method doc. comment.
 
