@@ -77,7 +77,14 @@ class DatabaseExtension extends CompilerExtension
 		}
 
 		if (extension_loaded('sqlite3')) {
-			return 'new ' . SQLite3Cache::class . '(new \SQLite3($entityManager->getDbDirPath() . \'/doctrine.db\'), \'doctrine\')';
+			return 'new ' . SQLite3Cache::class . '('
+				. '(function (Baraja\Doctrine\EntityManager $entityManager) {'
+				. "\n\t" . '$cache = new \SQLite3($entityManager->getDbDirPath() . \'/doctrine.db\');'
+				. "\n\t" . '$cache->busyTimeout(5000);'
+				. "\n\t" . '$cache->exec(\'PRAGMA journal_mode = wal;\');'
+				. "\n\t" . 'return $cache;'
+				. "\n\t" . '})($entityManager)'
+				. ', \'doctrine\')';
 		}
 
 		return 'null /* CACHE DOES NOT EXIST! */';
