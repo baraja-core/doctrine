@@ -68,7 +68,9 @@ For maximum performance is best to save the generated meta data about your entit
 UUID
 ----
 
-For unique record (entity) identification the package defines the trait `UuidIdentifier` with already defined all basic best-practice configurations for your entity.The ID will be generated automatically.
+**TIP:** Read more about [UUID binary peformance](https://php.baraja.cz/uuid-performance) (czech language)
+
+For unique record (entity) identification the package defines the trait `UuidIdentifier` or `UuidBinaryIdentifier` with already defined all basic best-practice configurations for your entity. The ID will be generated automatically.
 
 For a better experience please insert two traits to all the entities in your project:
 
@@ -90,11 +92,12 @@ use Baraja\Doctrine\UUID\UuidIdentifier;
 class DatabaseEntity
 {
 
-	use UuidIdentifier; // <--- UUID trait for entity identifier.
-	use SmartObject;    // <--- Strict class for better experience.
+	use UuidBinaryIdentifier; // <--- UUID trait for entity identifier.
+	use SmartObject;          // <--- Strict class for better experience.
 ```
 
 UUID will be generated automatically in PHP.
+
 Entities manipulation
 --------------------------
 
