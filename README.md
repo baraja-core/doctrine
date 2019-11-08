@@ -84,7 +84,7 @@ namespace Baraja\Doctrine\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Nette\SmartObject;
-use Baraja\Doctrine\UUID\UuidIdentifier;
+use Baraja\Doctrine\UUID\UuidBinaryIdentifier;
 
 /**
  * @ORM\Entity()
