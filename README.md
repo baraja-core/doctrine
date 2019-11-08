@@ -68,7 +68,7 @@ For maximum performance is best to save the generated meta data about your entit
 UUID
 ----
 
-**TIP:** Read more about [UUID binary peformance](https://php.baraja.cz/uuid-performance) (czech language)
+**TIP:** Read more about [UUID binary performance](https://php.baraja.cz/uuid-performance) (czech language)
 
 For unique record (entity) identification the package defines the trait `UuidIdentifier` or `UuidBinaryIdentifier` with already defined all basic best-practice configurations for your entity. The ID will be generated automatically.
 
