@@ -11,13 +11,13 @@ use Doctrine\DBAL\Types\Type;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-class UuidType extends Type
+class UuidBinaryType extends Type
 {
 
 	/**
 	 * @var string
 	 */
-	public const NAME = 'uuid';
+	public const NAME = 'uuid-binary';
 
 	/**
 	 * @param mixed[] $fieldDeclaration
@@ -26,27 +26,30 @@ class UuidType extends Type
 	 */
 	public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
 	{
-		return $platform->getGuidTypeDeclarationSQL($fieldDeclaration);
+		return $platform->getBinaryTypeDeclarationSQL([
+			'length' => '16',
+			'fixed' => true,
+		]);
 	}
 
 	/**
 	 * @param string|UuidInterface|null $value
 	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return string|null
+	 * @return UuidInterface|null
 	 * @throws ConversionException
 	 */
-	public function convertToPHPValue($value, AbstractPlatform $platform): ?string
+	public function convertToPHPValue($value, AbstractPlatform $platform): ?UuidInterface
 	{
 		if (empty($value)) {
 			return null;
 		}
 
 		if ($value instanceof UuidInterface) {
-			return (string) $value;
+			return $value;
 		}
 
 		try {
-			return (string) Uuid::fromString($value)->toString();
+			return Uuid::fromBytes($value);
 		} catch (\InvalidArgumentException $e) {
 			throw ConversionException::conversionFailed($value, static::NAME);
 		}
@@ -64,10 +67,16 @@ class UuidType extends Type
 			return null;
 		}
 
-		if ($value instanceof UuidInterface
-			|| ((\is_string($value) || method_exists($value, '__toString')) && Uuid::isValid((string) $value))
-		) {
-			return (string) $value;
+		if ($value instanceof UuidInterface) {
+			return $value->getBytes();
+		}
+
+		try {
+			if (is_string($value) || method_exists($value, '__toString')) {
+				return Uuid::fromString((string) $value)->getBytes();
+			}
+		} catch (\InvalidArgumentException $e) {
+			// Ignore the exception and pass through.
 		}
 
 		throw ConversionException::conversionFailed($value, static::NAME);
