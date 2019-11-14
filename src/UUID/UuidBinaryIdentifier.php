@@ -13,7 +13,7 @@ trait UuidBinaryIdentifier
 	/**
 	 * @var string|null
 	 * @ORM\Id
-	 * @ORM\Column(type="uuid", unique=true)
+	 * @ORM\Column(type="uuid-binary", unique=true)
 	 * @ORM\GeneratedValue(strategy="CUSTOM")
 	 * @ORM\CustomIdGenerator(class="\Baraja\Doctrine\UUID\UuidBinaryGenerator")
 	 */
