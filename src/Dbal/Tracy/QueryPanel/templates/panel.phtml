@@ -133,7 +133,8 @@ if (\count($this->queries) <= 0) {
 				SQL Statement
 				(<?= ($invalidCache ?? false
 				  ? '<span style="color:red">invalid cache!</span>'
-				  : 'Cache: ' . get_class($cache ?? null)); ?>)
+				  : 'Cache: ' . (isset($cache) === false || ($cache ?? null) === null ? 'NO CACHE' : get_class($cache ?? '')));
+		  ?>)
 			</th>
 		</tr>
 	  <?= $qExpress . $qs ?>

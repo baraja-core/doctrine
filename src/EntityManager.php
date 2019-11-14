@@ -29,7 +29,6 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\ORM\UnitOfWork;
-use Nette\Utils\FileSystem;
 use Tracy\Debugger;
 
 /**
@@ -54,22 +53,43 @@ class EntityManager implements EntityManagerInterface
 	private $eventManager;
 
 	/**
-	 * @var string
+	 * @var EntityManagerDependenciesAccessor
 	 */
-	private $dbDirPath;
+	private $dependencies;
 
 	/**
-	 * @param Connection $connection
-	 * @param Configuration $configuration
-	 * @param EventManager $eventManager
+	 * @var callable[]
 	 */
-	public function __construct(Connection $connection, Configuration $configuration, EventManager $eventManager)
+	private $onInit = [];
+
+	/**
+	 * @param EntityManagerDependenciesAccessor $dependencies
+	 */
+	public function __construct(EntityManagerDependenciesAccessor $dependencies)
 	{
-		$this->connection = $connection;
-		$this->configuration = $configuration;
-		$this->eventManager = $eventManager;
-		$this->dbDirPath = \dirname(__DIR__, 4) . '/temp/cache/baraja.doctrine';
-		FileSystem::createDir($this->dbDirPath);
+		$this->dependencies = $dependencies;
+	}
+
+	/**
+	 * @param callable(self $entityManager) $callback
+	 */
+	public function addInit(callable $callback): void
+	{
+		$this->onInit[] = $callback;
+	}
+
+	public function init(): void
+	{
+		if ($this->connection === null) {
+			$manager = $this->dependencies->get();
+			$this->connection = $manager->getConnection();
+			$this->configuration = $manager->getConfiguration();
+			$this->eventManager = $manager->getEventManager();
+
+			foreach ($this->onInit as $initCallback) {
+				$initCallback($this);
+			}
+		}
 	}
 
 	/**
@@ -77,7 +97,7 @@ class EntityManager implements EntityManagerInterface
 	 */
 	public function getDbDirPath(): string
 	{
-		return $this->dbDirPath;
+		return $this->dependencies->get()->getDbDirPath();
 	}
 
 	/**
@@ -491,6 +511,7 @@ class EntityManager implements EntityManagerInterface
 	 */
 	public function setCache(?CacheProvider $cache = null): void
 	{
+		$this->init();
 		QueryPanel::setCache($cache);
 
 		if ($cache === null) {
@@ -510,6 +531,7 @@ class EntityManager implements EntityManagerInterface
 
 	public function buildCache(): void
 	{
+		$this->init();
 		$invalidCache = false;
 		QueryPanel::setInvalidCache($invalidCache);
 
@@ -540,6 +562,7 @@ class EntityManager implements EntityManagerInterface
 		static $cache;
 
 		if ($cache === null) {
+			$this->init();
 			try {
 				$cache = \Doctrine\ORM\EntityManager::create(
 					$this->connection,

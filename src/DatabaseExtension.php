@@ -29,14 +29,16 @@ class DatabaseExtension extends CompilerExtension
 		$initialize = $class->getMethod('initialize');
 
 		$initialize->setBody(
-			$this->getTypeDefinition() . "\n"
-			. '/** @var ' . EntityManager::class . ' $entityManager */' . "\n"
+			'/** @var ' . EntityManager::class . ' $entityManager */' . "\n"
 			. '$entityManager = $this->getByType(' . EntityManager::class . '::class);' . "\n"
-			. '$entityManager->setCache(' . $this->processCache() . ');' . "\n"
-			. '$entityManager->getConnection()->getSchemaManager()->getDatabasePlatform()'
+			. '$entityManager->addInit(function(Baraja\Doctrine\EntityManager $entityManager) {' . "\n"
+			. $this->getTypeDefinition() . "\n"
+			. "\t" . '$entityManager->setCache(' . $this->processCache() . ');' . "\n"
+			. "\t" . '$entityManager->getConnection()->getSchemaManager()->getDatabasePlatform()'
 			. '->registerDoctrineTypeMapping(\'enum\', \'string\');' . "\n"
-			. '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
-			. '$entityManager->buildCache();' . "\n"
+			. "\t" . '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
+			. "\t" . '$entityManager->buildCache();' . "\n"
+			. '});' . "\n"
 			. $initialize->getBody()
 			. (PHP_SAPI === 'cli' && class_exists(Console::class) === false ? "\n"
 				. OrmSchemaUpdateTool::class . '::setContainer($this);' . "\n"
@@ -52,7 +54,7 @@ class DatabaseExtension extends CompilerExtension
 		$return = '';
 
 		foreach ($this->getConfig()['types'] ?? [] as $name => $className) {
-			$return .= '\Doctrine\DBAL\Types\Type::addType('
+			$return .= "\t" . '\Doctrine\DBAL\Types\Type::addType('
 				. Helpers::dump($name) . ',' . Helpers::dump($className)
 				. ');' . "\n";
 		}
