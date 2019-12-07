@@ -38,6 +38,11 @@ class EntityManager implements EntityManagerInterface
 {
 
 	/**
+	 * @var callable[]
+	 */
+	private static $onInit = [];
+
+	/**
 	 * @var Connection
 	 */
 	private $connection;
@@ -58,11 +63,6 @@ class EntityManager implements EntityManagerInterface
 	private $dependencies;
 
 	/**
-	 * @var callable[]
-	 */
-	private $onInit = [];
-
-	/**
 	 * @param EntityManagerDependenciesAccessor $dependencies
 	 */
 	public function __construct(EntityManagerDependenciesAccessor $dependencies)
@@ -73,9 +73,9 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @param callable(self $entityManager) $callback
 	 */
-	public function addInit(callable $callback): void
+	final public function addInit(callable $callback): void
 	{
-		$this->onInit[] = $callback;
+		self::$onInit[] = $callback;
 	}
 
 	public function init(): void
@@ -86,7 +86,7 @@ class EntityManager implements EntityManagerInterface
 			$this->configuration = $manager->getConfiguration();
 			$this->eventManager = $manager->getEventManager();
 
-			foreach ($this->onInit as $initCallback) {
+			foreach (self::$onInit as $initCallback) {
 				$initCallback($this);
 			}
 		}
