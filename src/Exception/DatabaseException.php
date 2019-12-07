@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
-class DatabaseException extends \Exception
+class DatabaseException extends \RuntimeException
 {
 
 	/**
