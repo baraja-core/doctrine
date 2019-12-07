@@ -10,6 +10,7 @@ This package automatically installs Doctrine to your project (also setting every
 How to install
 --------------
 This package can be installed using [PackageRegistrator](https://github.com/baraja-core/package-manager) which is also part of the Baraja [Sandbox](https://github.com/baraja-core/sandbox). If you are not using it, you have to install the package manually following this guide.
+
 A model configuration can be found in the config.neon file inside the root of the package.
 
 To manually install the package call Composer and execute the following command:
@@ -35,6 +36,21 @@ parameters:
 ```
 
 For now the package supports only the connection to one database.
+
+Drivers
+-------
+
+In default settings Doctrine use `MySql` driver.
+
+You can rewrite it for example for Postgres:
+
+In your `common.neon` simple type:
+
+```yaml
+dbal:
+	connection:
+		driverClass: Baraja\Doctrine\Driver\Postgres\PDOPgSqlDriver
+```
 
 Generate database structure from entities
 -----------------------------------------
