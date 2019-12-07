@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
+use Baraja\Doctrine\ORM\Exception\Logical\InvalidStateException;
+use Baraja\Doctrine\ORM\Mapping\AnnotationDriver;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
@@ -25,8 +27,6 @@ use Nette\DI\Helpers;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpLiteral;
 use Nette\Utils\Validators;
-use Baraja\Doctrine\ORM\Exception\Logical\InvalidStateException;
-use Baraja\Doctrine\ORM\Mapping\AnnotationDriver;
 
 class OrmAnnotationsExtension extends CompilerExtension
 {
@@ -113,7 +113,7 @@ class OrmAnnotationsExtension extends CompilerExtension
 	{
 		$initialize = $classType->getMethod('initialize');
 		$original = (string) $initialize->getBody();
-		$initialize->setBody('?::registerUniqueLoader("class_exists");' . "\n", [new PhpLiteral(AnnotationRegistry::class)]);
+		$initialize->setBody('?::registerUniqueLoader(\'class_exists\');' . "\n", [new PhpLiteral(AnnotationRegistry::class)]);
 		$initialize->addBody($original);
 	}
 
