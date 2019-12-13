@@ -7,7 +7,6 @@ namespace Baraja\Doctrine;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
-use Nette\Utils\FileSystem;
 
 class EntityManagerDependencies
 {
@@ -61,20 +60,6 @@ class EntityManagerDependencies
 	public function getEventManager(): EventManager
 	{
 		return $this->eventManager;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getDbDirPath(): string
-	{
-		static $cache;
-
-		if ($cache === null) {
-			FileSystem::createDir($cache = \dirname(__DIR__, 4) . '/temp/cache/baraja.doctrine');
-		}
-
-		return $cache;
 	}
 
 }

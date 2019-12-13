@@ -29,9 +29,7 @@ class DatabaseExtension extends CompilerExtension
 		$initialize = $class->getMethod('initialize');
 
 		$initialize->setBody(
-			'/** @var ' . EntityManager::class . ' $entityManager */' . "\n"
-			. '$entityManager = $this->getByType(' . EntityManager::class . '::class);' . "\n"
-			. '$entityManager->addInit(function(Baraja\Doctrine\EntityManager $entityManager) {' . "\n"
+			EntityManager::class . '::addInit(function(' . EntityManager::class . ' $entityManager) {' . "\n"
 			. $this->getTypeDefinition() . "\n"
 			. "\t" . '$entityManager->setCache(' . $this->processCache() . ');' . "\n"
 			. "\t" . '$entityManager->getConnection()->getSchemaManager()->getDatabasePlatform()'
@@ -81,7 +79,7 @@ class DatabaseExtension extends CompilerExtension
 		if (extension_loaded('sqlite3')) {
 			return 'new ' . SQLite3Cache::class . '('
 				. '(function (Baraja\Doctrine\EntityManager $entityManager) {'
-				. "\n\t" . '$cache = new \SQLite3($entityManager->getDbDirPath() . \'/doctrine.db\');'
+				. "\n\t" . '$cache = new \SQLite3($entityManager->getDbDirPath());'
 				. "\n\t" . '$cache->busyTimeout(5000);'
 				. "\n\t" . '$cache->exec(\'PRAGMA journal_mode = wal;\');'
 				. "\n\t" . 'return $cache;'
