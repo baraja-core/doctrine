@@ -29,6 +29,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\ORM\UnitOfWork;
+use Nette\Utils\FileSystem;
 use Tracy\Debugger;
 
 /**
@@ -73,7 +74,7 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @param callable(self $entityManager) $callback
 	 */
-	final public function addInit(callable $callback): void
+	final public static function addInit(callable $callback): void
 	{
 		self::$onInit[] = $callback;
 	}
@@ -97,7 +98,16 @@ class EntityManager implements EntityManagerInterface
 	 */
 	public function getDbDirPath(): string
 	{
-		return $this->dependencies->get()->getDbDirPath();
+		static $cache;
+
+		if ($cache === null) {
+			FileSystem::createDir($dir = \dirname(__DIR__, 4) . '/temp/cache/baraja.doctrine');
+			if (is_file($cache = $dir . '/doctrine.db') === true && fileperms($cache) < 33204) {
+				chmod($cache, 0664);
+			}
+		}
+
+		return $cache;
 	}
 
 	/**
