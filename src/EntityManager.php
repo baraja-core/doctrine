@@ -102,12 +102,17 @@ class EntityManager implements EntityManagerInterface
 
 		if ($cache === null) {
 			FileSystem::createDir($dir = \dirname(__DIR__, 4) . '/temp/cache/baraja.doctrine');
-			if (is_file($cache = $dir . '/doctrine.db') === true && fileperms($cache) < 33204) {
-				chmod($cache, 0664);
-			}
+			$cache = $dir . '/doctrine.db';
 		}
 
 		return $cache;
+	}
+
+	public function fixDbDirPathPermission(): void
+	{
+		if (is_file($path = $this->getDbDirPath()) === true && fileperms($path) < 33204) {
+			chmod($path, 0664);
+		}
 	}
 
 	/**
