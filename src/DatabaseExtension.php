@@ -27,15 +27,17 @@ class DatabaseExtension extends CompilerExtension
 	{
 		$this->types = $this->getConfig();
 		$initialize = $class->getMethod('initialize');
+		$cache = $this->processCache();
 
 		$initialize->setBody(
 			EntityManager::class . '::addInit(function(' . EntityManager::class . ' $entityManager) {' . "\n"
 			. $this->getTypeDefinition() . "\n"
-			. "\t" . '$entityManager->setCache(' . $this->processCache() . ');' . "\n"
+			. "\t" . '$entityManager->setCache(' . $cache['cache'] . ');' . "\n"
 			. "\t" . '$entityManager->getConnection()->getSchemaManager()->getDatabasePlatform()'
 			. '->registerDoctrineTypeMapping(\'enum\', \'string\');' . "\n"
 			. "\t" . '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
 			. "\t" . '$entityManager->buildCache();' . "\n"
+			. ($cache['after'] ? "\t" . $cache['after'] . "\n" : '')
 			. '});' . "\n"
 			. $initialize->getBody()
 			. (PHP_SAPI === 'cli' && class_exists(Console::class) === false ? "\n"
@@ -61,9 +63,9 @@ class DatabaseExtension extends CompilerExtension
 	}
 
 	/**
-	 * @return string
+	 * @return string[]
 	 */
-	private function processCache(): string
+	private function processCache(): array
 	{
 		if (Utils::functionIsAvailable('apcu_cache_info')) {
 			$cache = new ApcuCache;
@@ -73,21 +75,30 @@ class DatabaseExtension extends CompilerExtension
 				@apcu_clear_cache();
 			}
 
-			return 'new ' . ApcuCache::class;
+			return [
+				'cache' => 'new ' . ApcuCache::class,
+				'after' => '',
+			];
 		}
 
 		if (extension_loaded('sqlite3')) {
-			return 'new ' . SQLite3Cache::class . '('
-				. '(function (Baraja\Doctrine\EntityManager $entityManager) {'
-				. "\n\t" . '$cache = new \SQLite3($entityManager->getDbDirPath());'
-				. "\n\t" . '$cache->busyTimeout(5000);'
-				. "\n\t" . '$cache->exec(\'PRAGMA journal_mode = wal;\');'
-				. "\n\t" . 'return $cache;'
-				. "\n\t" . '})($entityManager)'
-				. ', \'doctrine\')';
+			return [
+				'cache' => 'new ' . SQLite3Cache::class . '('
+					. '(function (Baraja\Doctrine\EntityManager $entityManager) {'
+					. "\n\t\t" . '$cache = new \SQLite3($entityManager->getDbDirPath());'
+					. "\n\t\t" . '$cache->busyTimeout(5000);'
+					. "\n\t\t" . '$cache->exec(\'PRAGMA journal_mode = wal;\');'
+					. "\n\t\t" . 'return $cache;'
+					. "\n\t" . '})($entityManager)'
+					. ', \'doctrine\')',
+				'after' => '$entityManager->fixDbDirPathPermission();',
+			];
 		}
 
-		return 'null /* CACHE DOES NOT EXIST! */';
+		return [
+			'cache' => 'null /* CACHE DOES NOT EXIST! */',
+			'after' => '',
+		];
 	}
 
 }
