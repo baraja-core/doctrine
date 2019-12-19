@@ -7,10 +7,18 @@ namespace Baraja\Doctrine;
 
 use Nette\Utils\ArrayHash;
 
-class Utils
+final class Utils
 {
 
 	public const DOC_PATTERN = '/[@=](?<name>[^\(\s\n]+)\s*(?<value>[^\n]+)/';
+
+	/**
+	 * @throws \Error
+	 */
+	public function __construct()
+	{
+		throw new \Error('Class ' . get_class($this) . ' is static and cannot be instantiated.');
+	}
 
 	/**
 	 * Find annotation /^[@=] in class DocComment by reflection.
