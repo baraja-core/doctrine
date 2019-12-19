@@ -35,26 +35,23 @@ class DoctrineHelper
 	 * @param string[]|null $exclude
 	 * @return string[]
 	 */
-	public function getEntityVariants(string $entity, array $exclude = null): array
+	public function getEntityVariants(string $entity, ?array $exclude = null): array
 	{
 		$return = [];
-
 		$meta = $this->entityManager->getClassMetadata($entity);
 
 		if (\is_array($meta->discriminatorMap) && \count($meta->discriminatorMap) > 0) {
 			foreach ($meta->discriminatorMap as $variant) {
 				try {
-					$name = Utils::reflectionClassDocComment($variant, 'name');
+					$return[$variant] = Utils::reflectionClassDocComment($variant, 'name');
 				} catch (\ReflectionException $e) {
-					$name = null;
-				}
-
-				if ($name === null) {
-					$return[$variant] = preg_replace_callback('/([a-z0-9])([A-Z])/', static function (array $match) {
-						return $match[1] . ' ' . strtolower($match[2]);
-					}, preg_replace('/^.*?\\\\([^\\\\]+)$/', '$1', $variant));
-				} else {
-					$return[$variant] = $name;
+					$return[$variant] = (string) preg_replace_callback(
+						'/([a-z0-9])([A-Z])/',
+						static function (array $match) {
+							return $match[1] . ' ' . strtolower($match[2]);
+						},
+						(string) preg_replace('/^.*?\\\\([^\\\\]+)$/', '$1', $variant)
+					);
 				}
 			}
 		}
@@ -75,9 +72,7 @@ class DoctrineHelper
 	 */
 	public function getBestOfType(string $entity): string
 	{
-		$variants = $this->getEntityVariants($entity);
-
-		if (\in_array(\count($variants), [0, 1], true)) {
+		if (\in_array(\count($variants = $this->getEntityVariants($entity)), [0, 1], true) === true) {
 			return $entity;
 		}
 
@@ -163,10 +158,7 @@ class DoctrineHelper
 	 */
 	public function remapEntityToBestType($from)
 	{
-		$fromType = get_class($from);
-		$bestType = $this->getBestOfType($fromType);
-
-		if ($fromType === $bestType) {
+		if (($fromType = get_class($from)) === ($bestType = $this->getBestOfType($fromType))) {
 			return $from;
 		}
 
@@ -248,9 +240,7 @@ class DoctrineHelper
 			&& method_exists($itemEntity, 'setParent')
 			&& method_exists($itemEntity, 'setPosition')
 		) {
-			$parent = $itemEntity->getParent();
-
-			if ($parent !== null && method_exists($parent, 'getId') && $parent->getId() !== $parentId) {
+			if (($parent = $itemEntity->getParent()) !== null && method_exists($parent, 'getId') && $parent->getId() !== $parentId) {
 				try {
 					$parent = $this->entityManager->getRepository(\get_class($itemEntity))
 						->createQueryBuilder('e')
@@ -331,11 +321,11 @@ class DoctrineHelper
 	{
 		$parent = $reflection->getParentClass();
 
-		if ($parent === false) {
-			return $bind;
+		while (($parent = $parent->getParentClass()) !== false) {
+			$bind++;
 		}
 
-		return $this->getParentClassLength($parent, $bind) + $bind;
+		return $bind;
 	}
 
 }
