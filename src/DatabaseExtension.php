@@ -54,9 +54,10 @@ class DatabaseExtension extends CompilerExtension
 		$return = '';
 
 		foreach ($this->getConfig()['types'] ?? [] as $name => $className) {
-			$return .= "\t" . '\Doctrine\DBAL\Types\Type::addType('
+			$return .= "\t" . 'if (\Doctrine\DBAL\Types\Type::hasType(' . Helpers::dump($name) . ') === false) { '
+				. '\Doctrine\DBAL\Types\Type::addType('
 				. Helpers::dump($name) . ',' . Helpers::dump($className)
-				. ');' . "\n";
+				. '); }' . "\n";
 		}
 
 		return $return;
