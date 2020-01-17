@@ -321,7 +321,7 @@ class DoctrineHelper
 	{
 		$parent = $reflection->getParentClass();
 
-		while (($parent = $parent->getParentClass()) !== false) {
+		while ($parent !== false && ($parent = $parent->getParentClass()) !== false) {
 			$bind++;
 		}
 
