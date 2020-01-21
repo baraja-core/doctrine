@@ -6,6 +6,7 @@ namespace Baraja\Doctrine;
 
 
 use Baraja\PackageManager\Console;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\SQLite3Cache;
 use Nette\DI\CompilerExtension;
@@ -54,10 +55,17 @@ class DatabaseExtension extends CompilerExtension
 		$return = '';
 
 		foreach ($this->getConfig()['types'] ?? [] as $name => $className) {
+			if (\class_exists($className) === false) {
+				ConfiguratorException::typeDoesNotExist($name, $className);
+			}
 			$return .= "\t" . 'if (\Doctrine\DBAL\Types\Type::hasType(' . Helpers::dump($name) . ') === false) { '
 				. '\Doctrine\DBAL\Types\Type::addType('
 				. Helpers::dump($name) . ',' . Helpers::dump($className)
 				. '); }' . "\n";
+		}
+
+		foreach ($this->getConfig()['propertyIgnoreAnnotations'] ?? [] as $ignorePropertyAnnotation) {
+			$return .= "\t" . AnnotationReader::class . '::addGlobalIgnoredName(\'' . $ignorePropertyAnnotation . '\');' . "\n";
 		}
 
 		return $return;
