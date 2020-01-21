@@ -32,6 +32,8 @@ baraja.database:
 	types:
 		uuid: Baraja\Doctrine\UUID\UuidType
 		uuid-binary: Baraja\Doctrine\UUID\UuidBinaryType
+	propertyIgnoreAnnotations:
+		- sample
 
 orm.annotations:
 	paths:
