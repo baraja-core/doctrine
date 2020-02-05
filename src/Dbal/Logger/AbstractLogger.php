@@ -8,11 +8,13 @@ namespace Baraja\Doctrine\DBAL\Logger;
 use Baraja\Doctrine\Entity\SlowQuery;
 use Baraja\Doctrine\EntityManager;
 use Baraja\Doctrine\EntityManagerException;
+use Baraja\Doctrine\Utils;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use stdClass;
 use Tracy\Debugger;
+use Tracy\ILogger;
 
 abstract class AbstractLogger implements SQLLogger
 {
@@ -82,32 +84,26 @@ abstract class AbstractLogger implements SQLLogger
 	public function stopQuery(): ?stdClass
 	{
 		$keys = array_keys($this->queriesTimer);
-		$key = end($keys);
-
-		$this->queriesTimer[$key]['end'] = microtime(true);
+		$this->queriesTimer[$key = end($keys)]['end'] = microtime(true);
 		$this->queriesTimer[$key]['duration'] = $this->queriesTimer[$key]['end'] - $this->queriesTimer[$key]['start'];
 		$this->queriesTimer[$key]['ms'] = $this->queriesTimer[$key]['duration'] * 1000;
-
 		$this->totalTime += $this->queriesTimer[$key]['duration'] * 1000;
 
-		if (isset($this->queries[$key])) {
-			$duration = (float) $this->queriesTimer[$key]['duration'];
-			$durationMs = $duration * 1000;
+		if (isset($this->queries[$key]) === true) {
 			$this->queries[$key]->end = $this->queriesTimer[$key]['end'];
-			$this->queries[$key]->duration = $duration;
+			$this->queries[$key]->duration = ($duration = (float) $this->queriesTimer[$key]['duration']);
 			$this->queries[$key]->ms = $this->queriesTimer[$key]['ms'];
 
-			if ($this->entityManager !== null && $durationMs > 150) {
-				$slowQuery = new SlowQuery($this->queries[$key]->sql, $durationMs);
-				if ($this->queryExistsByHash($slowQuery->getHash()) === false) {
-					try {
-						$this->entityManager->persist($slowQuery)->flush($slowQuery);
-					} catch (EntityManagerException $e) {
-						Debugger::log($e);
-					}
-
-					$this->slowQueryHashes[$slowQuery->getHash()] = true;
+			if ($this->entityManager !== null && ($durationMs = $duration * 1000) > 150
+				&& $this->queryExistsByHash($hash = Utils::createSqlHash($this->queries[$key]->sql)) === false
+			) {
+				try {
+					$this->entityManager->persist($slowQuery = new SlowQuery($this->queries[$key]->sql, $hash, $durationMs))->flush($slowQuery);
+				} catch (EntityManagerException $e) {
+					Debugger::log($e, ILogger::DEBUG);
 				}
+
+				$this->slowQueryHashes[$hash] = true;
 			}
 		}
 
@@ -135,7 +131,7 @@ abstract class AbstractLogger implements SQLLogger
 	 */
 	private function findLocation(): ?array
 	{
-		static $exclude = ['baraja/database' => 1, 'baraja/doctrine' => 1];
+		static $exclude = ['baraja-core/doctrine' => 1, 'janbarasek/doctrine-pro' => 1];
 
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
 			if (isset($item['class']) && $item['class'] === __CLASS__) {
@@ -152,13 +148,10 @@ abstract class AbstractLogger implements SQLLogger
 		}
 
 		if (isset($location['file'], $location['line']) && is_file($location['file'])) {
-			$lines = file($location['file']);
-			$line = $lines[$location['line'] - 1];
-
 			return [
 				'file' => $location['file'],
 				'line' => $location['line'],
-				'snippet' => trim(preg_match('#\w*dump(er::\w+)?\(.*\)#i', $line, $m) ? $m[0] : $line),
+				'snippet' => trim(preg_match('#\w*dump(er::\w+)?\(.*\)#i', $line = file($location['file'])[$location['line'] - 1], $m) ? $m[0] : $line),
 			];
 		}
 
@@ -180,6 +173,7 @@ abstract class AbstractLogger implements SQLLogger
 				->createQueryBuilder('slowQuery')
 				->where('slowQuery.hash = :hash')
 				->setParameter('hash', $hash)
+				->setMaxResults(1)
 				->getQuery()
 				->getSingleResult();
 
