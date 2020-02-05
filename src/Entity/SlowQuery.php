@@ -7,12 +7,19 @@ namespace Baraja\Doctrine\Entity;
 
 use Baraja\Doctrine\UUID\UuidIdentifier;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Index;
 use Nette\SmartObject;
 use Nette\Utils\DateTime;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="core__database_slow_query")
+ * @ORM\Table(
+ *    name="core__database_slow_query",
+ *    indexes={
+ *       @Index(name="database_slow_query__hash", columns={"hash"}),
+ *       @Index(name="database_slow_query__id_hash", columns={"id", "hash"})
+ *    }
+ * )
  */
 class SlowQuery
 {
@@ -46,13 +53,14 @@ class SlowQuery
 
 	/**
 	 * @param string $sql
+	 * @param string $hash
 	 * @param float $duration
 	 */
-	public function __construct(string $sql, float $duration)
+	public function __construct(string $sql, string $hash, float $duration)
 	{
 		$this->query = $sql;
 		$this->duration = $duration;
-		$this->hash = $this->computeHash($this->simplifyQuery($sql));
+		$this->hash = $hash;
 		$this->insertedDate = DateTime::from('now');
 	}
 
@@ -86,24 +94,6 @@ class SlowQuery
 	public function getInsertedDate(): \DateTime
 	{
 		return $this->insertedDate;
-	}
-
-	/**
-	 * @param string $query
-	 * @return string
-	 */
-	public function simplifyQuery(string $query): string
-	{
-		return (string) preg_replace('/(\w+)(?:\s*=\s*(?:[\'"].*?[\'"]|[\d-.]+)|\s+IN\s+\([^\)]+\))/', '$1 = \?', $query);
-	}
-
-	/**
-	 * @param string $query
-	 * @return string
-	 */
-	private function computeHash(string $query): string
-	{
-		return md5($query);
 	}
 
 }
