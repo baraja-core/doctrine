@@ -78,4 +78,13 @@ final class Utils
 		return false;
 	}
 
+	/**
+	 * @param string $sql
+	 * @return string
+	 */
+	public static function createSqlHash(string $sql): string
+	{
+		return md5((string) preg_replace('/(\w+)(?:\s*=\s*(?:[\'"].*?[\'"]|[\d-.]+)|\s+IN\s+\([^\)]+\))/', '$1 = \?', $sql));
+	}
+
 }
