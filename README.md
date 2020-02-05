@@ -1,14 +1,13 @@
 Baraja Doctrine database
 ========================
 
-A simple and easy to use, maximum performance database layer with connection to Doctrine, which allows you to use all the advantages of OOP and also has support for Nette 3.0.
+A simple and easy to use, maximum performance database layer with connection to Doctrine, which allows you to use all the advantages of OOP and also has **support for Nette 3**.
 
 This package automatically installs Doctrine to your project (also setting everything up in the configuration) and runs stably.
 
-**READY FOR NETTE 3.0!**
-
 How to install
 --------------
+
 This package can be installed using [PackageRegistrator](https://github.com/baraja-core/package-manager) which is also part of the Baraja [Sandbox](https://github.com/baraja-core/sandbox). If you are not using it, you have to install the package manually following this guide.
 
 A model configuration can be found in the config.neon file inside the root of the package.
