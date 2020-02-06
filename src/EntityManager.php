@@ -72,6 +72,7 @@ class EntityManager implements EntityManagerInterface
 	}
 
 	/**
+	 * @internal reserved for DIC
 	 * @param callable(self $entityManager) $callback
 	 */
 	final public static function addInit(callable $callback): void
@@ -82,8 +83,7 @@ class EntityManager implements EntityManagerInterface
 	public function init(): void
 	{
 		if ($this->connection === null) {
-			$manager = $this->dependencies->get();
-			$this->connection = $manager->getConnection();
+			$this->connection = ($manager = $this->dependencies->get())->getConnection();
 			$this->configuration = $manager->getConfiguration();
 			$this->eventManager = $manager->getEventManager();
 
@@ -118,14 +118,13 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @param object $entity
 	 * @return EntityManager
-	 * @throws EntityManagerException
 	 */
 	public function persist($entity): self
 	{
 		try {
 			$this->em()->persist($entity);
 		} catch (ORMException $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
+			EntityManagerException::e($e);
 		}
 
 		return $this;
@@ -134,14 +133,13 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @param null|object|array $entity
 	 * @return EntityManager
-	 * @throws EntityManagerException
 	 */
 	public function flush($entity = null): self
 	{
 		try {
 			$this->em()->flush($entity);
 		} catch (ORMException|OptimisticLockException $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
+			EntityManagerException::e($e);
 		}
 
 		return $this;
@@ -151,7 +149,6 @@ class EntityManager implements EntityManagerInterface
 	 * @param string $className The class name of the object to find.
 	 * @param mixed $id The identity of the object to find.
 	 * @return object|null The found object.
-	 * @throws EntityManagerException
 	 */
 	public function find($className, $id)
 	{
@@ -165,14 +162,13 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @param object $object The object instance to remove.
 	 * @return EntityManager
-	 * @throws EntityManagerException
 	 */
 	public function remove($object): self
 	{
 		try {
 			$this->em()->remove($object);
 		} catch (ORMException $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
+			EntityManagerException::e($e);
 		}
 
 		return $this;
@@ -472,6 +468,8 @@ class EntityManager implements EntityManagerInterface
 	 */
 	public function getHydrator($hydrationMode): AbstractHydrator
 	{
+		trigger_error(__METHOD__ . ': Method getHydrator() is deprecated, use DIC.', E_DEPRECATED);
+
 		return $this->em()->getHydrator($hydrationMode);
 	}
 
@@ -544,24 +542,21 @@ class EntityManager implements EntityManagerInterface
 		$this->configuration->setAutoGenerateProxyClasses(2);
 	}
 
-	public function buildCache(): void
+	/**
+	 * @param bool $saveMode
+	 * @param bool $invalidCache
+	 */
+	public function buildCache(bool $saveMode = false, $invalidCache = false): void
 	{
 		$this->init();
-		$invalidCache = false;
 		QueryPanel::setInvalidCache($invalidCache);
 
 		if ($invalidCache === true) {
-			$metadata = $this->getMetadataFactory()->getAllMetadata();
-
-			if (empty($metadata)) {
+			if (empty($metadata = $this->getMetadataFactory()->getAllMetadata())) {
 				return;
 			}
 
-			$schemaTool = new SchemaTool($this);
-			$saveMode = false;
-			$sql = $schemaTool->getUpdateSchemaSql($metadata, $saveMode);
-
-			if (empty($sql)) {
+			if (empty(($schemaTool = new SchemaTool($this))->getUpdateSchemaSql($metadata, $saveMode))) {
 				return;
 			}
 
@@ -579,11 +574,7 @@ class EntityManager implements EntityManagerInterface
 		if ($cache === null) {
 			$this->init();
 			try {
-				$cache = \Doctrine\ORM\EntityManager::create(
-					$this->connection,
-					$this->configuration,
-					$this->eventManager
-				);
+				$cache = \Doctrine\ORM\EntityManager::create($this->connection, $this->configuration, $this->eventManager);
 			} catch (ORMException $e) {
 				Debugger::log($e);
 				trigger_error($e->getMessage(), E_ERROR);
