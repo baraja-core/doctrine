@@ -58,7 +58,7 @@ abstract class AbstractLogger implements SQLLogger
 	}
 
 	/**
-	 * @param mixed $sql
+	 * @param string $sql
 	 * @param mixed[] $params
 	 * @param mixed[] $types
 	 */
@@ -123,7 +123,7 @@ abstract class AbstractLogger implements SQLLogger
 	 */
 	public function getTimer(): float
 	{
-		return $this->totalTime;
+		return (float) $this->totalTime;
 	}
 
 	/**
@@ -147,11 +147,11 @@ abstract class AbstractLogger implements SQLLogger
 			break;
 		}
 
-		if (isset($location['file'], $location['line']) && is_file($location['file'])) {
+		if (isset($location['file'], $location['line']) && is_file($location['file'] ?? '')) {
 			return [
-				'file' => $location['file'],
-				'line' => $location['line'],
-				'snippet' => trim(preg_match('#\w*dump(er::\w+)?\(.*\)#i', $line = file($location['file'])[$location['line'] - 1], $m) ? $m[0] : $line),
+				'file' => $location['file'] ?? '',
+				'line' => $location['line'] ?? '',
+				'snippet' => trim(preg_match('#\w*dump(er::\w+)?\(.*\)#i', $line = file($location['file'] ?? '')[$location['line'] ?? 0 - 1], $m) ? $m[0] : $line),
 			];
 		}
 
