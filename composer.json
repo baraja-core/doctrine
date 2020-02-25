@@ -19,6 +19,7 @@
 		"nette/utils": "^3.0",
 		"nette/finder": "^2.5",
 		"janbarasek/doctrine-pro": "~1.0",
+		"baraja-core/package-manager": "~1.0",
 		"ramsey/uuid": "^3.0"
 	},
 	"autoload": {
