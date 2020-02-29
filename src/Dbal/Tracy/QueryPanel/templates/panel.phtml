@@ -99,7 +99,7 @@ foreach ($queries ?? [] as $query) {
 </style>
 
 <?php
-if (\count($this->queries) <= 0) {
+if (\count($this->queries) === 0) {
 	echo '<h1>No queries</h1>';
 } else {
 	?>
@@ -142,9 +142,11 @@ if (\count($this->queries) <= 0) {
 	  <?= $qExpress . $qs ?>
 	</table>
 	<?php
-	if (($connected ?? false) === false) {
-		echo '<div style="text-align:center;padding:1em 0;color:#888">Database is disconnected.</div>';
-	}
+  if (($connected ?? false) === false) {
+	  echo '<div style="text-align:center;padding:1em 0;color:#888">Database is disconnected.</div>';
+  } elseif (\count($this->queries) === 0) {
+	  echo '<div style="text-align:center;padding:1em 0;color:#888">No queries.</div>';
+  }
 	if (\count($queries ?? []) < ($queriesCount ?? 0)) {
 		echo '<div style="text-align:center;padding:48px">'
 			. 'And more...'
