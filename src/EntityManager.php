@@ -44,6 +44,11 @@ class EntityManager implements EntityManagerInterface
 	private static $onInit = [];
 
 	/**
+	 * @var mixed[]
+	 */
+	private $lazyEventListeners = [];
+
+	/**
 	 * @var Connection
 	 */
 	private $connection;
@@ -80,7 +85,28 @@ class EntityManager implements EntityManagerInterface
 		self::$onInit[] = $callback;
 	}
 
-	public function init(): void
+	/**
+	 * Adds an event listener that listens on the specified events.
+	 *
+	 * @param string|string[] $events The event(s) to listen on.
+	 * @param object $listener The listener object.
+	 * @return EntityManager
+	 */
+	final public function addEventListener($events, $listener): self
+	{
+		if ($this->connection === null) {
+			$this->lazyEventListeners[] = [$events, $listener];
+		} else {
+			$this->getEventManager()->addEventListener($events, $listener);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @internal
+	 */
+	final public function init(): void
 	{
 		if ($this->connection === null) {
 			$this->connection = ($manager = $this->dependencies->get())->getConnection();
@@ -90,13 +116,18 @@ class EntityManager implements EntityManagerInterface
 			foreach (self::$onInit as $initCallback) {
 				$initCallback($this);
 			}
+
+			foreach ($this->lazyEventListeners as $eventListener) {
+				$this->getEventManager()->addEventListener($eventListener[0], $eventListener[1]);
+			}
 		}
 	}
 
 	/**
+	 * @internal
 	 * @return string
 	 */
-	public function getDbDirPath(): string
+	final public function getDbDirPath(): string
 	{
 		static $cache;
 
@@ -108,7 +139,10 @@ class EntityManager implements EntityManagerInterface
 		return $cache;
 	}
 
-	public function fixDbDirPathPermission(): void
+	/**
+	 * @internal
+	 */
+	final public function fixDbDirPathPermission(): void
 	{
 		if (is_file($path = $this->getDbDirPath()) === true && fileperms($path) < 33204) {
 			chmod($path, 0664);
@@ -522,7 +556,7 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @param CacheProvider|null $cache
 	 */
-	public function setCache(?CacheProvider $cache = null): void
+	final public function setCache(?CacheProvider $cache = null): void
 	{
 		$this->init();
 		QueryPanel::setCache($cache);
@@ -546,7 +580,7 @@ class EntityManager implements EntityManagerInterface
 	 * @param bool $saveMode
 	 * @param bool $invalidCache
 	 */
-	public function buildCache(bool $saveMode = false, $invalidCache = false): void
+	final public function buildCache(bool $saveMode = false, $invalidCache = false): void
 	{
 		$this->init();
 		QueryPanel::setInvalidCache($invalidCache);
