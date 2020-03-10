@@ -10,8 +10,6 @@ use Baraja\Doctrine\EntityManager;
 use Baraja\Doctrine\EntityManagerException;
 use Baraja\Doctrine\Utils;
 use Doctrine\DBAL\Logging\SQLLogger;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use stdClass;
 use Tracy\Debugger;
 use Tracy\ILogger;
@@ -45,9 +43,11 @@ abstract class AbstractLogger implements SQLLogger
 	private $counter = 0;
 
 	/**
-	 * @var bool[]
+	 * Log an error if this time has been exceeded.
+	 *
+	 * @var int
 	 */
-	private $slowQueryHashes = [];
+	private $maxQueryTime = 150;
 
 	/**
 	 * @param EntityManager $entityManager
@@ -83,6 +83,7 @@ abstract class AbstractLogger implements SQLLogger
 
 	public function stopQuery(): ?stdClass
 	{
+		static $locked = false;
 		$keys = array_keys($this->queriesTimer);
 		$this->queriesTimer[$key = end($keys)]['end'] = microtime(true);
 		$this->queriesTimer[$key]['duration'] = $this->queriesTimer[$key]['end'] - $this->queriesTimer[$key]['start'];
@@ -94,16 +95,16 @@ abstract class AbstractLogger implements SQLLogger
 			$this->queries[$key]->duration = ($duration = (float) $this->queriesTimer[$key]['duration']);
 			$this->queries[$key]->ms = $this->queriesTimer[$key]['ms'];
 
-			if ($this->entityManager !== null && ($durationMs = $duration * 1000) > 150
-				&& $this->queryExistsByHash($hash = Utils::createSqlHash($this->queries[$key]->sql)) === false
-			) {
-				try {
-					$this->entityManager->persist($slowQuery = new SlowQuery($this->queries[$key]->sql, $hash, $durationMs))->flush($slowQuery);
-				} catch (EntityManagerException $e) {
-					Debugger::log($e, ILogger::DEBUG);
+			if ($locked === false && $this->entityManager !== null && ($durationMs = $duration * 1000) > $this->maxQueryTime) {
+				$locked = true;
+				if (Utils::queryExistsByHash($hash = Utils::createSqlHash($this->queries[$key]->sql), $this->entityManager) === false) {
+					try {
+						$this->entityManager->persist($slowQuery = new SlowQuery($this->queries[$key]->sql, $hash, $durationMs))->flush($slowQuery);
+					} catch (EntityManagerException $e) {
+						Debugger::log($e, ILogger::DEBUG);
+					}
 				}
-
-				$this->slowQueryHashes[$hash] = true;
+				$locked = false;
 			}
 		}
 
@@ -124,6 +125,23 @@ abstract class AbstractLogger implements SQLLogger
 	public function getTimer(): float
 	{
 		return (float) $this->totalTime;
+	}
+
+	/**
+	 * Set max query time to log in interval (0 - 30 sec).
+	 * Time in milliseconds.
+	 *
+	 * @param int $maxQueryTime
+	 */
+	public function setMaxQueryTime(int $maxQueryTime): void
+	{
+		if ($maxQueryTime < 0) {
+			$maxQueryTime = 0;
+		} elseif ($maxQueryTime > 30000) {
+			$maxQueryTime = 30000;
+		}
+
+		$this->maxQueryTime = $maxQueryTime;
 	}
 
 	/**
@@ -156,33 +174,6 @@ abstract class AbstractLogger implements SQLLogger
 		}
 
 		return null;
-	}
-
-	/**
-	 * @param string $hash
-	 * @return bool
-	 */
-	private function queryExistsByHash(string $hash): bool
-	{
-		if (isset($this->slowQueryHashes[$hash]) === true) {
-			return true;
-		}
-
-		try {
-			$this->entityManager->getRepository(SlowQuery::class)
-				->createQueryBuilder('slowQuery')
-				->where('slowQuery.hash = :hash')
-				->setParameter('hash', $hash)
-				->setMaxResults(1)
-				->getQuery()
-				->getSingleResult();
-
-			$this->slowQueryHashes[$hash] = true;
-		} catch (NoResultException|NonUniqueResultException $e) {
-			return false;
-		}
-
-		return true;
 	}
 
 }
