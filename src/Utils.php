@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\ORM\EntityManagerInterface;
+
 final class Utils
 {
 
@@ -84,7 +87,41 @@ final class Utils
 	 */
 	public static function createSqlHash(string $sql): string
 	{
-		return md5((string) preg_replace('/(\w+)(?:\s*=\s*(?:[\'"].*?[\'"]|[\d-.]+)|\s+IN\s+\([^\)]+\))/', '$1 = \?', $sql));
+		$sql = (string) preg_replace('/\'[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}\'/', '\'uuid\'', $sql);
+		$sql = (string) preg_replace('/[^\']+/', '\'string\'', $sql);
+		$sql = (string) preg_replace('/(\w+)(?:\s*=\s*(?:[\'"].*?[\'"]|[\d-.]+)|\s+IN\s+\([^\)]+\))/', '$1 = \?', $sql);
+
+		return md5($sql);
+	}
+
+	/**
+	 * Fast check of record existence.
+	 *
+	 * @param string $hash
+	 * @param EntityManagerInterface $em
+	 * @return bool
+	 */
+	public static function queryExistsByHash(string $hash, EntityManagerInterface $em): bool
+	{
+		static $cache = [];
+
+		if (isset($cache[$hash]) === true) {
+			return $cache[$hash];
+		}
+
+		try {
+			$hashExist = $em->getConnection()
+				->executeQuery('SELECT 1 FROM `core__database_slow_query` WHERE hash = \'' . $hash . '\'')
+				->fetch();
+		} catch (DBALException $e) {
+			throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+		}
+
+		if ($hashExist !== false) {
+			$cache[$hash] = true;
+		}
+
+		return $hashExist !== false;
 	}
 
 }
