@@ -39,14 +39,20 @@ class EntityManager implements EntityManagerInterface
 {
 
 	/**
+	 * Init events will be called when EntityManager will be connected to database.
+	 * This property must be static, because EntityManager can be created in multiple instances.
+	 *
 	 * @var callable[]
 	 */
 	private static $onInit = [];
 
 	/**
+	 * List of waiting lazy event listeners.
+	 * This property must be static, because EntityManager can be created in multiple instances.
+	 *
 	 * @var mixed[]
 	 */
-	private $lazyEventListeners = [];
+	private static $lazyEventListeners = [];
 
 	/**
 	 * @var Connection
@@ -95,7 +101,7 @@ class EntityManager implements EntityManagerInterface
 	final public function addEventListener($events, $listener): self
 	{
 		if ($this->connection === null) {
-			$this->lazyEventListeners[] = [$events, $listener];
+			self::$lazyEventListeners[] = [$events, $listener];
 		} else {
 			$this->getEventManager()->addEventListener($events, $listener);
 		}
@@ -117,9 +123,12 @@ class EntityManager implements EntityManagerInterface
 				$initCallback($this);
 			}
 
-			foreach ($this->lazyEventListeners as $eventListener) {
+			foreach (self::$lazyEventListeners as $eventListener) {
 				$this->getEventManager()->addEventListener($eventListener[0], $eventListener[1]);
 			}
+
+			self::$onInit = [];
+			self::$lazyEventListeners = [];
 		}
 	}
 
