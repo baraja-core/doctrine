@@ -26,12 +26,12 @@ For example:
 
 ```yaml
 parameters:
-	database:
-		primary:
-			host: 127.0.0.1
-			dbname: sandbox
-			user: root
-			password: root
+   database:
+      primary:
+         host: 127.0.0.1
+         dbname: sandbox
+         user: root
+         password: root
 ```
 
 For now the package supports only the connection to one database.
@@ -47,8 +47,8 @@ In your `common.neon` simple type:
 
 ```yaml
 dbal:
-	connection:
-		driverClass: Baraja\Doctrine\Driver\Postgres\PDOPgSqlDriver
+   connection:
+      driverClass: Baraja\Doctrine\Driver\Postgres\PDOPgSqlDriver
 ```
 
 Generate database structure from entities
@@ -107,8 +107,8 @@ use Baraja\Doctrine\UUID\UuidBinaryIdentifier;
 class DatabaseEntity
 {
 
-	use UuidBinaryIdentifier; // <--- UUID trait for entity identifier.
-	use SmartObject;          // <--- Strict class for better experience.
+   use UuidBinaryIdentifier; // <--- UUID trait for entity identifier.
+   use SmartObject;          // <--- Strict class for better experience.
 ```
 
 UUID will be generated automatically in PHP.
