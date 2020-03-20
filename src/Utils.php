@@ -89,7 +89,7 @@ final class Utils
 	{
 		$sql = (string) preg_replace('/\'[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}\'/', '\'uuid\'', $sql);
 		$sql = (string) preg_replace('/[^\']+/', '\'string\'', $sql);
-		$sql = (string) preg_replace('/(\w+)(?:\s*=\s*(?:[\'"].*?[\'"]|[\d-.]+)|\s+IN\s+\([^\)]+\))/', '$1 = \?', $sql);
+		$sql = (string) preg_replace('/(\w+)(?:\s*=\s*(?:[\'"].*?[\'"]|[\d\-\.]+)|\s+IN\s+\([^\)]+\))/', '$1 = \?', $sql);
 
 		return md5($sql);
 	}
