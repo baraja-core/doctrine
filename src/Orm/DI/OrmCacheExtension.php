@@ -68,6 +68,7 @@ class OrmCacheExtension extends CompilerExtension
 	{
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
+		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
 		$configuration = $builder->getDefinitionByType(Configuration::class);
 
 		if ($config['queryCache'] === null && $config['defaultDriver'] !== null) {
@@ -86,6 +87,7 @@ class OrmCacheExtension extends CompilerExtension
 	{
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
+		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
 		$configuration = $builder->getDefinitionByType(Configuration::class);
 
 		if ($config['resultCache'] === null && $config['defaultDriver'] !== null) {
@@ -104,6 +106,7 @@ class OrmCacheExtension extends CompilerExtension
 	{
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
+		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
 		$configuration = $builder->getDefinitionByType(Configuration::class);
 
 		if ($config['hydrationCache'] === null && $config['defaultDriver'] !== null) {
@@ -122,6 +125,7 @@ class OrmCacheExtension extends CompilerExtension
 	{
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
+		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
 		$configuration = $builder->getDefinitionByType(Configuration::class);
 
 		if ($config['metadataCache'] === null && $config['defaultDriver'] !== null) {
@@ -140,6 +144,7 @@ class OrmCacheExtension extends CompilerExtension
 	{
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
+		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
 		$configuration = $builder->getDefinitionByType(Configuration::class);
 
 		if ($config['secondLevelCache'] === null && $config['defaultDriver'] !== null) {

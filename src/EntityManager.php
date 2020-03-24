@@ -78,7 +78,7 @@ class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @internal reserved for DIC
-	 * @param callable(self $entityManager) $callback
+	 * @param callable $callback with value (self $entityManager)
 	 */
 	final public static function addInit(callable $callback): void
 	{
@@ -174,7 +174,7 @@ class EntityManager implements EntityManagerInterface
 
 
 	/**
-	 * @param null|object|array $entity
+	 * @param object|mixed[]|null $entity
 	 * @return EntityManager
 	 */
 	public function flush($entity = null): self
@@ -277,9 +277,12 @@ class EntityManager implements EntityManagerInterface
 	 */
 	public function getRepository($className): ObjectRepository
 	{
+		/** @var \Doctrine\ORM\EntityManager $em */
+		$em = $this;
+
 		return new Repository(
-			$this,
-			$this->getClassMetadata($className)
+			$em,
+			$em->getClassMetadata($className)
 		);
 	}
 

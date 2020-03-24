@@ -13,8 +13,6 @@ use Ramsey\Uuid\UuidInterface;
 
 class UuidType extends Type
 {
-
-	/** @var string */
 	public const NAME = 'uuid';
 
 
@@ -30,19 +28,19 @@ class UuidType extends Type
 
 
 	/**
-	 * @param string|UuidInterface|null $value
+	 * @param string|UuidInterface|mixed|null $value
 	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
 	 * @return string|null
 	 * @throws ConversionException
 	 */
 	public function convertToPHPValue($value, AbstractPlatform $platform): ?string
 	{
-		if (empty($value)) {
+		if ($value === null) {
 			return null;
 		}
 
 		if ($value instanceof UuidInterface) {
-			return (string) $value;
+			return $value->toString();
 		}
 
 		try {
@@ -54,7 +52,7 @@ class UuidType extends Type
 
 
 	/**
-	 * @param UuidInterface|string|null $value
+	 * @param UuidInterface|string|mixed|null $value
 	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
 	 * @return string|null
 	 * @throws ConversionException
