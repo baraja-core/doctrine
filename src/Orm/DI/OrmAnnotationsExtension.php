@@ -101,8 +101,9 @@ class OrmAnnotationsExtension extends CompilerExtension
 			->setFactory(AnnotationDriver::class, [$this->prefix('@reader'), Helpers::expand($config['paths'], $builder->parameters)])
 			->addSetup('addExcludePaths', [Helpers::expand($config['excludePaths'], $builder->parameters)]);
 
-		$builder->getDefinitionByType(Configuration::class)
-			->addSetup('setMetadataDriverImpl', [$this->prefix('@annotationDriver')]);
+		/** @var ServiceDefinition $configurationDefinition */
+		$configurationDefinition = $builder->getDefinitionByType(Configuration::class);
+		$configurationDefinition->addSetup('setMetadataDriverImpl', [$this->prefix('@annotationDriver')]);
 
 		AnnotationRegistry::registerUniqueLoader('class_exists');
 	}
