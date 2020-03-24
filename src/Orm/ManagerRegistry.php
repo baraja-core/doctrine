@@ -40,6 +40,7 @@ class ManagerRegistry extends AbstractManagerRegistry
 	/**
 	 * @param string $alias
 	 * @throws ORMException
+	 * @return string
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
 	public function getAliasNamespace($alias): string
@@ -78,5 +79,4 @@ class ManagerRegistry extends AbstractManagerRegistry
 	{
 		$this->container->removeService($name);
 	}
-
 }

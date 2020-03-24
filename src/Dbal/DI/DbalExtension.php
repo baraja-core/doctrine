@@ -26,7 +26,6 @@ use ReflectionClass;
 
 final class DbalExtension extends CompilerExtension
 {
-
 	public const TAG_DOCTRINE_SUBSCRIBER = 'doctrine.subscriber';
 
 	/** @var mixed[] */

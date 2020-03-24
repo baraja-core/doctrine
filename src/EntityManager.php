@@ -181,7 +181,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		try {
 			$this->em()->flush($entity);
-		} catch (ORMException|OptimisticLockException $e) {
+		} catch (ORMException | OptimisticLockException $e) {
 			EntityManagerException::e($e);
 		}
 
@@ -198,7 +198,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		try {
 			return $this->em()->find($className, $id);
-		} catch (ORMException|OptimisticLockException|TransactionRequiredException $e) {
+		} catch (ORMException | OptimisticLockException | TransactionRequiredException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
 	}
@@ -474,7 +474,7 @@ class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param object $entity The entity to copy.
-	 * @param boolean $deep FALSE for a shallow copy, TRUE for a deep copy.
+	 * @param bool $deep FALSE for a shallow copy, TRUE for a deep copy.
 	 * @return object The new entity.
 	 * @throws EntityManagerException
 	 */

@@ -6,8 +6,6 @@ namespace Baraja\Doctrine\DBAL\Logger;
 
 
 use Tracy\IBarPanel;
-use function count;
-use function sprintf;
 
 class QueryProfiler extends AbstractLogger implements IBarPanel
 {
