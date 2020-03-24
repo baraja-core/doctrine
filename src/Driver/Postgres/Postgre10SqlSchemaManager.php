@@ -22,9 +22,12 @@ class Postgre10SqlSchemaManager extends PostgreSqlSchemaManager
 			$sequenceName = $sequence['relname'];
 		}
 
-		if (!isset($sequence['increment_by'], $sequence['min_value'])) {
-			$data = $this->_conn->fetchAssoc('SELECT min_value, increment_by FROM ' . $this->_platform->quoteIdentifier($sequenceName));
-			$sequence += $data;
+		if (isset($sequence['increment_by'], $sequence['min_value']) === false) {
+			if (\is_array($sequence) === true) {
+				$sequence = array_merge($sequence, $this->_conn->fetchAssoc('SELECT min_value, increment_by FROM ' . $this->_platform->quoteIdentifier($sequenceName)));
+			} else {
+				throw new \RuntimeException('Sequence must be type of array, type "' . \gettype($sequence) . '" given.');
+			}
 		}
 
 		return new Sequence($sequenceName, $sequence['increment_by'], $sequence['min_value']);

@@ -18,6 +18,7 @@ use Doctrine\DBAL\Logging\LoggerChain;
 use Doctrine\DBAL\Portability\Connection as PortabilityConnection;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\ServiceDefinition;
 use Nette\PhpGenerator\ClassType;
 use Nette\Utils\AssertionException;
 use Nette\Utils\Validators;
@@ -157,18 +158,13 @@ final class DbalExtension extends CompilerExtension
 		// Idea by @enumag
 		// https://github.com/Arachne/EventManager/blob/master/src/DI/EventManagerExtension.php
 
+		/** @var ServiceDefinition $eventManager */
 		$eventManager = $builder->getDefinition($this->prefix('eventManager'));
 		foreach ($builder->findByTag(self::TAG_DOCTRINE_SUBSCRIBER) as $serviceName => $tag) {
 			$class = $builder->getDefinition($serviceName)->getType();
 
 			if ($class === null || !is_subclass_of($class, EventSubscriber::class)) {
-				throw new AssertionException(
-					sprintf(
-						'Subscriber "%s" doesn\'t implement "%s".',
-						$serviceName,
-						EventSubscriber::class
-					)
-				);
+				throw new AssertionException('Subscriber "' . $serviceName . '" does not implement "' . EventSubscriber::class . '".');
 			}
 			$eventManager->addSetup(
 				'?->addEventListener(?, ?)', [

@@ -66,7 +66,7 @@ final class OrmSchemaUpdateTask extends BaseTask
 	/**
 	 * Execute the given command by displaying console output live to the user.
 	 *
-	 * @param string
+	 * @param string $command
 	 * @return string
 	 */
 	private function liveExecuteCommand(string $command): string

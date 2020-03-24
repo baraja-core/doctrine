@@ -26,7 +26,7 @@ abstract class AbstractLogger implements SQLLogger
 	/** @var EntityManager|null */
 	private $entityManager;
 
-	/** @var float[] */
+	/** @var float[][] */
 	private $queriesTimer = [];
 
 	/** @var int */
@@ -143,6 +143,8 @@ abstract class AbstractLogger implements SQLLogger
 
 	/**
 	 * Finds the location where dump was called. Returns [file, line, code]
+	 *
+	 * @return string[]|null
 	 */
 	private function findLocation(): ?array
 	{
