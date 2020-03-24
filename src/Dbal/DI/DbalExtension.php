@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\DBAL\DI;
 
 
+use Baraja\Doctrine\DBAL\ConnectionFactory;
+use Baraja\Doctrine\DBAL\Events\ContainerAwareEventManager;
+use Baraja\Doctrine\DBAL\Events\DebugEventManager;
+use Baraja\Doctrine\DBAL\Tracy\BlueScreen\DbalBlueScreen;
+use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Configuration;
@@ -18,11 +23,6 @@ use Nette\Utils\AssertionException;
 use Nette\Utils\Validators;
 use PDO;
 use ReflectionClass;
-use Baraja\Doctrine\DBAL\ConnectionFactory;
-use Baraja\Doctrine\DBAL\Events\ContainerAwareEventManager;
-use Baraja\Doctrine\DBAL\Events\DebugEventManager;
-use Baraja\Doctrine\DBAL\Tracy\BlueScreen\DbalBlueScreen;
-use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 
 final class DbalExtension extends CompilerExtension
 {
@@ -63,6 +63,7 @@ final class DbalExtension extends CompilerExtension
 		],
 	];
 
+
 	/**
 	 * Register services
 	 */
@@ -80,6 +81,7 @@ final class DbalExtension extends CompilerExtension
 				->setAutowired(false);
 		}
 	}
+
 
 	/**
 	 * Register Doctrine Configuration
@@ -118,6 +120,7 @@ final class DbalExtension extends CompilerExtension
 		$configuration->addSetup('setAutoCommit', [$config['autoCommit']]);
 	}
 
+
 	public function loadConnectionConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
@@ -145,6 +148,7 @@ final class DbalExtension extends CompilerExtension
 				$builder->getDefinitionByType(EventManager::class),
 			]);
 	}
+
 
 	/**
 	 * Decorate services
@@ -178,6 +182,7 @@ final class DbalExtension extends CompilerExtension
 			);
 		}
 	}
+
 
 	/**
 	 * Update initialize method

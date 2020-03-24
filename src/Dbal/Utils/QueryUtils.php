@@ -59,6 +59,7 @@ final class QueryUtils
 			. '</span>' . "\n";
 	}
 
+
 	/**
 	 * @param bool $reset
 	 * @return int

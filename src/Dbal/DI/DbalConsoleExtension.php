@@ -23,6 +23,7 @@ class DbalConsoleExtension extends CompilerExtension
 	 */
 	private $cliMode;
 
+
 	/**
 	 * @param bool|null $cliMode
 	 */
@@ -30,6 +31,7 @@ class DbalConsoleExtension extends CompilerExtension
 	{
 		$this->cliMode = $cliMode ?? PHP_SAPI === 'cli';
 	}
+
 
 	/**
 	 * Register services
@@ -67,6 +69,7 @@ class DbalConsoleExtension extends CompilerExtension
 			->addTag('console.command', 'dbal:run-sql')
 			->setAutowired(false);
 	}
+
 
 	/**
 	 * Decorate services

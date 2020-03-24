@@ -49,6 +49,7 @@ abstract class AbstractLogger implements SQLLogger
 	 */
 	private $maxQueryTime = 150;
 
+
 	/**
 	 * @param EntityManager $entityManager
 	 */
@@ -56,6 +57,7 @@ abstract class AbstractLogger implements SQLLogger
 	{
 		$this->entityManager = $entityManager;
 	}
+
 
 	/**
 	 * @param string $sql
@@ -80,6 +82,7 @@ abstract class AbstractLogger implements SQLLogger
 			'location' => $this->findLocation(),
 		];
 	}
+
 
 	public function stopQuery(): ?stdClass
 	{
@@ -111,6 +114,7 @@ abstract class AbstractLogger implements SQLLogger
 		return $this->queries[$key] ?? null;
 	}
 
+
 	/**
 	 * @return int
 	 */
@@ -119,6 +123,7 @@ abstract class AbstractLogger implements SQLLogger
 		return $this->counter;
 	}
 
+
 	/**
 	 * @return float
 	 */
@@ -126,6 +131,7 @@ abstract class AbstractLogger implements SQLLogger
 	{
 		return (float) $this->totalTime;
 	}
+
 
 	/**
 	 * Set max query time to log in interval (0 - 30 sec).
@@ -143,6 +149,7 @@ abstract class AbstractLogger implements SQLLogger
 
 		$this->maxQueryTime = $maxQueryTime;
 	}
+
 
 	/**
 	 * Finds the location where dump was called. Returns [file, line, code]

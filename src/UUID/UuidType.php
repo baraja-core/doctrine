@@ -14,10 +14,9 @@ use Ramsey\Uuid\UuidInterface;
 class UuidType extends Type
 {
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	public const NAME = 'uuid';
+
 
 	/**
 	 * @param mixed[] $fieldDeclaration
@@ -28,6 +27,7 @@ class UuidType extends Type
 	{
 		return $platform->getGuidTypeDeclarationSQL($fieldDeclaration);
 	}
+
 
 	/**
 	 * @param string|UuidInterface|null $value
@@ -52,6 +52,7 @@ class UuidType extends Type
 		}
 	}
 
+
 	/**
 	 * @param UuidInterface|string|null $value
 	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
@@ -73,6 +74,7 @@ class UuidType extends Type
 		throw ConversionException::conversionFailed($value, static::NAME);
 	}
 
+
 	/**
 	 * @return string
 	 */
@@ -80,6 +82,7 @@ class UuidType extends Type
 	{
 		return static::NAME;
 	}
+
 
 	/**
 	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
@@ -89,5 +92,4 @@ class UuidType extends Type
 	{
 		return true;
 	}
-
 }

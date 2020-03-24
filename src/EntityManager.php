@@ -54,25 +54,18 @@ class EntityManager implements EntityManagerInterface
 	 */
 	private static $lazyEventListeners = [];
 
-	/**
-	 * @var Connection
-	 */
+	/** @var Connection */
 	private $connection;
 
-	/**
-	 * @var Configuration
-	 */
+	/** @var Configuration */
 	private $configuration;
 
-	/**
-	 * @var EventManager
-	 */
+	/**  @var EventManager */
 	private $eventManager;
 
-	/**
-	 * @var EntityManagerDependenciesAccessor
-	 */
+	/** @var EntityManagerDependenciesAccessor */
 	private $dependencies;
+
 
 	/**
 	 * @param EntityManagerDependenciesAccessor $dependencies
@@ -82,6 +75,7 @@ class EntityManager implements EntityManagerInterface
 		$this->dependencies = $dependencies;
 	}
 
+
 	/**
 	 * @internal reserved for DIC
 	 * @param callable(self $entityManager) $callback
@@ -90,6 +84,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		self::$onInit[] = $callback;
 	}
+
 
 	/**
 	 * Adds an event listener that listens on the specified events.
@@ -108,6 +103,7 @@ class EntityManager implements EntityManagerInterface
 
 		return $this;
 	}
+
 
 	/**
 	 * @internal
@@ -132,6 +128,7 @@ class EntityManager implements EntityManagerInterface
 		}
 	}
 
+
 	/**
 	 * @internal
 	 * @return string
@@ -148,6 +145,7 @@ class EntityManager implements EntityManagerInterface
 		return $cache;
 	}
 
+
 	/**
 	 * @internal
 	 */
@@ -157,6 +155,7 @@ class EntityManager implements EntityManagerInterface
 			chmod($path, 0664);
 		}
 	}
+
 
 	/**
 	 * @param object $entity
@@ -173,6 +172,7 @@ class EntityManager implements EntityManagerInterface
 		return $this;
 	}
 
+
 	/**
 	 * @param null|object|array $entity
 	 * @return EntityManager
@@ -188,6 +188,7 @@ class EntityManager implements EntityManagerInterface
 		return $this;
 	}
 
+
 	/**
 	 * @param string $className The class name of the object to find.
 	 * @param mixed $id The identity of the object to find.
@@ -201,6 +202,7 @@ class EntityManager implements EntityManagerInterface
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
 	}
+
 
 	/**
 	 * @param object $object The object instance to remove.
@@ -217,6 +219,7 @@ class EntityManager implements EntityManagerInterface
 		return $this;
 	}
 
+
 	/**
 	 * @param object $object
 	 * @return object
@@ -231,6 +234,7 @@ class EntityManager implements EntityManagerInterface
 		}
 	}
 
+
 	/**
 	 * @param string|null $objectName if given, only objects of this type will get detached.
 	 * @return void
@@ -241,6 +245,7 @@ class EntityManager implements EntityManagerInterface
 		$this->em()->clear($objectName);
 	}
 
+
 	/**
 	 * @param object $object The object to detach.
 	 * @return void
@@ -249,6 +254,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		$this->em()->detach($object);
 	}
+
 
 	/**
 	 * @param object $object The object to refresh.
@@ -264,6 +270,7 @@ class EntityManager implements EntityManagerInterface
 		}
 	}
 
+
 	/**
 	 * @param string $className
 	 * @return EntityRepository|ObjectRepository|Repository
@@ -276,6 +283,7 @@ class EntityManager implements EntityManagerInterface
 		);
 	}
 
+
 	/**
 	 * @param string $className
 	 * @return ClassMetadata
@@ -285,6 +293,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->getClassMetadata($className);
 	}
 
+
 	/**
 	 * @return ClassMetadataFactory
 	 */
@@ -292,6 +301,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		return $this->em()->getMetadataFactory();
 	}
+
 
 	/**
 	 * @param object $obj
@@ -302,6 +312,7 @@ class EntityManager implements EntityManagerInterface
 		$this->em()->initializeObject($obj);
 	}
 
+
 	/**
 	 * @param object $object
 	 * @return bool
@@ -311,6 +322,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->contains($object);
 	}
 
+
 	/**
 	 * @return Cache|null
 	 */
@@ -318,6 +330,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		return $this->em()->getCache();
 	}
+
 
 	/**
 	 * @return Connection
@@ -327,6 +340,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->getConnection();
 	}
 
+
 	/**
 	 * @return Query\Expr
 	 */
@@ -335,6 +349,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->getExpressionBuilder();
 	}
 
+
 	/**
 	 * @return void
 	 */
@@ -342,6 +357,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		$this->em()->beginTransaction();
 	}
+
 
 	/**
 	 * @param callable $func The function to execute transactionally.
@@ -357,15 +373,18 @@ class EntityManager implements EntityManagerInterface
 		}
 	}
 
+
 	public function commit(): void
 	{
 		$this->em()->commit();
 	}
 
+
 	public function rollback(): void
 	{
 		$this->em()->rollback();
 	}
+
 
 	/**
 	 * @param string $dql The DQL string.
@@ -376,6 +395,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->createQuery($dql ?? '');
 	}
 
+
 	/**
 	 * @param string $name
 	 * @return Query
@@ -384,6 +404,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		return $this->em()->createNamedQuery($name);
 	}
+
 
 	/**
 	 * @param string $sql
@@ -395,6 +416,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->createNativeQuery($sql, $rsm);
 	}
 
+
 	/**
 	 * @param string $name
 	 * @return NativeQuery
@@ -404,6 +426,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->createNamedNativeQuery($name);
 	}
 
+
 	/**
 	 * @return QueryBuilder
 	 */
@@ -411,6 +434,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		return $this->em()->createQueryBuilder();
 	}
+
 
 	/**
 	 * @param string $entityName The name of the entity type.
@@ -427,6 +451,7 @@ class EntityManager implements EntityManagerInterface
 		}
 	}
 
+
 	/**
 	 * @param string $entityName The name of the entity type.
 	 * @param mixed $identifier The entity identifier.
@@ -437,6 +462,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->getPartialReference($entityName, $identifier);
 	}
 
+
 	/**
 	 * @return void
 	 */
@@ -444,6 +470,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		$this->em()->close();
 	}
+
 
 	/**
 	 * @param object $entity The entity to copy.
@@ -460,6 +487,7 @@ class EntityManager implements EntityManagerInterface
 		}
 	}
 
+
 	/**
 	 * @param object $entity
 	 * @param int $lockMode
@@ -472,6 +500,7 @@ class EntityManager implements EntityManagerInterface
 		$this->em()->lock($entity, $lockMode, $lockVersion);
 	}
 
+
 	/**
 	 * @return EventManager
 	 */
@@ -479,6 +508,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		return $this->em()->getEventManager();
 	}
+
 
 	/**
 	 * @return Configuration
@@ -488,6 +518,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->getConfiguration();
 	}
 
+
 	/**
 	 * @return bool
 	 */
@@ -496,6 +527,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->isOpen();
 	}
 
+
 	/**
 	 * @return UnitOfWork
 	 */
@@ -503,6 +535,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		return $this->em()->getUnitOfWork();
 	}
+
 
 	/**
 	 * @deprecated
@@ -515,6 +548,7 @@ class EntityManager implements EntityManagerInterface
 
 		return $this->em()->getHydrator($hydrationMode);
 	}
+
 
 	/**
 	 * @param string|int $hydrationMode
@@ -530,6 +564,7 @@ class EntityManager implements EntityManagerInterface
 		}
 	}
 
+
 	/**
 	 * @return ProxyFactory
 	 */
@@ -537,6 +572,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		return $this->em()->getProxyFactory();
 	}
+
 
 	/**
 	 * @return Query\FilterCollection
@@ -546,6 +582,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->getFilters();
 	}
 
+
 	/**
 	 * @return bool -> True, if the filter collection is clean.
 	 */
@@ -554,6 +591,7 @@ class EntityManager implements EntityManagerInterface
 		return $this->em()->isFiltersStateClean();
 	}
 
+
 	/**
 	 * @return bool -> True, if the EM has a filter collection.
 	 */
@@ -561,6 +599,7 @@ class EntityManager implements EntityManagerInterface
 	{
 		return $this->em()->hasFilters();
 	}
+
 
 	/**
 	 * @param CacheProvider|null $cache
@@ -585,6 +624,7 @@ class EntityManager implements EntityManagerInterface
 		$this->configuration->setAutoGenerateProxyClasses(2);
 	}
 
+
 	/**
 	 * @param bool $saveMode
 	 * @param bool $invalidCache
@@ -607,6 +647,7 @@ class EntityManager implements EntityManagerInterface
 		}
 	}
 
+
 	/**
 	 * @return \Doctrine\ORM\EntityManager
 	 */
@@ -626,5 +667,4 @@ class EntityManager implements EntityManagerInterface
 
 		return $cache;
 	}
-
 }

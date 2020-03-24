@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Baraja\Doctrine\ORM\Mapping;
 
@@ -12,20 +12,18 @@ use Nette\DI\Container;
 class ContainerEntityListenerResolver implements EntityListenerResolver
 {
 
-	/**
-	 * @var Container
-	 */
+	/** @var object[] */
+	protected $instances = [];
+
+	/** @var Container */
 	private $container;
 
-	/**
-	 * @var object[]
-	 */
-	protected $instances = [];
 
 	public function __construct(Container $container)
 	{
 		$this->container = $container;
 	}
+
 
 	/**
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
@@ -44,6 +42,7 @@ class ContainerEntityListenerResolver implements EntityListenerResolver
 		}
 	}
 
+
 	/**
 	 * @param object|mixed $object
 	 */
@@ -55,6 +54,7 @@ class ContainerEntityListenerResolver implements EntityListenerResolver
 
 		$this->instances[get_class($object)] = $object;
 	}
+
 
 	/**
 	 * @param string $className
@@ -76,5 +76,4 @@ class ContainerEntityListenerResolver implements EntityListenerResolver
 
 		return $this->instances[$className];
 	}
-
 }

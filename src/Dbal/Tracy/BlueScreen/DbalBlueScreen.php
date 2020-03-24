@@ -1,16 +1,16 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Baraja\Doctrine\DBAL\Tracy\BlueScreen;
 
 
+use Baraja\Doctrine\DBAL\Utils\QueryUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\DriverException;
 use Doctrine\DBAL\Query\QueryException;
-use Baraja\Doctrine\DBAL\Utils\QueryUtils;
 use PDO;
 use PDOException;
 use Throwable;
@@ -27,7 +27,8 @@ class DbalBlueScreen
 	 */
 	public function __invoke(?Throwable $e): ?array
 	{
-		if ($e === null) return null;
+		if ($e === null)
+			return null;
 
 		if ($e instanceof DriverException) {
 			if (($prev = $e->getPrevious()) && ($item = Helpers::findTrace($e->getTrace(), DBALException::class . '::driverExceptionDuringQuery'))) {

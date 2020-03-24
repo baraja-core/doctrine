@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Baraja\Doctrine\DBAL\Logger;
 
@@ -25,6 +25,7 @@ class QueryProfiler extends AbstractLogger implements IBarPanel
 			. '</span>'
 			. '</span>';
 	}
+
 
 	/**
 	 * @return string

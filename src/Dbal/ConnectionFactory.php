@@ -37,6 +37,7 @@ class ConnectionFactory
 	 */
 	private $initialized = false;
 
+
 	/**
 	 * @param mixed[] $typesConfig
 	 * @param mixed[] $typesMapping
@@ -46,6 +47,7 @@ class ConnectionFactory
 		$this->typesConfig = $typesConfig;
 		$this->typesMapping = $typesMapping;
 	}
+
 
 	/**
 	 * Create a connection by name.
@@ -85,6 +87,7 @@ class ConnectionFactory
 		return $connection;
 	}
 
+
 	/**
 	 * Try to get the database platform.
 	 *
@@ -115,6 +118,7 @@ class ConnectionFactory
 			throw $driverException;
 		}
 	}
+
 
 	/**
 	 * @throws DBALException
