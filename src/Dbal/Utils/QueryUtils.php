@@ -76,5 +76,4 @@ final class QueryUtils
 
 		return $counter;
 	}
-
 }

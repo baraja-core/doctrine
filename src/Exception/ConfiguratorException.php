@@ -16,5 +16,4 @@ final class ConfiguratorException extends DatabaseException
 	{
 		throw new self('Doctrine type "' . $type . '" does not exist, because class "' . $className . '" is not defined.');
 	}
-
 }

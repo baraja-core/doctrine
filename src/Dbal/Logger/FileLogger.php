@@ -10,9 +10,7 @@ use stdClass;
 final class FileLogger extends AbstractLogger
 {
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $file;
 
 
@@ -30,5 +28,4 @@ final class FileLogger extends AbstractLogger
 
 		return $query;
 	}
-
 }

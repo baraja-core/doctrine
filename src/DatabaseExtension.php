@@ -13,12 +13,10 @@ use Nette\DI\CompilerExtension;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Helpers;
 
-class DatabaseExtension extends CompilerExtension
+final class DatabaseExtension extends CompilerExtension
 {
 
-	/**
-	 * @var string[]
-	 */
+	/** @var string[] */
 	private $types = [];
 
 
@@ -112,5 +110,4 @@ class DatabaseExtension extends CompilerExtension
 			'after' => '',
 		];
 	}
-
 }

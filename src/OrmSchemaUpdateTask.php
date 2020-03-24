@@ -11,7 +11,7 @@ use Baraja\PackageManager\Helpers;
 /**
  * Priority: 5
  */
-class OrmSchemaUpdateTask extends BaseTask
+final class OrmSchemaUpdateTask extends BaseTask
 {
 
 	/**
