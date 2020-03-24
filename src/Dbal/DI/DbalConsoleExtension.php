@@ -18,9 +18,7 @@ use Symfony\Component\Console\Application;
 class DbalConsoleExtension extends CompilerExtension
 {
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool */
 	private $cliMode;
 
 
@@ -89,5 +87,4 @@ class DbalConsoleExtension extends CompilerExtension
 		$connectionHelper = $this->prefix('@connectionHelper');
 		$application->addSetup(new Statement('$service->getHelperSet()->set(?, ?)', [$connectionHelper, 'db']));
 	}
-
 }

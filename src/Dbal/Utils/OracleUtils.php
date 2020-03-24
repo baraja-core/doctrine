@@ -29,5 +29,4 @@ final class OracleUtils
 
 		return $sql2;
 	}
-
 }

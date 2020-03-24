@@ -9,7 +9,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 
-class EntityManagerDependencies
+final class EntityManagerDependencies
 {
 
 	/** @var Connection */

@@ -21,5 +21,4 @@ final class TracyDumpLogger extends AbstractLogger
 
 		return $query;
 	}
-
 }

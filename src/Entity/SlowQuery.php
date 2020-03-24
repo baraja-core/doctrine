@@ -23,7 +23,6 @@ use Nette\Utils\DateTime;
  */
 class SlowQuery
 {
-
 	use UuidIdentifier;
 	use SmartObject;
 
@@ -100,5 +99,4 @@ class SlowQuery
 	{
 		return $this->insertedDate;
 	}
-
 }

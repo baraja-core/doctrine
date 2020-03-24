@@ -12,9 +12,7 @@ use Doctrine\Common\EventManager as DoctrineEventManager;
 class DebugEventManager extends DoctrineEventManager
 {
 
-	/**
-	 * @var EventManager
-	 */
+	/** @var EventManager */
 	private $inner;
 
 
@@ -79,5 +77,4 @@ class DebugEventManager extends DoctrineEventManager
 	{
 		$this->inner->removeEventListener($events, $listener);
 	}
-
 }

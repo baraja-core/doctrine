@@ -18,9 +18,9 @@ class PostgreSQL100Platform extends PostgreSQL94Platform
                        minimum_value AS min_value,
                        increment AS increment_by
                 FROM   information_schema.sequences
-                WHERE  sequence_catalog = ' . $this->quoteStringLiteral($database) . "
-                AND    sequence_schema NOT LIKE 'pg\_%'
-                AND    sequence_schema != 'information_schema'";
+                WHERE  sequence_catalog = ' . $this->quoteStringLiteral($database) . '
+                AND    sequence_schema NOT LIKE \'pg\_%\'
+                AND    sequence_schema != \'information_schema\'';
 	}
 
 
@@ -31,5 +31,4 @@ class PostgreSQL100Platform extends PostgreSQL94Platform
 	{
 		return PostgreSQL94Keywords::class;
 	}
-
 }

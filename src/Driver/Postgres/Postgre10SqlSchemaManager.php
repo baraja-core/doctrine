@@ -29,5 +29,4 @@ class Postgre10SqlSchemaManager extends PostgreSqlSchemaManager
 
 		return new Sequence($sequenceName, $sequence['increment_by'], $sequence['min_value']);
 	}
-
 }

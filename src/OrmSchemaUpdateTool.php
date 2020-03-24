@@ -13,7 +13,7 @@ use Nette\DI\Container;
 use Nette\Utils\Finder;
 use Tracy\Debugger;
 
-class OrmSchemaUpdateTool
+final class OrmSchemaUpdateTool
 {
 
 	/** @var Container */
