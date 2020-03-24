@@ -17,29 +17,19 @@ use Tracy\ILogger;
 abstract class AbstractLogger implements SQLLogger
 {
 
-	/**
-	 * @var mixed[]
-	 */
+	/** @var mixed[] */
 	protected $queries = [];
 
-	/**
-	 * @var float
-	 */
+	/** @var float */
 	protected $totalTime = 0;
 
-	/**
-	 * @var EntityManager|null
-	 */
+	/** @var EntityManager|null */
 	private $entityManager;
 
-	/**
-	 * @var float[]
-	 */
+	/** @var float[] */
 	private $queriesTimer = [];
 
-	/**
-	 * @var int
-	 */
+	/** @var int */
 	private $counter = 0;
 
 	/**
@@ -182,5 +172,4 @@ abstract class AbstractLogger implements SQLLogger
 
 		return null;
 	}
-
 }

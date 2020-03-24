@@ -47,5 +47,4 @@ class DatabaseException extends \RuntimeException
 	{
 		throw new self('Entity "' . $className . '" must implement getParent(), setParent() and getPosition().');
 	}
-
 }

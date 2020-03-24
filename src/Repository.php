@@ -7,7 +7,7 @@ namespace Baraja\Doctrine;
 
 use Doctrine\ORM\EntityRepository;
 
-class Repository extends EntityRepository
+final class Repository extends EntityRepository
 {
 
 	/**

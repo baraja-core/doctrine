@@ -20,5 +20,4 @@ class PDOPgSqlDriver extends ParentDriver
 	{
 		return new Postgre10SqlSchemaManager($conn);
 	}
-
 }

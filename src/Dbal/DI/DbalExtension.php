@@ -29,9 +29,7 @@ final class DbalExtension extends CompilerExtension
 
 	public const TAG_DOCTRINE_SUBSCRIBER = 'doctrine.subscriber';
 
-	/**
-	 * @var mixed[]
-	 */
+	/** @var mixed[] */
 	private $defaults = [
 		'debug' => false,
 		'configuration' => [
@@ -207,5 +205,4 @@ final class DbalExtension extends CompilerExtension
 			);
 		}
 	}
-
 }

@@ -13,19 +13,13 @@ use RuntimeException;
 class ContainerAwareEventManager extends DoctrineEventManager
 {
 
-	/**
-	 * @var Container
-	 */
+	/** @var Container */
 	protected $container;
 
-	/**
-	 * @var mixed[bool[]]
-	 */
+	/** @var mixed[bool[]] */
 	protected $initialized = [];
 
-	/**
-	 * @var mixed[EventSubscriber[]]
-	 */
+	/** @var mixed[EventSubscriber[]] */
 	protected $listeners = [];
 
 
@@ -132,5 +126,4 @@ class ContainerAwareEventManager extends DoctrineEventManager
 			}
 		}
 	}
-
 }
