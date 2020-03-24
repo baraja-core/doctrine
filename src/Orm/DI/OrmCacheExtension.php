@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Baraja\Doctrine\ORM\DI;
 
@@ -24,7 +24,6 @@ use Nette\InvalidStateException;
 
 class OrmCacheExtension extends CompilerExtension
 {
-
 	public const DRIVERS = [
 		'apc' => ApcCache::class,
 		'apcu' => ApcuCache::class,
@@ -37,9 +36,7 @@ class OrmCacheExtension extends CompilerExtension
 		'xcache' => XcacheCache::class,
 	];
 
-	/**
-	 * @var mixed[]
-	 */
+	/** @var mixed[] */
 	private $defaults = [
 		'defaultDriver' => 'filesystem',
 		'queryCache' => null,
@@ -48,6 +45,7 @@ class OrmCacheExtension extends CompilerExtension
 		'resultCache' => null,
 		'secondLevelCache' => null,
 	];
+
 
 	public function loadConfiguration(): void
 	{
@@ -64,6 +62,7 @@ class OrmCacheExtension extends CompilerExtension
 		$this->loadMetadataCacheConfiguration();
 		$this->loadSecondLevelCacheConfiguration();
 	}
+
 
 	public function loadQueryCacheConfiguration(): void
 	{
@@ -82,6 +81,7 @@ class OrmCacheExtension extends CompilerExtension
 		}
 	}
 
+
 	public function loadResultCacheConfiguration(): void
 	{
 		$config = $this->getConfig();
@@ -98,6 +98,7 @@ class OrmCacheExtension extends CompilerExtension
 			throw new InvalidStateException('ResultCache or defaultDriver must be provided');
 		}
 	}
+
 
 	public function loadHydrationCacheConfiguration(): void
 	{
@@ -116,6 +117,7 @@ class OrmCacheExtension extends CompilerExtension
 		}
 	}
 
+
 	public function loadMetadataCacheConfiguration(): void
 	{
 		$config = $this->getConfig();
@@ -132,6 +134,7 @@ class OrmCacheExtension extends CompilerExtension
 			throw new InvalidStateException('MetadataCache or defaultDriver must be provided');
 		}
 	}
+
 
 	public function loadSecondLevelCacheConfiguration(): void
 	{
@@ -159,6 +162,7 @@ class OrmCacheExtension extends CompilerExtension
 		}
 	}
 
+
 	protected function getDefaultDriverCache(string $service): ServiceDefinition
 	{
 		$config = $this->getConfig();
@@ -178,5 +182,4 @@ class OrmCacheExtension extends CompilerExtension
 
 		return $driverCache;
 	}
-
 }

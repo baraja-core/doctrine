@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
+use Baraja\Doctrine\EntityManager;
 use Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand;
 use Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand;
 use Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand;
@@ -24,16 +25,14 @@ use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Definitions\Statement;
 use Nette\DI\ServiceCreationException;
 use Nette\InvalidStateException;
-use Baraja\Doctrine\EntityManager;
 use Symfony\Component\Console\Application;
 
 class OrmConsoleExtension extends CompilerExtension
 {
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool */
 	private $cliMode;
+
 
 	/**
 	 * @param bool|null $cliMode
@@ -42,6 +41,7 @@ class OrmConsoleExtension extends CompilerExtension
 	{
 		$this->cliMode = $cliMode ?? PHP_SAPI === 'cli';
 	}
+
 
 	public function loadConfiguration(): void
 	{
@@ -125,6 +125,7 @@ class OrmConsoleExtension extends CompilerExtension
 			->setAutowired(false);
 	}
 
+
 	/**
 	 * Decorate services
 	 */
@@ -145,5 +146,4 @@ class OrmConsoleExtension extends CompilerExtension
 		$entityManagerHelper = $this->prefix('@entityManagerHelper');
 		$application->addSetup(new Statement('$service->getHelperSet()->set(?,?)', [$entityManagerHelper, 'em']));
 	}
-
 }

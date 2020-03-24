@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver as DoctrineAnnotationDriver;
 
 class AnnotationDriver extends DoctrineAnnotationDriver
 {
-
 	/**
 	 * @param Reader $reader
 	 * @param string[] $paths
@@ -21,5 +20,4 @@ class AnnotationDriver extends DoctrineAnnotationDriver
 		$this->reader = $reader;
 		$this->paths = $paths;
 	}
-
 }

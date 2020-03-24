@@ -21,6 +21,7 @@ class DatabaseExtension extends CompilerExtension
 	 */
 	private $types = [];
 
+
 	/**
 	 * @param ClassType $class
 	 */
@@ -47,6 +48,7 @@ class DatabaseExtension extends CompilerExtension
 		);
 	}
 
+
 	/**
 	 * @return string
 	 */
@@ -70,6 +72,7 @@ class DatabaseExtension extends CompilerExtension
 
 		return $return;
 	}
+
 
 	/**
 	 * @return string[]

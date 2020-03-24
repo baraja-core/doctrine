@@ -15,6 +15,7 @@ class PDOPgSqlDriver extends ParentDriver
 		return new PostgreSQL100Platform;
 	}
 
+
 	public function getSchemaManager(\Doctrine\DBAL\Connection $conn)
 	{
 		return new Postgre10SqlSchemaManager($conn);

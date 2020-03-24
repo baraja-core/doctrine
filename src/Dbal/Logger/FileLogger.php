@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Baraja\Doctrine\DBAL\Logger;
 
@@ -15,10 +15,12 @@ final class FileLogger extends AbstractLogger
 	 */
 	private $file;
 
+
 	public function __construct(string $file)
 	{
 		$this->file = $file;
 	}
+
 
 	public function stopQuery(): stdClass
 	{

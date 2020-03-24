@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Baraja\Doctrine\DBAL\Events;
 
@@ -28,10 +28,12 @@ class ContainerAwareEventManager extends DoctrineEventManager
 	 */
 	protected $listeners = [];
 
+
 	public function __construct(Container $container)
 	{
 		$this->container = $container;
 	}
+
 
 	/**
 	 * @param string $eventName
@@ -57,6 +59,7 @@ class ContainerAwareEventManager extends DoctrineEventManager
 		}
 	}
 
+
 	/**
 	 * @param string|NULL $event
 	 * @return object[]
@@ -67,6 +70,7 @@ class ContainerAwareEventManager extends DoctrineEventManager
 		return $event ? $this->listeners[$event] : $this->listeners;
 	}
 
+
 	/**
 	 * @param string $event
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
@@ -76,6 +80,7 @@ class ContainerAwareEventManager extends DoctrineEventManager
 	{
 		return !empty($this->listeners[$event]);
 	}
+
 
 	/**
 	 * Adds an event listener that listens on the specified events.
@@ -102,6 +107,7 @@ class ContainerAwareEventManager extends DoctrineEventManager
 			$this->listeners[$event][$hash] = $listener;
 		}
 	}
+
 
 	/**
 	 * Removes an event listener from the specified events.

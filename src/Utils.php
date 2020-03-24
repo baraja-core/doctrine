@@ -10,8 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class Utils
 {
-
 	private const DOC_PATTERN = '/[@=](?<name>[^\(\s\n]+)\s*(?<value>[^\n]+)/';
+
 
 	/**
 	 * @throws \Error
@@ -20,6 +20,7 @@ final class Utils
 	{
 		throw new \Error('Class ' . get_class($this) . ' is static and cannot be instantiated.');
 	}
+
 
 	/**
 	 * Find annotation /^[@=] in class DocComment by reflection.
@@ -42,6 +43,7 @@ final class Utils
 		return null;
 	}
 
+
 	/**
 	 * Return reflection class by given class name. In case of repeated use return reflection by cache.
 	 *
@@ -60,6 +62,7 @@ final class Utils
 		return $cache[$class];
 	}
 
+
 	/**
 	 * Safe detection if function is available to call.
 	 *
@@ -72,7 +75,7 @@ final class Utils
 
 		if (\function_exists($functionName) === true) {
 			if ($disabled === null && \is_string($disableFunctions = ini_get('disable_functions'))) {
-				$disabled = explode(',', $disableFunctions) ? : [];
+				$disabled = explode(',', $disableFunctions) ?: [];
 			}
 
 			return \in_array($functionName, $disabled ?? [], true) === false;
@@ -80,6 +83,7 @@ final class Utils
 
 		return false;
 	}
+
 
 	/**
 	 * @param string $sql
@@ -93,6 +97,7 @@ final class Utils
 
 		return md5($sql);
 	}
+
 
 	/**
 	 * Fast check of record existence.

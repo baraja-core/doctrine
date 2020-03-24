@@ -5,21 +5,19 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
+use Baraja\Doctrine\ORM\EntityManagerDecorator;
+use Baraja\Doctrine\ORM\Mapping\ContainerEntityListenerResolver;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\Statement;
 use Nette\DI\Helpers;
 use Nette\InvalidArgumentException;
-use Baraja\Doctrine\ORM\EntityManagerDecorator;
-use Baraja\Doctrine\ORM\Mapping\ContainerEntityListenerResolver;
 
 final class OrmExtension extends CompilerExtension
 {
 
-	/**
-	 * @var mixed[]
-	 */
+	/** @var mixed[] */
 	private $defaults = [
 		'entityManagerDecoratorClass' => EntityManagerDecorator::class,
 		'configurationClass' => Configuration::class,
@@ -43,10 +41,12 @@ final class OrmExtension extends CompilerExtension
 		],
 	];
 
+
 	public function loadConfiguration(): void
 	{
 		$this->loadDoctrineConfiguration();
 	}
+
 
 	public function loadDoctrineConfiguration(): void
 	{
@@ -122,5 +122,4 @@ final class OrmExtension extends CompilerExtension
 			$configuration->addSetup('setDefaultQueryHints', [$config['defaultQueryHints']]);
 		}
 	}
-
 }

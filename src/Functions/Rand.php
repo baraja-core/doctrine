@@ -25,6 +25,7 @@ class Rand extends FunctionNode
 		$parser->match(Lexer::T_CLOSE_PARENTHESIS);
 	}
 
+
 	/**
 	 * @param SqlWalker $sqlWalker
 	 * @return string

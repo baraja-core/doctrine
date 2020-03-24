@@ -1,5 +1,6 @@
 <?php
 
+
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
 
 $qs = '';
@@ -64,8 +65,8 @@ foreach ($queries ?? [] as $query) {
 			? '<span style="color:#888">' . $query->location['file'] . ':' . $query->location['line'] . '</span><hr>'
 			: ''
 		) . (isset($query->duration) === false
-				? '<div style="color:white;background:#bf0014;text-align:center;padding:2px 6px;margin:8px 0;border-radius:4px">Error with processing this query!</div>'
-				: '')
+			? '<div style="color:white;background:#bf0014;text-align:center;padding:2px 6px;margin:8px 0;border-radius:4px">Error with processing this query!</div>'
+			: '')
 		. QueryUtils::highlight($query->sql)
 		. '</td>'
 		. '</tr>';
@@ -99,12 +100,14 @@ foreach ($queries ?? [] as $query) {
 </style>
 
 <?php
+
 if (\count($this->queries) === 0) {
 	echo '<h1>No queries</h1>';
 } else {
 	?>
 	<h1>Queries:
 	  <?php
+
 	  $queriesDurationColor = Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel::getPanelDurationColor($totalTime ?? 0 * 1000);
 	  echo ($queriesCount ?? '0')
 		  . (isset($totalTime) && $totalTime === null
@@ -142,11 +145,12 @@ if (\count($this->queries) === 0) {
 	  <?= $qExpress . $qs ?>
 	</table>
 	<?php
-  if (($connected ?? false) === false) {
-	  echo '<div style="text-align:center;padding:1em 0;color:#888">Database is disconnected.</div>';
-  } elseif (\count($this->queries) === 0) {
-	  echo '<div style="text-align:center;padding:1em 0;color:#888">No queries.</div>';
-  }
+
+	if (($connected ?? false) === false) {
+		echo '<div style="text-align:center;padding:1em 0;color:#888">Database is disconnected.</div>';
+	} elseif (\count($this->queries) === 0) {
+		echo '<div style="text-align:center;padding:1em 0;color:#888">No queries.</div>';
+	}
 	if (\count($queries ?? []) < ($queriesCount ?? 0)) {
 		echo '<div style="text-align:center;padding:48px">'
 			. 'And more...'
