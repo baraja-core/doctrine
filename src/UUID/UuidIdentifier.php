@@ -19,6 +19,7 @@ trait UuidIdentifier
 	 */
 	protected $id;
 
+
 	/**
 	 * @return string|null
 	 */
@@ -26,6 +27,7 @@ trait UuidIdentifier
 	{
 		return (string) $this->id;
 	}
+
 
 	/**
 	 * @param string|null $id
@@ -36,9 +38,9 @@ trait UuidIdentifier
 		DatabaseException::canNotSetIdentifier($id);
 	}
 
+
 	public function __clone()
 	{
 		$this->id = null;
 	}
-
 }

@@ -23,6 +23,7 @@ class PostgreSQL100Platform extends PostgreSQL94Platform
                 AND    sequence_schema != 'information_schema'";
 	}
 
+
 	/**
 	 * {@inheritdoc}
 	 */

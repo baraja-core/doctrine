@@ -30,7 +30,6 @@ use Nette\Utils\Validators;
 
 class OrmAnnotationsExtension extends CompilerExtension
 {
-
 	public const DRIVERS = [
 		'apc' => ApcCache::class,
 		'apcu' => ApcuCache::class,
@@ -43,17 +42,16 @@ class OrmAnnotationsExtension extends CompilerExtension
 		'xcache' => XcacheCache::class,
 	];
 
-	/**
-	 * @var mixed[]
-	 */
+	/** @var mixed[] */
 	public $defaults = [
-		'paths' => [], //'%appDir%'
+		'paths' => [],
 		'excludePaths' => [],
 		'ignore' => [],
 		'defaultCache' => 'filesystem',
 		'cache' => null,
 		'debug' => false,
 	];
+
 
 	/**
 	 * Register services
@@ -109,6 +107,7 @@ class OrmAnnotationsExtension extends CompilerExtension
 		AnnotationRegistry::registerUniqueLoader('class_exists');
 	}
 
+
 	public function afterCompile(ClassType $classType): void
 	{
 		$initialize = $classType->getMethod('initialize');
@@ -116,6 +115,7 @@ class OrmAnnotationsExtension extends CompilerExtension
 		$initialize->setBody('?::registerUniqueLoader(\'class_exists\');' . "\n", [new PhpLiteral(AnnotationRegistry::class)]);
 		$initialize->addBody($original);
 	}
+
 
 	protected function getDefaultCache(): ServiceDefinition
 	{
@@ -136,5 +136,4 @@ class OrmAnnotationsExtension extends CompilerExtension
 
 		return $driverCache;
 	}
-
 }

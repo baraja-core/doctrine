@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Baraja\Doctrine\ORM;
 
@@ -12,10 +12,9 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 class EntityManagerDecorator extends DoctrineEntityManagerDecorator
 {
 
-	/**
-	 * @var RepositoryFactory
-	 */
+	/** @var RepositoryFactory */
 	private $repositoryFactory;
+
 
 	public function __construct(EntityManagerInterface $wrapped)
 	{
@@ -24,6 +23,7 @@ class EntityManagerDecorator extends DoctrineEntityManagerDecorator
 		$this->repositoryFactory = $wrapped->getConfiguration()->getRepositoryFactory();
 	}
 
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -31,5 +31,4 @@ class EntityManagerDecorator extends DoctrineEntityManagerDecorator
 	{
 		return $this->repositoryFactory->getRepository($this, $className);
 	}
-
 }
