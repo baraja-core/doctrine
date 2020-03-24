@@ -9,5 +9,4 @@ use Baraja\Doctrine\ORM\Exception\LogicalException;
 
 class InvalidStateException extends LogicalException
 {
-
 }

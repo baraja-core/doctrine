@@ -7,5 +7,4 @@ namespace Baraja\Doctrine;
 
 class EntityManagerException extends DatabaseException
 {
-
 }

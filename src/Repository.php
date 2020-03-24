@@ -60,5 +60,4 @@ final class Repository extends EntityRepository
 
 		return $return;
 	}
-
 }

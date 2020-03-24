@@ -9,5 +9,4 @@ use LogicException;
 
 abstract class LogicalException extends LogicException
 {
-
 }

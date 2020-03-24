@@ -10,7 +10,6 @@ use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 
 class PostgreSQL100Platform extends PostgreSQL94Platform
 {
-
 	public function getListSequencesSQL($database): string
 	{
 		return 'SELECT sequence_name AS relname,
