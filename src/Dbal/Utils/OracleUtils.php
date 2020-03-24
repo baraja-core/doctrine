@@ -11,6 +11,13 @@ use Nette\Utils\Paginator;
 final class OracleUtils
 {
 
+	/** @throws \Error */
+	public function __construct()
+	{
+		throw new \Error('Class ' . get_class($this) . ' is static and cannot be instantiated.');
+	}
+
+
 	public static function limitSql(QueryBuilder $builder, Paginator $paginator): string
 	{
 		$sql = $builder->getSQL();

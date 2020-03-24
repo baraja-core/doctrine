@@ -222,11 +222,7 @@ class DoctrineHelper
 	 * @throws DatabaseException
 	 * @throws EntityManagerException
 	 */
-	public function sortEntities(
-		$itemEntity,
-		?string $previousId = null,
-		?string $parentId = null
-	): void
+	public function sortEntities($itemEntity, ?string $previousId = null, ?string $parentId = null): void
 	{
 		if (method_exists($itemEntity, 'getId')
 			&& method_exists($itemEntity, 'getParent')
@@ -242,7 +238,7 @@ class DoctrineHelper
 						->orderBy('e.position', 'ASC')
 						->getQuery()
 						->getSingleResult();
-				} catch (NoResultException|NonUniqueResultException $e) {
+				} catch (NoResultException | NonUniqueResultException $e) {
 					DatabaseException::e($e);
 				}
 

@@ -9,7 +9,6 @@ use Doctrine\DBAL\Driver\PDOPgSql\Driver as ParentDriver;
 
 class PDOPgSqlDriver extends ParentDriver
 {
-
 	public function createDatabasePlatformForVersion($version)
 	{
 		return new PostgreSQL100Platform;

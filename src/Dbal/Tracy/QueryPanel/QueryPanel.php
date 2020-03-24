@@ -39,7 +39,7 @@ class QueryPanel extends AbstractLogger implements IBarPanel
 	];
 
 	/** @var Connection */
-	protected $connection;
+	private $connection;
 
 
 	public function __construct(Connection $connection, EntityManager $entityManager)
