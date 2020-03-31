@@ -273,9 +273,9 @@ class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param string $className
-	 * @return EntityRepository|ObjectRepository|Repository
+	 * @return Repository
 	 */
-	public function getRepository($className): ObjectRepository
+	public function getRepository($className): Repository
 	{
 		/** @var \Doctrine\ORM\EntityManager $em */
 		$em = $this;
