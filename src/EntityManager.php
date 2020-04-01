@@ -234,12 +234,15 @@ class EntityManager implements EntityManagerInterface
 
 
 	/**
-	 * @param string|null $objectName if given, only objects of this type will get detached.
+	 * @param string|mixed|null $objectName if given, only objects of this type will get detached.
 	 * @return void
 	 * @throws MappingException
 	 */
 	public function clear($objectName = null): void
 	{
+		if ($objectName !== null && \is_string($objectName) === false) {
+			$objectName = \get_class($objectName);
+		}
 		$this->em()->clear($objectName);
 	}
 
