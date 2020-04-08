@@ -9,6 +9,7 @@ use Baraja\PackageManager\Composer\BaseTask;
 use Baraja\PackageManager\Helpers;
 use Contributte\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
+use Tracy\Debugger;
 
 /**
  * Priority: 99
@@ -29,6 +30,9 @@ final class OrmSchemaUpdateTask extends BaseTask
 			$app->setAutoExit(false);
 			$app->run(new ArgvInput(['index.php', 'orm:schema-tool:update', '-f', '--dump-sql']));
 		} catch (\Throwable $e) {
+			if (\class_exists(Debugger::class) === true) {
+				Debugger::log($e, 'critical');
+			}
 			Helpers::terminalRenderError($e->getMessage());
 			Helpers::terminalRenderCode($e->getFile(), $e->getLine());
 
