@@ -7,6 +7,7 @@ namespace Baraja\Doctrine;
 
 use Baraja\PackageManager\Composer\BaseTask;
 use Baraja\PackageManager\Helpers;
+use Baraja\PackageManager\PackageRegistrator;
 use Contributte\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Tracy\Debugger;
@@ -22,6 +23,15 @@ final class OrmSchemaUpdateTask extends BaseTask
 	 */
 	public function run(): bool
 	{
+		try {
+			if (PackageRegistrator::getCiDetect() !== null) {
+				echo 'CI environment detected: Schema generating skipped.';
+
+				return true;
+			}
+		} catch (\Exception $e) {
+		}
+
 		echo 'Using PHP version: ' . PHP_VERSION . "\n\n";
 
 		try {
