@@ -33,24 +33,8 @@ use Tracy\Debugger;
 /**
  * Improved implementation of EntityManager with configure cache automatically and add data types.
  */
-class EntityManager implements EntityManagerInterface
+final class EntityManager implements EntityManagerInterface
 {
-
-	/**
-	 * Init events will be called when EntityManager will be connected to database.
-	 * This property must be static, because EntityManager can be created in multiple instances.
-	 *
-	 * @var callable[]
-	 */
-	private static $onInit = [];
-
-	/**
-	 * List of waiting lazy event listeners.
-	 * This property must be static, because EntityManager can be created in multiple instances.
-	 *
-	 * @var mixed[]
-	 */
-	private static $lazyEventListeners = [];
 
 	/** @var Connection */
 	private $connection;
@@ -58,7 +42,7 @@ class EntityManager implements EntityManagerInterface
 	/** @var Configuration */
 	private $configuration;
 
-	/**  @var EventManager */
+	/** @var EventManager */
 	private $eventManager;
 
 	/** @var EntityManagerDependenciesAccessor */
@@ -76,11 +60,11 @@ class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @internal reserved for DIC
-	 * @param callable $callback with value (self $entityManager)
+	 * @param callable $callback with value (self $entityManager): void
 	 */
-	final public static function addInit(callable $callback): void
+	public function addInit(callable $callback): void
 	{
-		self::$onInit[] = $callback;
+		$this->dependencies->get()->addInitEvent($callback);
 	}
 
 
@@ -91,10 +75,10 @@ class EntityManager implements EntityManagerInterface
 	 * @param object $listener The listener object.
 	 * @return EntityManager
 	 */
-	final public function addEventListener($events, $listener): self
+	public function addEventListener($events, $listener): self
 	{
 		if ($this->connection === null) {
-			self::$lazyEventListeners[] = [$events, $listener];
+			$this->dependencies->get()->addLazyEventListener([$events, $listener]);
 		} else {
 			$this->getEventManager()->addEventListener($events, $listener);
 		}
@@ -106,23 +90,22 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @internal
 	 */
-	final public function init(): void
+	public function init(): void
 	{
 		if ($this->connection === null) {
 			$this->connection = ($manager = $this->dependencies->get())->getConnection();
 			$this->configuration = $manager->getConfiguration();
 			$this->eventManager = $manager->getEventManager();
 
-			foreach (self::$onInit as $initCallback) {
+			foreach ($manager->getInitEvents() as $initCallback) {
 				$initCallback($this);
 			}
 
-			foreach (self::$lazyEventListeners as $eventListener) {
+			foreach ($manager->getLazyEventListeners() as $eventListener) {
 				$this->getEventManager()->addEventListener($eventListener[0], $eventListener[1]);
 			}
 
-			self::$onInit = [];
-			self::$lazyEventListeners = [];
+			$manager->setInitClosed();
 		}
 	}
 
@@ -131,7 +114,7 @@ class EntityManager implements EntityManagerInterface
 	 * @internal
 	 * @return string
 	 */
-	final public function getDbDirPath(): string
+	public function getDbDirPath(): string
 	{
 		static $cache;
 
@@ -147,7 +130,7 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @internal
 	 */
-	final public function fixDbDirPathPermission(): void
+	public function fixDbDirPathPermission(): void
 	{
 		if (is_file($path = $this->getDbDirPath()) === true && fileperms($path) < 33204) {
 			chmod($path, 0664);
@@ -278,11 +261,8 @@ class EntityManager implements EntityManagerInterface
 	 */
 	public function getRepository($className): Repository
 	{
-		/** @var \Doctrine\ORM\EntityManager $em */
-		$em = $this;
-
 		return new Repository(
-			$em,
+			$em = $this->em(),
 			$em->getClassMetadata($className)
 		);
 	}
@@ -608,7 +588,7 @@ class EntityManager implements EntityManagerInterface
 	/**
 	 * @param CacheProvider|null $cache
 	 */
-	final public function setCache(?CacheProvider $cache = null): void
+	public function setCache(?CacheProvider $cache = null): void
 	{
 		$this->init();
 		QueryPanel::setCache($cache);
@@ -633,7 +613,7 @@ class EntityManager implements EntityManagerInterface
 	 * @param bool $saveMode
 	 * @param bool $invalidCache
 	 */
-	final public function buildCache(bool $saveMode = false, $invalidCache = false): void
+	public function buildCache(bool $saveMode = false, $invalidCache = false): void
 	{
 		$this->init();
 		QueryPanel::setInvalidCache($invalidCache);
