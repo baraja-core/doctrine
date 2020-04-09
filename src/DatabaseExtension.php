@@ -9,62 +9,60 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\SQLite3Cache;
 use Nette\DI\CompilerExtension;
-use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\Helpers;
+use Nette\DI\Definitions\ServiceDefinition;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 
 final class DatabaseExtension extends CompilerExtension
 {
-
-	/** @var string[] */
-	private $types = [];
-
-
-	/**
-	 * @param ClassType $class
-	 */
-	public function afterCompile(ClassType $class): void
+	public function getConfigSchema(): Schema
 	{
-		$this->types = $this->getConfig();
-		$initialize = $class->getMethod('initialize');
+		return Expect::structure([
+			'types' => Expect::arrayOf(Expect::string()),
+			'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string()),
+		])->castTo('array');
+	}
+
+
+	public function beforeCompile(): void
+	{
 		$cache = $this->processCache();
 
-		$initialize->setBody(
-			EntityManager::class . '::addInit(function(' . EntityManager::class . ' $entityManager) {' . "\n"
-			. $this->getTypeDefinition() . "\n"
+		$types = [];
+		foreach ($this->config['types'] ?? [] as $type => $typeClass) {
+			if (\class_exists($typeClass) === false) {
+				ConfiguratorException::typeDoesNotExist($type, $typeClass);
+			}
+			$types[$type] = $typeClass;
+		}
+
+		/** @var ServiceDefinition $generator */
+		$generator = $this->getContainerBuilder()->getDefinitionByType(EntityManager::class);
+		$generator->addSetup(
+			'?->addInit(function(' . EntityManager::class . ' $entityManager) {' . "\n"
+			. "\t" . '// Types' . "\n"
+			. "\t" . 'foreach (? as $type => $typeClass) {' . "\n"
+			. "\t\t" . 'if (\Doctrine\DBAL\Types\Type::hasType($type) === false) {' . "\n"
+			. "\t\t\t" . '\Doctrine\DBAL\Types\Type::addType($type, $typeClass);' . "\n"
+			. "\t\t" . '}' . "\n"
+			. "\t" . '}' . "\n\n"
+			. "\t" . '// Global ignored names' . "\n"
+			. "\t" . 'foreach (? as $ignorePropertyAnnotation) {' . "\n"
+			. "\t\t" . AnnotationReader::class . '::addGlobalIgnoredName($ignorePropertyAnnotation);' . "\n"
+			. "\t" . '}' . "\n\n"
 			. "\t" . '$entityManager->setCache(' . $cache['cache'] . ');' . "\n"
 			. "\t" . '$entityManager->getConnection()->getSchemaManager()->getDatabasePlatform()'
 			. '->registerDoctrineTypeMapping(\'enum\', \'string\');' . "\n"
 			. "\t" . '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
 			. "\t" . '$entityManager->buildCache();' . "\n"
 			. ($cache['after'] ? "\t" . $cache['after'] . "\n" : '')
-			. '});' . "\n"
-			. $initialize->getBody()
+			. '})',
+			[
+				'@self',
+				$types,
+				$this->config['propertyIgnoreAnnotations'] ?? [],
+			]
 		);
-	}
-
-
-	/**
-	 * @return string
-	 */
-	private function getTypeDefinition(): string
-	{
-		$return = '';
-
-		foreach ($this->getConfig()['types'] ?? [] as $name => $className) {
-			if (\class_exists($className) === false) {
-				ConfiguratorException::typeDoesNotExist($name, $className);
-			}
-			$return .= "\t" . 'if (\Doctrine\DBAL\Types\Type::hasType(' . Helpers::dump($name) . ') === false) { '
-				. '\Doctrine\DBAL\Types\Type::addType('
-				. Helpers::dump($name) . ',' . Helpers::dump($className)
-				. '); }' . "\n";
-		}
-
-		foreach ($this->getConfig()['propertyIgnoreAnnotations'] ?? [] as $ignorePropertyAnnotation) {
-			$return .= "\t" . AnnotationReader::class . '::addGlobalIgnoredName(\'' . $ignorePropertyAnnotation . '\');' . "\n";
-		}
-
-		return $return;
 	}
 
 
