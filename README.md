@@ -1,6 +1,8 @@
 Baraja Doctrine database
 ========================
 
+![Integrity check](https://github.com/baraja-core/doctrine/workflows/Integrity%20check/badge.svg)
+
 A simple and easy to use, maximum performance database layer with connection to Doctrine, which allows you to use all the advantages of OOP and also has **support for Nette 3**.
 
 This package automatically installs Doctrine to your project (also setting everything up in the configuration) and runs stably.
