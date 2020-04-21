@@ -93,6 +93,9 @@ final class EntityManager implements EntityManagerInterface
 	public function init(): void
 	{
 		if ($this->connection === null) {
+			if (\class_exists(Debugger::class) === true) {
+				Debugger::getBlueScreen()->addPanel([TracyBlueScreenDebugger::class, 'render']);
+			}
 			$this->connection = ($manager = $this->dependencies->get())->getConnection();
 			$this->configuration = $manager->getConfiguration();
 			$this->eventManager = $manager->getEventManager();
