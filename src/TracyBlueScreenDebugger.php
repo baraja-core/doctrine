@@ -6,7 +6,9 @@ namespace Baraja\Doctrine;
 
 
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
@@ -15,10 +17,23 @@ use Tracy\Dumper;
 
 final class TracyBlueScreenDebugger
 {
+	/** @var EntityManager|null */
+	private static $entityManager;
+
+
 	/** @throws \Error */
 	public function __construct()
 	{
 		throw new \Error('Class ' . get_class($this) . ' is static and cannot be instantiated.');
+	}
+
+
+	/**
+	 * @param EntityManager $entityManager
+	 */
+	public static function setEntityManager(EntityManager $entityManager): void
+	{
+		self::$entityManager = $entityManager;
 	}
 
 
@@ -67,24 +82,57 @@ final class TracyBlueScreenDebugger
 	 */
 	private static function renderDriver(DriverException $e): array
 	{
+		$tab = null;
+		$panel = null;
+
 		if (preg_match('/while executing \'(.+)\' with params (.+):(?:\n\s)+(.+)/', $e->getMessage(), $parser)) {
-			return [
-				'tab' => 'Driver error | ' . $parser[3],
-				'panel' => '<pre class="code"><div>' . QueryUtils::highlight($parser[1]) . '</div></pre>'
-					. '<p>With params:</p>' . Dumper::toHtml(json_decode($parser[2])),
-			];
+			$tab = 'Driver error | ' . $parser[3];
+			$panel = '<pre class="code"><div>' . QueryUtils::highlight($parser[1]) . '</div></pre>'
+				. '<p>With params:</p>' . Dumper::toHtml(json_decode($parser[2]));
+		} elseif (preg_match('/while executing \'(.+)\'/', $e->getMessage(), $parser)) {
+			$tab = 'Driver error';
+			$panel = '<pre class="code"><div>' . QueryUtils::highlight($parser[1]) . '</div></pre>';
 		}
 
-		if (preg_match('/while executing \'(.+)\'/', $e->getMessage(), $parser)) {
-			return [
-				'tab' => 'Driver error',
-				'panel' => '<pre class="code"><div>' . QueryUtils::highlight($parser[1]) . '</div></pre>',
-			];
+		if (self::$entityManager !== null && preg_match('/Table\s\\\'([^\\\']+)\\\'\sdoesn\\\'t\sexist/', $e->getMessage(), $parser)) {
+			try {
+				$tableList = array_map(static function (array $item): string {
+					return (string) (array_values($item)[0] ?? '');
+				}, self::$entityManager->getConnection()->executeQuery('show tables')->fetchAll());
+
+				$panelMeta = [];
+				foreach (self::$entityManager->getMetadataFactory()->getAllMetadata() as $metaData) {
+					if ($metaData instanceof ClassMetadata) {
+						$panelMeta[$metaData->getTableName()] = [
+							'tableName' => $metaData->getTableName(),
+							'className' => $metaData->getName(),
+						];
+					}
+				}
+
+				$panel .= '<p>Table list:</p>';
+				$panel .= '<table>';
+				$panel .= '<tr><th>Table name</th><th>Entity class name</th></tr>';
+				$panel .= '<tr>'
+					. '<td style="background:#bf0014;color:white"><b>' . htmlspecialchars($parser[1]) . '</b></td>'
+					. '<td style="background:#bf0014;color:white">Can not find. Please use command <b>index.php&nbsp;o:s:u&nbsp;-f</b></td>'
+					. '</tr>';
+
+				foreach ($tableList as $tableName) {
+					$panel .= '<tr>'
+						. '<td>' . htmlspecialchars($tableName) . '</td>'
+						. '<td>' . htmlspecialchars($panelMeta[$tableName]['className'] ?? '???') . '</td>'
+						. '</tr>';
+				}
+
+				$panel .= '</table>';
+			} catch (DBALException $e) {
+			}
 		}
 
 		return [
-			'tab' => 'Driver error',
-			'panel' => '<p>' . htmlspecialchars($e->getMessage()) . '</p>',
+			'tab' => $tab ?? 'Driver error',
+			'panel' => $panel ?? '<p>' . htmlspecialchars($e->getMessage()) . '</p>',
 		];
 	}
 
