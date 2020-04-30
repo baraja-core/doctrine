@@ -40,7 +40,7 @@ orm.annotations:
 	paths:
 		App: %appDir%
 		Model: %appDir%
-		Baraja: %vendorDir%/baraja-core
+		Baraja: %appDir%/../vendor/baraja-core
 	ignore: []
 
 console:
