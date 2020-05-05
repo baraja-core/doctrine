@@ -17,8 +17,8 @@
 		"nette/di": "^3.0",
 		"nette/utils": "^3.0",
 		"nette/finder": "^2.5",
-		"janbarasek/doctrine-pro": "~1.0",
-		"baraja-core/package-manager": "~2.0",
+		"janbarasek/doctrine-pro": "^2.0",
+		"baraja-core/package-manager": "^2.1",
 		"ramsey/uuid": "^3.0"
 	},
 	"require-dev": {
