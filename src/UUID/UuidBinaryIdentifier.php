@@ -6,12 +6,13 @@ namespace Baraja\Doctrine\UUID;
 
 
 use Baraja\Doctrine\DatabaseException;
+use Ramsey\Uuid\UuidInterface;
 
 trait UuidBinaryIdentifier
 {
 
 	/**
-	 * @var string|null
+	 * @var UuidInterface
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid-binary", unique=true)
 	 * @ORM\GeneratedValue(strategy="CUSTOM")
@@ -21,9 +22,9 @@ trait UuidBinaryIdentifier
 
 
 	/**
-	 * @return string|null
+	 * @return string
 	 */
-	public function getId(): ?string
+	public function getId(): string
 	{
 		return (string) $this->id;
 	}
@@ -33,9 +34,15 @@ trait UuidBinaryIdentifier
 	 * @param string|null $id
 	 * @throws DatabaseException
 	 */
-	public function setId(?string $id = null): void
+	final public function setId(?string $id = null): void
 	{
 		DatabaseException::canNotSetIdentifier($id);
+	}
+
+
+	public function getBinaryId(): string
+	{
+		return $this->id->getBytes();
 	}
 
 
