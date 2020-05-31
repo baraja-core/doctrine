@@ -13,7 +13,6 @@
 		"ext-json": "*",
 		"ext-PDO": "*",
 		"ext-tokenizer": "*",
-		"contributte/console": "^0.8.0",
 		"nette/di": "^3.0",
 		"nette/utils": "^3.0",
 		"nette/finder": "^2.5",
