@@ -25,6 +25,10 @@ trait UuidIdentifier
 	 */
 	public function getId(): ?string
 	{
+		if ($this->id === null) {
+			throw new \RuntimeException('Entity ID does not exist yet. Did you call ->persist() method first?');
+		}
+
 		return (string) $this->id;
 	}
 
@@ -36,6 +40,18 @@ trait UuidIdentifier
 	public function setId(?string $id = null): void
 	{
 		DatabaseException::canNotSetIdentifier($id);
+	}
+
+
+	/**
+	 * Back support for migration logic.
+	 *
+	 * @param string $id
+	 */
+	public function dangerouslySetLegacyId(string $id): void
+	{
+		$this->id = $id;
+		throw new \RuntimeException('The ID was passed unsafely. Please catch this exception if it was intended.');
 	}
 
 
