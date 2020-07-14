@@ -18,8 +18,9 @@
 		"nette/di": "^3.0",
 		"nette/utils": "^3.0",
 		"nette/finder": "^2.5",
-		"doctrine/orm": "~2.7",
-		"doctrine/dbal": "~2.9",
+		"doctrine/orm": "^2.7",
+		"doctrine/dbal": "^2.9",
+		"symfony/yaml": "^4.4",
 		"baraja-core/package-manager": "^2.1",
 		"ramsey/uuid": "^3.0"
 	},
