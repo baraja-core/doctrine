@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM;
 
 
-use Doctrine\Common\Persistence\AbstractManagerRegistry;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Persistence\AbstractManagerRegistry;
 use Nette\DI\Container;
 
 class ManagerRegistry extends AbstractManagerRegistry

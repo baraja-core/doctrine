@@ -11,19 +11,21 @@
 	"require": {
 		"php": ">=7.1.0",
 		"ext-json": "*",
-		"ext-PDO": "*",
+		"ext-pdo": "*",
 		"ext-tokenizer": "*",
+		"baraja-core/package-manager": "^2.1",
 		"nette/di": "^3.0",
 		"nette/utils": "^3.0",
 		"nette/finder": "^2.5",
-		"janbarasek/doctrine-pro": "^2.0",
-		"baraja-core/package-manager": "^2.1",
+		"doctrine/orm": "^2.7",
+		"doctrine/dbal": "^2.9",
 		"ramsey/uuid": "^3.0"
 	},
 	"require-dev": {
 		"phpstan/phpstan": "^0.12.18",
 		"tracy/tracy": "^2.7",
-		"phpstan/phpstan-nette": "^0.12.6"
+		"phpstan/phpstan-nette": "^0.12.6",
+		"symplify/easy-coding-standard": "^8.1"
 	},
 	"autoload": {
 		"classmap": [
