@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Tracy\Debugger;
 
 class DoctrineHelper

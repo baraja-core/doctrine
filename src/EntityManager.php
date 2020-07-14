@@ -8,7 +8,6 @@ namespace Baraja\Doctrine;
 use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
@@ -27,6 +26,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Persistence\Mapping\MappingException;
 use Nette\Utils\FileSystem;
 use Tracy\Debugger;
 
