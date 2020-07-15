@@ -7,12 +7,12 @@ A simple and easy to use, maximum performance database layer with connection to 
 
 This package automatically installs Doctrine to your project (also setting everything up in the configuration) and runs stably.
 
-How to install
---------------
+📦 Installation & Basic Usage
+-----------------------------
 
-This package can be installed using [PackageRegistrator](https://github.com/baraja-core/package-manager) which is also part of the Baraja [Sandbox](https://github.com/baraja-core/sandbox). If you are not using it, you have to install the package manually following this guide.
+This package can be installed using [Package Manager](https://github.com/baraja-core/package-manager) which is also part of the Baraja [Sandbox](https://github.com/baraja-core/sandbox). If you are not using it, you have to install the package manually following this guide.
 
-A model configuration can be found in the config.neon file inside the root of the package.
+A model configuration can be found in the `common.neon` file inside the root of the package.
 
 To manually install the package call Composer and execute the following command:
 
@@ -20,7 +20,7 @@ To manually install the package call Composer and execute the following command:
 composer require baraja-core/doctrine
 ```
 
-In the projects `common.neon` you have to define the database credentials. A fully working example of configuration can be found in the `config.neon` file inside this package.
+In the projects `common.neon` you have to define the database credentials. A fully working example of configuration can be found in the `common.neon` file inside this package.
 
 You can define the configuration simply using parameters (stored in the super-global array `parameters`).
 
@@ -38,8 +38,8 @@ parameters:
 
 For now the package supports only the connection to one database.
 
-Drivers
--------
+⚙️ Drivers
+----------
 
 In default settings Doctrine use `MySql` driver.
 
@@ -53,8 +53,8 @@ dbal:
       driverClass: Baraja\Doctrine\Driver\Postgres\PDOPgSqlDriver
 ```
 
-Generate database structure from entities
------------------------------------------
+🗺️ Generate database structure from entities
+--------------------------------------------
 
 This package implements a bridge to automatically execute Doctrine commands.
 
@@ -71,8 +71,10 @@ The command `o:s:u` means `orm:schema-tool:update`.
 
 If everything will work fine, the command will create the table `core__database_slow_query` which is defined in this package and is ready for logging slow queries.
 
-Best performance
-----------------
+> **TIP:** If you are using [Package Manager](https://github.com/baraja-core/package-manager), you can simply call the `composer dump` command.
+
+🚀 Performance Benchmarks
+-------------------------
 
 When Doctrine is used poorly, it can be unnecessarily slow.
 
@@ -108,25 +110,13 @@ use Baraja\Doctrine\UUID\UuidBinaryIdentifier;
  */
 class DatabaseEntity
 {
-
    use UuidBinaryIdentifier; // <--- UUID trait for entity identifier.
    use SmartObject;          // <--- Strict class for better experience.
 ```
 
 UUID will be generated automatically in PHP.
 
-Entities manipulation
---------------------------
+📄 License
+-----------
 
-The package defines a DIC service `DoctrineHelper` with super useful methods.
-
-- `getEntityVariants(string $entity, array $exclude = null): array`
-- `getBestOfType(string $entity): string`
-- `getTableNameByEntity(string $entity): string`
-- `getRootEntityName(string $entity): string`
-- `getDiscriminatorByEntity(string $entity): string`
-- `remapEntityToBestType($from)`
-- `remapEntity($from, $to)`
-
-More information is in the method doc. comment.
-
+`baraja-core/doctrine` is licensed under the MIT license. See the [LICENSE](https://github.com/baraja-core/doctrine/blob/master/LICENSE) file for more details.
