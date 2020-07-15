@@ -148,15 +148,13 @@ abstract class AbstractLogger implements SQLLogger
 	 */
 	private function findLocation(): ?array
 	{
-		static $exclude = ['baraja-core/doctrine' => 1, 'janbarasek/doctrine-pro' => 1];
-
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
 			if (isset($item['class']) && $item['class'] === __CLASS__) {
 				$location = $item;
 				continue;
 			}
 
-			if (preg_match('/\/vendor\/([^\/]+\/[^\/]+)\//', $item['file'] ?? '', $parser) && isset($exclude[$parser[1]])) {
+			if (preg_match('/\/vendor\/([^\/]+\/[^\/]+)\//', $item['file'] ?? '', $parser) && ($parser[1] === 'baraja-core/doctrine' || strncmp($parser[1], 'doctrine/', 9) === 0)) {
 				continue;
 			}
 
