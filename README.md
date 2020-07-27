@@ -53,8 +53,25 @@ dbal:
       driverClass: Baraja\Doctrine\Driver\Postgres\PDOPgSqlDriver
 ```
 
-🗺️ Generate database structure from entities
---------------------------------------------
+🗺️ Entity mapping
+------------------
+
+In order for Doctrine to know which classes are **entities** and which **application logic**, it is necessary to set up a mapping.
+
+For mapping, it is necessary to set the introductory part of the namespace entities and the directory where they occur in the project common.neon. A relative path can also be used.
+
+For example:
+
+```yaml
+orm.annotations:
+   paths:
+      App\Baraja\Entity: %rootDir%/app/model/Entity
+```
+
+You can also specify the `ignore` key, which disables browsing a specific directory.
+
+Generate database structure from entities
+-----------------------------------------
 
 This package implements a bridge to automatically execute Doctrine commands.
 
