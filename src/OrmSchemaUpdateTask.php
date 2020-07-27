@@ -17,10 +17,6 @@ use Tracy\Debugger;
  */
 final class OrmSchemaUpdateTask extends BaseTask
 {
-
-	/**
-	 * @return bool
-	 */
 	public function run(): bool
 	{
 		try {
@@ -38,13 +34,18 @@ final class OrmSchemaUpdateTask extends BaseTask
 			/** @var Application $app */
 			$app = $this->getContainer()->getByType(Application::class);
 			$app->setAutoExit(false);
+			$app->setCatchExceptions(false);
 			$app->run(new ArgvInput(['index.php', 'orm:schema-tool:update', '-f', '--dump-sql']));
 		} catch (\Throwable $e) {
 			if (\class_exists(Debugger::class) === true) {
 				Debugger::log($e, 'critical');
 			}
-			Helpers::terminalRenderError($e->getMessage());
-			Helpers::terminalRenderCode($e->getFile(), $e->getLine());
+			if (preg_match('/The annotation "([^"]+)" in class (\S+) was never imported/', $e->getMessage(), $annotation)) {
+				$this->unknownAnnotationInfo($annotation[1], $annotation[2]);
+			} else {
+				Helpers::terminalRenderError($e->getMessage());
+				Helpers::terminalRenderCode($e->getFile(), $e->getLine());
+			}
 
 			return false;
 		}
@@ -53,11 +54,24 @@ final class OrmSchemaUpdateTask extends BaseTask
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getName(): string
 	{
 		return 'Update Doctrine database schema';
+	}
+
+
+	private function unknownAnnotationInfo(string $annotation, string $class): void
+	{
+		Helpers::terminalRenderError('The annotation "' . $annotation . '" in class "' . $class . '" was never imported.');
+		Helpers::terminalRenderError('Did you maybe forget to add a "use" statement for this annotation?');
+		echo "\n\n";
+		echo 'To solve this issue:' . "\n";
+		echo 'This error is typical when you map entities to places where they do not belong.' . "\n";
+		echo 'You should now modify your NEON configuration file to include only the mapping to the directory where your entities are located.' . "\n\n\n";
+		echo 'Configuration example (paste into your project `common.neon`):' . "\n\n";
+		echo '| orm.annotations:' . "\n";
+		echo '|    paths:' . "\n";
+		echo '|       App\Baraja\Entity: %rootDir%/app/model/Entity' . "\n\n\n";
+		echo 'Complete configuration information is available in the official Baraja Doctrine documentation: https://github.com/baraja-core/doctrine';
 	}
 }
