@@ -37,10 +37,7 @@ baraja.database:
 		- endpointName
 
 orm.annotations:
-	paths:
-		App: %appDir%
-		Model: %appDir%
-		Baraja: %appDir%/../vendor/baraja-core
+	paths: []
 	ignore: []
 
 console:
