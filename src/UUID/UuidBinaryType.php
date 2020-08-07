@@ -82,19 +82,12 @@ class UuidBinaryType extends Type
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getName(): string
 	{
 		return static::NAME;
 	}
 
 
-	/**
-	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return bool
-	 */
 	public function requiresSQLCommentHint(AbstractPlatform $platform): bool
 	{
 		return true;

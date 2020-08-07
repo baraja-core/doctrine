@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\UUID;
 
 
-use Baraja\Doctrine\DatabaseException;
 use Ramsey\Uuid\UuidInterface;
 
 trait UuidBinaryIdentifier
@@ -21,22 +20,15 @@ trait UuidBinaryIdentifier
 	protected $id;
 
 
-	/**
-	 * @return string
-	 */
 	public function getId(): string
 	{
 		return (string) $this->id;
 	}
 
 
-	/**
-	 * @param string|null $id
-	 * @throws DatabaseException
-	 */
 	final public function setId(?string $id = null): void
 	{
-		DatabaseException::canNotSetIdentifier($id);
+		throw new \LogicException('Can not set identifier "' . $id . '", please use trait UuidIdentifier.');
 	}
 
 

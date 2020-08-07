@@ -41,11 +41,6 @@ final class EntityManagerDependencies
 	private $lazyEventListeners = [];
 
 
-	/**
-	 * @param Connection $connection
-	 * @param Configuration $configuration
-	 * @param EventManager $eventManager
-	 */
 	public function __construct(Connection $connection, Configuration $configuration, EventManager $eventManager)
 	{
 		$this->connection = $connection;
@@ -54,27 +49,18 @@ final class EntityManagerDependencies
 	}
 
 
-	/**
-	 * @return Connection
-	 */
 	public function getConnection(): Connection
 	{
 		return $this->connection;
 	}
 
 
-	/**
-	 * @return Configuration
-	 */
 	public function getConfiguration(): Configuration
 	{
 		return $this->configuration;
 	}
 
 
-	/**
-	 * @return EventManager
-	 */
 	public function getEventManager(): EventManager
 	{
 		return $this->eventManager;
@@ -95,9 +81,6 @@ final class EntityManagerDependencies
 	}
 
 
-	/**
-	 * @param callable $event
-	 */
 	public function addInitEvent(callable $event): void
 	{
 		$this->initEvents[] = $event;

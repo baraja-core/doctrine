@@ -15,16 +15,13 @@ use Nette\DI\Definitions\Statement;
 use Nette\DI\ServiceCreationException;
 use Symfony\Component\Console\Application;
 
-class DbalConsoleExtension extends CompilerExtension
+final class DbalConsoleExtension extends CompilerExtension
 {
 
 	/** @var bool */
 	private $cliMode;
 
 
-	/**
-	 * @param bool|null $cliMode
-	 */
 	public function __construct(?bool $cliMode = null)
 	{
 		$this->cliMode = $cliMode ?? PHP_SAPI === 'cli';

@@ -27,16 +27,13 @@ use Nette\DI\ServiceCreationException;
 use Nette\InvalidStateException;
 use Symfony\Component\Console\Application;
 
-class OrmConsoleExtension extends CompilerExtension
+final class OrmConsoleExtension extends CompilerExtension
 {
 
 	/** @var bool */
 	private $cliMode;
 
 
-	/**
-	 * @param bool|null $cliMode
-	 */
 	public function __construct(?bool $cliMode = null)
 	{
 		$this->cliMode = $cliMode ?? PHP_SAPI === 'cli';
@@ -56,7 +53,6 @@ class OrmConsoleExtension extends CompilerExtension
 		}
 
 		$builder = $this->getContainerBuilder();
-
 		$builder->addDefinition('entityManager')
 			->setType(EntityManager::class)
 			->setAutowired(true);
@@ -136,11 +132,9 @@ class OrmConsoleExtension extends CompilerExtension
 			return;
 		}
 
-		$builder = $this->getContainerBuilder();
-
 		// Lookup for Symfony Console Application
 		/** @var ServiceDefinition $application */
-		$application = $builder->getDefinitionByType(Application::class);
+		$application = $this->getContainerBuilder()->getDefinitionByType(Application::class);
 
 		// Register helpers
 		$entityManagerHelper = $this->prefix('@entityManagerHelper');

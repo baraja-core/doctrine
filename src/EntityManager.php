@@ -49,9 +49,6 @@ final class EntityManager implements EntityManagerInterface
 	private $dependencies;
 
 
-	/**
-	 * @param EntityManagerDependenciesAccessor $dependencies
-	 */
 	public function __construct(EntityManagerDependenciesAccessor $dependencies)
 	{
 		$this->dependencies = $dependencies;
@@ -116,7 +113,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @internal
-	 * @return string
 	 */
 	public function getDbDirPath(): string
 	{
@@ -222,7 +218,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param string|mixed|null $objectName if given, only objects of this type will get detached.
-	 * @return void
 	 * @throws EntityManagerException
 	 */
 	public function clear($objectName = null): void
@@ -240,7 +235,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param object $object The object to detach.
-	 * @return void
 	 */
 	public function detach($object): void
 	{
@@ -250,7 +244,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param object $object The object to refresh.
-	 * @return void
 	 * @throws EntityManagerException
 	 */
 	public function refresh($object): void
@@ -286,9 +279,6 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @return ClassMetadataFactory
-	 */
 	public function getMetadataFactory(): ClassMetadataFactory
 	{
 		return $this->em()->getMetadataFactory();
@@ -297,7 +287,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param object $obj
-	 * @return void
 	 */
 	public function initializeObject($obj): void
 	{
@@ -315,36 +304,24 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @return Cache|null
-	 */
 	public function getCache(): ?Cache
 	{
 		return $this->em()->getCache();
 	}
 
 
-	/**
-	 * @return Connection
-	 */
 	public function getConnection(): Connection
 	{
 		return $this->em()->getConnection();
 	}
 
 
-	/**
-	 * @return Query\Expr
-	 */
 	public function getExpressionBuilder(): Query\Expr
 	{
 		return $this->em()->getExpressionBuilder();
 	}
 
 
-	/**
-	 * @return void
-	 */
 	public function beginTransaction(): void
 	{
 		$this->em()->beginTransaction();
@@ -419,9 +396,6 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @return QueryBuilder
-	 */
 	public function createQueryBuilder(): QueryBuilder
 	{
 		return $this->em()->createQueryBuilder();
@@ -455,9 +429,6 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @return void
-	 */
 	public function close(): void
 	{
 		$this->em()->close();
@@ -484,7 +455,6 @@ final class EntityManager implements EntityManagerInterface
 	 * @param object $entity
 	 * @param int $lockMode
 	 * @param int|null $lockVersion
-	 * @return void
 	 * @throws OptimisticLockException|PessimisticLockException
 	 */
 	public function lock($entity, $lockMode, $lockVersion = null): void
@@ -493,36 +463,24 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @return EventManager
-	 */
 	public function getEventManager(): EventManager
 	{
 		return $this->em()->getEventManager();
 	}
 
 
-	/**
-	 * @return Configuration
-	 */
 	public function getConfiguration(): Configuration
 	{
 		return $this->em()->getConfiguration();
 	}
 
 
-	/**
-	 * @return bool
-	 */
 	public function isOpen(): bool
 	{
 		return $this->em()->isOpen();
 	}
 
 
-	/**
-	 * @return UnitOfWork
-	 */
 	public function getUnitOfWork(): UnitOfWork
 	{
 		return $this->em()->getUnitOfWork();
@@ -557,18 +515,12 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @return ProxyFactory
-	 */
 	public function getProxyFactory(): ProxyFactory
 	{
 		return $this->em()->getProxyFactory();
 	}
 
 
-	/**
-	 * @return Query\FilterCollection
-	 */
 	public function getFilters(): Query\FilterCollection
 	{
 		return $this->em()->getFilters();
@@ -593,9 +545,6 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @param CacheProvider|null $cache
-	 */
 	public function setCache(?CacheProvider $cache = null): void
 	{
 		$this->init();
@@ -617,10 +566,6 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @param bool $saveMode
-	 * @param bool $invalidCache
-	 */
 	public function buildCache(bool $saveMode = false, $invalidCache = false): void
 	{
 		$this->init();
@@ -630,7 +575,6 @@ final class EntityManager implements EntityManagerInterface
 			if (empty($metadata = $this->getMetadataFactory()->getAllMetadata())) {
 				return;
 			}
-
 			if (empty(($schemaTool = new SchemaTool($this))->getUpdateSchemaSql($metadata, $saveMode))) {
 				return;
 			}
@@ -640,9 +584,6 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	/**
-	 * @return \Doctrine\ORM\EntityManager
-	 */
 	private function em(): \Doctrine\ORM\EntityManager
 	{
 		static $cache;

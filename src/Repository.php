@@ -11,8 +11,6 @@ final class Repository extends EntityRepository
 {
 
 	/**
-	 * @param string $value
-	 * @param string|null $key
 	 * @return mixed[]
 	 */
 	public function findPairs(string $value, ?string $key = null): array
@@ -34,15 +32,11 @@ final class Repository extends EntityRepository
 
 
 	/**
-	 * @param string $value
 	 * @param string[] $conditions
-	 * @param string|null $key
 	 * @return mixed[]
 	 */
 	public function findByConditions(string $value = 'id', array $conditions = [], ?string $key = 'id'): array
 	{
-		$return = [];
-
 		$selection = $this->createQueryBuilder('e')
 			->select('e.' . $key, 'e.' . $value);
 
@@ -50,6 +44,7 @@ final class Repository extends EntityRepository
 			$selection->andWhere($condition);
 		}
 
+		$return = [];
 		foreach ($selection->getQuery()->getArrayResult() as $item) {
 			if ($key === null) {
 				$return[] = $item[$value];

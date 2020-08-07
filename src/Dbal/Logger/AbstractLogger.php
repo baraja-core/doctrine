@@ -40,9 +40,6 @@ abstract class AbstractLogger implements SQLLogger
 	private $maxQueryTime = 150;
 
 
-	/**
-	 * @param EntityManager $entityManager
-	 */
 	public function __construct(EntityManager $entityManager)
 	{
 		$this->entityManager = $entityManager;
@@ -50,7 +47,6 @@ abstract class AbstractLogger implements SQLLogger
 
 
 	/**
-	 * @param string $sql
 	 * @param mixed[] $params
 	 * @param mixed[] $types
 	 */
@@ -105,18 +101,12 @@ abstract class AbstractLogger implements SQLLogger
 	}
 
 
-	/**
-	 * @return int
-	 */
 	public function getCounter(): int
 	{
 		return $this->counter;
 	}
 
 
-	/**
-	 * @return float
-	 */
 	public function getTimer(): float
 	{
 		return (float) $this->totalTime;
@@ -126,8 +116,6 @@ abstract class AbstractLogger implements SQLLogger
 	/**
 	 * Set max query time to log in interval (0 - 30 sec).
 	 * Time in milliseconds.
-	 *
-	 * @param int $maxQueryTime
 	 */
 	public function setMaxQueryTime(int $maxQueryTime): void
 	{
@@ -153,7 +141,6 @@ abstract class AbstractLogger implements SQLLogger
 				$location = $item;
 				continue;
 			}
-
 			if (preg_match('/\/vendor\/([^\/]+\/[^\/]+)\//', $item['file'] ?? '', $parser) && ($parser[1] === 'baraja-core/doctrine' || strncmp($parser[1], 'doctrine/', 9) === 0)) {
 				continue;
 			}

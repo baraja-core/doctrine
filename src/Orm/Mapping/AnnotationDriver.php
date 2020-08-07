@@ -8,10 +8,10 @@ namespace Baraja\Doctrine\ORM\Mapping;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver as DoctrineAnnotationDriver;
 
-class AnnotationDriver extends DoctrineAnnotationDriver
+final class AnnotationDriver extends DoctrineAnnotationDriver
 {
+
 	/**
-	 * @param Reader $reader
 	 * @param string[] $paths
 	 */
 	public function __construct(Reader $reader, array $paths = [])

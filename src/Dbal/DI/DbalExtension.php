@@ -98,18 +98,13 @@ final class DbalExtension extends CompilerExtension
 			->setAutowired(false)
 			->addSetup('setSQLLogger', [$this->prefix('@logger')]);
 
-		// SqlLogger (append to chain)
-		if ($config['sqlLogger'] !== null) {
+		if ($config['sqlLogger'] !== null) { // SqlLogger (append to chain)
 			$logger->addSetup('addLogger', [$config['sqlLogger']]);
 		}
-
-		// ResultCacheImpl
-		if ($config['resultCacheImpl'] !== null) {
+		if ($config['resultCacheImpl'] !== null) { // ResultCacheImpl
 			$configuration->addSetup('setResultCacheImpl', [$config['resultCacheImpl']]);
 		}
-
-		// FilterSchemaAssetsExpression
-		if ($config['filterSchemaAssetsExpression'] !== null) {
+		if ($config['filterSchemaAssetsExpression'] !== null) { // FilterSchemaAssetsExpression
 			$configuration->addSetup('setFilterSchemaAssetsExpression', [$config['filterSchemaAssetsExpression']]);
 		}
 

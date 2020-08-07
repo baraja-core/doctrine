@@ -28,7 +28,7 @@ use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpLiteral;
 use Nette\Utils\Validators;
 
-class OrmAnnotationsExtension extends CompilerExtension
+final class OrmAnnotationsExtension extends CompilerExtension
 {
 	public const DRIVERS = [
 		'apc' => ApcCache::class,
@@ -118,7 +118,7 @@ class OrmAnnotationsExtension extends CompilerExtension
 	}
 
 
-	protected function getDefaultCache(): ServiceDefinition
+	private function getDefaultCache(): ServiceDefinition
 	{
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();

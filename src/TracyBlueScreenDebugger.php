@@ -28,9 +28,6 @@ final class TracyBlueScreenDebugger
 	}
 
 
-	/**
-	 * @param EntityManager $entityManager
-	 */
 	public static function setEntityManager(EntityManager $entityManager): void
 	{
 		self::$entityManager = $entityManager;
@@ -38,7 +35,6 @@ final class TracyBlueScreenDebugger
 
 
 	/**
-	 * @param \Throwable|null $e
 	 * @return string[]|null
 	 */
 	public static function render(?\Throwable $e): ?array
@@ -46,15 +42,12 @@ final class TracyBlueScreenDebugger
 		if ($e instanceof DriverException) {
 			return self::renderDriver($e);
 		}
-
 		if ($e === null || !$e instanceof ORMException) {
 			return null;
 		}
-
 		if ($e instanceof QueryException) {
 			return self::renderQuery($e);
 		}
-
 		if ($e instanceof MappingException) {
 			return self::renderMapping($e);
 		}
@@ -64,7 +57,6 @@ final class TracyBlueScreenDebugger
 
 
 	/**
-	 * @param ORMException $e
 	 * @return string[]
 	 */
 	private static function renderCommon(ORMException $e): array
@@ -77,14 +69,12 @@ final class TracyBlueScreenDebugger
 
 
 	/**
-	 * @param DriverException $e
 	 * @return string[]
 	 */
 	private static function renderDriver(DriverException $e): array
 	{
 		$tab = null;
 		$panel = null;
-
 		if (preg_match('/while executing \'(.+)\' with params (.+):(?:\n\s)+(.+)/', $e->getMessage(), $parser)) {
 			$tab = 'Driver error | ' . $parser[3];
 			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>'
@@ -138,7 +128,6 @@ final class TracyBlueScreenDebugger
 
 
 	/**
-	 * @param QueryException $e
 	 * @return string[]
 	 */
 	private static function renderQuery(QueryException $e): array
@@ -151,7 +140,6 @@ final class TracyBlueScreenDebugger
 
 
 	/**
-	 * @param MappingException $e
 	 * @return string[]
 	 */
 	private static function renderMapping(MappingException $e): array
@@ -169,7 +157,6 @@ final class TracyBlueScreenDebugger
 					$docComment = trim((string) $ref->getDocComment());
 				} catch (\ReflectionException $e) {
 				}
-
 				if ($fileName !== null && $fileContent !== null) {
 					return [
 						'tab' => 'Mapping error',

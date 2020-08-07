@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\Identifier;
 
 
-use Baraja\Doctrine\DatabaseException;
 use Doctrine\ORM\Mapping as ORM;
 
 trait Identifier
@@ -30,13 +29,9 @@ trait Identifier
 	}
 
 
-	/**
-	 * @param int|null $id
-	 * @throws DatabaseException
-	 */
 	public function setId(?int $id = null): void
 	{
-		DatabaseException::canNotSetIdentifier((string) $id);
+		throw new \LogicException('Can not set identifier "' . $id . '", please use trait UuidIdentifier.');
 	}
 
 
