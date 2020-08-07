@@ -38,7 +38,6 @@ class UuidType extends Type
 		if ($value === null) {
 			return null;
 		}
-
 		if ($value instanceof UuidInterface) {
 			return $value->toString();
 		}
@@ -62,7 +61,6 @@ class UuidType extends Type
 		if (empty($value)) {
 			return null;
 		}
-
 		if ($value instanceof UuidInterface
 			|| ((\is_string($value) || method_exists($value, '__toString')) && Uuid::isValid((string) $value))
 		) {
@@ -73,19 +71,12 @@ class UuidType extends Type
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getName(): string
 	{
 		return static::NAME;
 	}
 
 
-	/**
-	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return bool
-	 */
 	public function requiresSQLCommentHint(AbstractPlatform $platform): bool
 	{
 		return true;

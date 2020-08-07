@@ -19,8 +19,9 @@ use Tracy\Helpers;
 /**
  * Inspired by https://github.com/Kdyby/Doctrine/blob/master/src/Kdyby/Doctrine/Diagnostics/Panel.php.
  */
-class DbalBlueScreen
+final class DbalBlueScreen
 {
+
 	/**
 	 * @param Throwable|null $e
 	 * @return mixed[]|null

@@ -7,12 +7,8 @@ namespace Baraja\Doctrine\DBAL\Logger;
 
 use Tracy\IBarPanel;
 
-class QueryProfiler extends AbstractLogger implements IBarPanel
+final class QueryProfiler extends AbstractLogger implements IBarPanel
 {
-
-	/**
-	 * @return string
-	 */
 	public function getTab(): string
 	{
 		return '<span title="Doctrine 2">'
@@ -25,9 +21,6 @@ class QueryProfiler extends AbstractLogger implements IBarPanel
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getPanel(): string
 	{
 		if (empty($this->queries)) {

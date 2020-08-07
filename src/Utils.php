@@ -13,9 +13,7 @@ final class Utils
 	private const DOC_PATTERN = '/[@=](?<name>[^\(\s\n]+)\s*(?<value>[^\n]+)/';
 
 
-	/**
-	 * @throws \Error
-	 */
+	/** @throws \Error */
 	public function __construct()
 	{
 		throw new \Error('Class ' . get_class($this) . ' is static and cannot be instantiated.');
@@ -25,9 +23,6 @@ final class Utils
 	/**
 	 * Find annotation /^[@=] in class DocComment by reflection.
 	 *
-	 * @param string $class
-	 * @param string $key
-	 * @return string|null
 	 * @throws \ReflectionException
 	 */
 	public static function reflectionClassDocComment(string $class, string $key): ?string
@@ -47,14 +42,11 @@ final class Utils
 	/**
 	 * Return reflection class by given class name. In case of repeated use return reflection by cache.
 	 *
-	 * @param string $class
-	 * @return \ReflectionClass
 	 * @throws \ReflectionException
 	 */
 	public static function getReflectionClass(string $class): \ReflectionClass
 	{
 		static $cache = [];
-
 		if (isset($cache[$class]) === false) {
 			$cache[$class] = new \ReflectionClass($class);
 		}
@@ -65,14 +57,10 @@ final class Utils
 
 	/**
 	 * Safe detection if function is available to call.
-	 *
-	 * @param string $functionName
-	 * @return bool
 	 */
 	public static function functionIsAvailable(string $functionName): bool
 	{
 		static $disabled;
-
 		if (\function_exists($functionName) === true) {
 			if ($disabled === null && \is_string($disableFunctions = ini_get('disable_functions'))) {
 				$disabled = explode(',', $disableFunctions) ?: [];
@@ -85,10 +73,6 @@ final class Utils
 	}
 
 
-	/**
-	 * @param string $sql
-	 * @return string
-	 */
 	public static function createSqlHash(string $sql): string
 	{
 		$sql = (string) preg_replace('/\'[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}\'/', '\'uuid\'', $sql);
@@ -101,10 +85,6 @@ final class Utils
 
 	/**
 	 * Fast check of record existence.
-	 *
-	 * @param string $hash
-	 * @param EntityManagerInterface $em
-	 * @return bool
 	 */
 	public static function queryExistsByHash(string $hash, EntityManagerInterface $em): bool
 	{
@@ -113,7 +93,6 @@ final class Utils
 		if (isset($cache[$hash]) === true) {
 			return $cache[$hash];
 		}
-
 		try {
 			$hashExist = $em->getConnection()
 				->executeQuery('SELECT 1 FROM `core__database_slow_query` WHERE hash = \'' . $hash . '\'')
@@ -121,7 +100,6 @@ final class Utils
 		} catch (DBALException $e) {
 			throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
 		}
-
 		if ($hashExist !== false) {
 			$cache[$hash] = true;
 		}

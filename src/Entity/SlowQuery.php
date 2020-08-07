@@ -51,11 +51,6 @@ class SlowQuery
 	private $insertedDate;
 
 
-	/**
-	 * @param string $sql
-	 * @param string $hash
-	 * @param float $duration
-	 */
 	public function __construct(string $sql, string $hash, float $duration)
 	{
 		$this->query = $sql;
@@ -65,36 +60,24 @@ class SlowQuery
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getQuery(): string
 	{
 		return $this->query;
 	}
 
 
-	/**
-	 * @return float
-	 */
 	public function getDuration(): float
 	{
 		return $this->duration;
 	}
 
 
-	/**
-	 * @return string
-	 */
 	public function getHash(): string
 	{
 		return $this->hash;
 	}
 
 
-	/**
-	 * @return \DateTime
-	 */
 	public function getInsertedDate(): \DateTime
 	{
 		return $this->insertedDate;

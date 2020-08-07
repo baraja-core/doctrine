@@ -21,7 +21,6 @@ class Postgre10SqlSchemaManager extends PostgreSqlSchemaManager
 		} else {
 			$sequenceName = $sequence['relname'];
 		}
-
 		if (isset($sequence['increment_by'], $sequence['min_value']) === false) {
 			$sequence = array_merge($sequence, $this->_conn->fetchAssoc('SELECT min_value, increment_by FROM ' . $this->_platform->quoteIdentifier($sequenceName)));
 		}

@@ -12,14 +12,16 @@ use Ramsey\Uuid\Uuid;
 
 class UuidGenerator extends AbstractIdGenerator
 {
+
 	/**
-	 * @param EntityManager $em
 	 * @param Entity|null $entity
-	 * @return string
-	 * @throws \Exception
 	 */
 	public function generate(EntityManager $em, $entity): string
 	{
-		return Uuid::uuid4()->toString();
+		try {
+			return Uuid::uuid4()->toString();
+		} catch (\Throwable $e) {
+			throw new \RuntimeException('Can not generate UUID: ' . $e->getMessage(), $e->getCode(), $e);
+		}
 	}
 }

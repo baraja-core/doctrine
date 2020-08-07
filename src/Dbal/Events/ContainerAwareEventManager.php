@@ -10,7 +10,7 @@ use Doctrine\Common\EventManager as DoctrineEventManager;
 use Nette\DI\Container;
 use RuntimeException;
 
-class ContainerAwareEventManager extends DoctrineEventManager
+final class ContainerAwareEventManager extends DoctrineEventManager
 {
 
 	/** @var Container */

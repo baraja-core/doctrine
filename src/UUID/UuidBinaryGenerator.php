@@ -11,16 +11,18 @@ use Doctrine\ORM\Mapping\Entity;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-class UuidBinaryGenerator extends AbstractIdGenerator
+final class UuidBinaryGenerator extends AbstractIdGenerator
 {
+
 	/**
-	 * @param EntityManager $em
 	 * @param Entity|null $entity
-	 * @return UuidInterface
-	 * @throws \Exception
 	 */
 	public function generate(EntityManager $em, $entity): UuidInterface
 	{
-		return Uuid::uuid4();
+		try {
+			return Uuid::uuid4();
+		} catch (\Throwable $e) {
+			throw new \RuntimeException('Can not generate UUID: ' . $e->getMessage(), $e->getCode(), $e);
+		}
 	}
 }

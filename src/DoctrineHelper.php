@@ -18,9 +18,6 @@ class DoctrineHelper
 	private $entityManager;
 
 
-	/**
-	 * @param EntityManager $entityManager
-	 */
 	public function __construct(EntityManager $entityManager)
 	{
 		$this->entityManager = $entityManager;
@@ -31,8 +28,6 @@ class DoctrineHelper
 	 * Return list of class names which is variant of given entity.
 	 * By $exclude you can define list of entities which will be skipped.
 	 *
-	 * @param string $entity as class name
-	 * @param string[]|null $exclude
 	 * @return string[]
 	 */
 	public function getEntityVariants(string $entity, ?array $exclude = null): array
@@ -66,19 +61,15 @@ class DoctrineHelper
 	/**
 	 * Return most embedded entity.
 	 * In case of `CustomProduct` extends `Product` extends `BaseProduct`, return `CustomProduct`.
-	 *
-	 * @param string $entity as class name
-	 * @return string
 	 */
-	public function getBestOfType(string $entity): string
+	public function getBestOfType(string $entityClassName): string
 	{
-		if (\in_array(\count($variants = $this->getEntityVariants($entity)), [0, 1], true) === true) {
-			return $entity;
+		if (\in_array(\count($variants = $this->getEntityVariants($entityClassName)), [0, 1], true) === true) {
+			return $entityClassName;
 		}
 
 		$topLength = 0;
-		$topType = $entity;
-
+		$topType = $entityClassName;
 		foreach (array_keys($variants) as $variant) {
 			try {
 				if (($length = $this->getParentClassLength(Utils::getReflectionClass($variant))) > $topLength) {
@@ -95,9 +86,6 @@ class DoctrineHelper
 
 	/**
 	 * Return real table name by entity Class name.
-	 *
-	 * @param string $entity
-	 * @return string
 	 */
 	public function getTableNameByEntity(string $entity): string
 	{
@@ -107,9 +95,6 @@ class DoctrineHelper
 
 	/**
 	 * If extends lot's of entities, return root entity class name.
-	 *
-	 * @param string $entity
-	 * @return string
 	 */
 	public function getRootEntityName(string $entity): string
 	{
@@ -121,9 +106,6 @@ class DoctrineHelper
 	 * In case of chain inheritance Doctrine store lot's of entities in one table
 	 * and distinguishes itself by `discriminator` column.
 	 * This method return discriminator column name by given entity Class name.
-	 *
-	 * @param string $entity
-	 * @return string
 	 */
 	public function getDiscriminatorByEntity(string $entity): string
 	{
@@ -216,11 +198,7 @@ class DoctrineHelper
 	/**
 	 * Count position of entity in list and save integer back by setPosition().
 	 *
-	 * @param object $itemEntity
-	 * @param string|null $previousId
-	 * @param string|null $parentId
-	 * @throws DatabaseException
-	 * @throws EntityManagerException
+	 * @throws DatabaseException|EntityManagerException
 	 */
 	public function sortEntities($itemEntity, ?string $previousId = null, ?string $parentId = null): void
 	{
@@ -302,10 +280,6 @@ class DoctrineHelper
 	 * for CustomProduct -> 3
 	 * for Product       -> 2
 	 * for BaseProduct   -> 1
-	 *
-	 * @param \ReflectionClass $reflection
-	 * @param int $bind
-	 * @return int
 	 */
 	private function getParentClassLength(\ReflectionClass $reflection, int $bind = 1): int
 	{

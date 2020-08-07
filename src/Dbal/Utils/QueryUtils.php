@@ -14,10 +14,6 @@ final class QueryUtils
 	}
 
 
-	/**
-	 * @param string $sql
-	 * @return string
-	 */
 	public static function highlight(string $sql): string
 	{
 		static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
@@ -66,10 +62,6 @@ final class QueryUtils
 	}
 
 
-	/**
-	 * @param bool $reset
-	 * @return int
-	 */
 	private static function getCounter(bool $reset = false): int
 	{
 		static $counter = 0;

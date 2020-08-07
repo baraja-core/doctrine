@@ -22,7 +22,7 @@ use Nette\DI\CompilerExtension;
 use Nette\DI\ServiceDefinition;
 use Nette\InvalidStateException;
 
-class OrmCacheExtension extends CompilerExtension
+final class OrmCacheExtension extends CompilerExtension
 {
 	public const DRIVERS = [
 		'apc' => ApcCache::class,
@@ -168,7 +168,7 @@ class OrmCacheExtension extends CompilerExtension
 	}
 
 
-	protected function getDefaultDriverCache(string $service): ServiceDefinition
+	private function getDefaultDriverCache(string $service): ServiceDefinition
 	{
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();

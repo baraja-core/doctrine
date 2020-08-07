@@ -9,7 +9,7 @@ use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\EventManager as DoctrineEventManager;
 
-class DebugEventManager extends DoctrineEventManager
+final class DebugEventManager extends DoctrineEventManager
 {
 
 	/** @var EventManager */

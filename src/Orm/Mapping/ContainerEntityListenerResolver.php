@@ -9,11 +9,11 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use InvalidArgumentException;
 use Nette\DI\Container;
 
-class ContainerEntityListenerResolver implements EntityListenerResolver
+final class ContainerEntityListenerResolver implements EntityListenerResolver
 {
 
 	/** @var object[] */
-	protected $instances = [];
+	private $instances = [];
 
 	/** @var Container */
 	private $container;

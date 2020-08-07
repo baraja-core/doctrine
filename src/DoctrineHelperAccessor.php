@@ -7,8 +7,5 @@ namespace Baraja\Doctrine;
 
 interface DoctrineHelperAccessor
 {
-	/**
-	 * @return DoctrineHelper
-	 */
 	public function get(): DoctrineHelper;
 }
