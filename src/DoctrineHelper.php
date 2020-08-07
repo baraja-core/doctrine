@@ -28,12 +28,12 @@ class DoctrineHelper
 	 * Return list of class names which is variant of given entity.
 	 * By $exclude you can define list of entities which will be skipped.
 	 *
+	 * @param string[]|null $exclude
 	 * @return string[]
 	 */
 	public function getEntityVariants(string $entity, ?array $exclude = null): array
 	{
 		$return = [];
-
 		if (\is_array(($meta = $this->entityManager->getClassMetadata($entity))->discriminatorMap) && \count($meta->discriminatorMap) > 0) {
 			foreach ($meta->discriminatorMap as $variant) {
 				try {
@@ -198,6 +198,7 @@ class DoctrineHelper
 	/**
 	 * Count position of entity in list and save integer back by setPosition().
 	 *
+	 * @param object $itemEntity
 	 * @throws DatabaseException|EntityManagerException
 	 */
 	public function sortEntities($itemEntity, ?string $previousId = null, ?string $parentId = null): void
