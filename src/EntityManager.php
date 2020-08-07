@@ -566,7 +566,7 @@ final class EntityManager implements EntityManagerInterface
 	}
 
 
-	public function buildCache(bool $saveMode = false, $invalidCache = false): void
+	public function buildCache(bool $saveMode = false, bool $invalidCache = false): void
 	{
 		$this->init();
 		QueryPanel::setInvalidCache($invalidCache);
