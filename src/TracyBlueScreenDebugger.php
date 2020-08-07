@@ -87,11 +87,11 @@ final class TracyBlueScreenDebugger
 
 		if (preg_match('/while executing \'(.+)\' with params (.+):(?:\n\s)+(.+)/', $e->getMessage(), $parser)) {
 			$tab = 'Driver error | ' . $parser[3];
-			$panel = '<pre class="code"><div>' . QueryUtils::highlight($parser[1]) . '</div></pre>'
+			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>'
 				. '<p>With params:</p>' . Dumper::toHtml(json_decode($parser[2]));
 		} elseif (preg_match('/while executing \'(.+)\'/', $e->getMessage(), $parser)) {
 			$tab = 'Driver error';
-			$panel = '<pre class="code"><div>' . QueryUtils::highlight($parser[1]) . '</div></pre>';
+			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>';
 		}
 
 		if (self::$entityManager !== null && preg_match('/Table\s\\\'([^\\\']+)\\\'\sdoesn\\\'t\sexist/', $e->getMessage(), $parser)) {
