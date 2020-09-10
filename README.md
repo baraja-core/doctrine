@@ -17,26 +17,25 @@ A model configuration can be found in the `common.neon` file inside the root of 
 To manually install the package call Composer and execute the following command:
 
 ```shell
-composer require baraja-core/doctrine
+$ composer require baraja-core/doctrine
 ```
 
-In the projects `common.neon` you have to define the database credentials. A fully working example of configuration can be found in the `common.neon` file inside this package.
-
-You can define the configuration simply using parameters (stored in the super-global array `parameters`).
+In the projects `common.neon` you have to define the database credentials. A fully working example of configuration can be found in the `common.neon` file inside this package. You can define the configuration simply using `baraja.database` extension.
 
 For example:
 
 ```yaml
-parameters:
-   database:
-      primary:
-         host: 127.0.0.1
-         dbname: sandbox
-         user: root
-         password: root
+baraja.database:
+   connection:
+      host: 127.0.0.1
+      dbname: sandbox
+      user: root
+      password: root
 ```
 
 For now the package supports only the connection to one database.
+
+Possible connection options: `url`, `pdo`, `memory`, `driver`, `driverClass`, `driverOptions`, `unix_socket`, `host`, `port`, `dbname`, `servicename`, `user`, `password`, `charset`, `portability`, `fetchCase`, `persistent`, `types`, `typesMapping`, `wrapperClass`.
 
 ⚙️ Drivers
 ----------
