@@ -83,6 +83,30 @@ final class Utils
 	}
 
 
+	public static function userIp(): string
+	{
+		static $ip = null;
+
+		if ($ip === null) {
+			if (isset($_SERVER['REMOTE_ADDR'])) {
+				if (\in_array($_SERVER['REMOTE_ADDR'], ['::1', '0.0.0.0', 'localhost'], true)) {
+					$ip = '127.0.0.1';
+				} else {
+					$ip = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+
+					if ($ip === false) {
+						$ip = '127.0.0.1';
+					}
+				}
+			} else {
+				$ip = '127.0.0.1';
+			}
+		}
+
+		return $ip;
+	}
+
+
 	/**
 	 * Fast check of record existence.
 	 */

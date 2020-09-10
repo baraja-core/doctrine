@@ -75,6 +75,18 @@ final class TracyBlueScreenDebugger
 	{
 		$tab = null;
 		$panel = null;
+		if (strpos($e->getMessage(), 'The server requested authentication method unknown to the client') !== false) {
+			$tab = 'Connection error';
+			$panel = '<p>' . htmlspecialchars($e->getMessage()) . '</p>'
+				. '<p>If the database is connected to the cloud (for example, DigitalOcean), an <b>enabled SSL mode</b> may be required for a functional connection.</p>'
+				. '<p>To resolve this issue, you <b>must connect to your database manually</b> and run this SQL command:</p>'
+				. '<pre class="code"><div>ALTER USER `myuser` IDENTIFIED WITH mysql_native_password BY \'mypassword\';</div></pre>'
+				. '<p><b>Note about MySQL&nbsp;8</b></p>'
+				. '<p>When running a PHP version before 7.1.16, or PHP 7.2 before 7.2.4, set MySQL 8 Server\'s default password plugin to mysql_native_password or else you will see errors similar to The server requested authentication method unknown to the client [caching_sha2_password] even when caching_sha2_password is not used.</p>'
+				. '<p>This is because MySQL 8 defaults to caching_sha2_password, a plugin that is not recognized by the older PHP (mysqlnd) releases. Instead, change it by setting default_authentication_plugin=mysql_native_password in my.cnf. The caching_sha2_password plugin will be supported in a future PHP release. In the meantime, the mysql_xdevapi extension does support it.</p>'
+				. '<p>Your PHP version is: <b>' . htmlspecialchars(PHP_VERSION) . '</b>.</p>'
+				. '<a href="https://www.digitalocean.com/community/questions/how-to-change-caching_sha2_password-to-mysql_native_password-on-a-digitalocean-s-managed-mysql-database" target="_blank">More information</a>';
+		}
 		if (preg_match('/while executing \'(.+)\' with params (.+):(?:\n\s)+(.+)/', $e->getMessage(), $parser)) {
 			$tab = 'Driver error | ' . $parser[3];
 			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>'
