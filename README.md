@@ -5,12 +5,12 @@ Baraja Doctrine database
 
 A simple and easy to use, maximum performance database layer with connection to Doctrine, which allows you to use all the advantages of OOP and also has **support for Nette 3**.
 
-This package automatically installs Doctrine to your project (also setting everything up in the configuration) and runs stably.
+This package automatically installs Doctrine to your project (also sets everything up in the configuration) and runs stably.
 
 📦 Installation & Basic Usage
 -----------------------------
 
-This package can be installed using [Package Manager](https://github.com/baraja-core/package-manager) which is also part of the Baraja [Sandbox](https://github.com/baraja-core/sandbox). If you are not using it, you have to install the package manually following this guide.
+This package can be installed using [Package Manager](https://github.com/baraja-core/package-manager) which is also part of the Baraja [Sandbox](https://github.com/baraja-core/sandbox). If you are not using it, you will have to install the package manually using this guide.
 
 A model configuration can be found in the `common.neon` file inside the root of the package.
 
@@ -20,7 +20,7 @@ To manually install the package call Composer and execute the following command:
 composer require baraja-core/doctrine
 ```
 
-In the projects `common.neon` you have to define the database credentials. A fully working example of configuration can be found in the `common.neon` file inside this package.
+In the project's `common.neon` you have to define the database credentials. A fully working example of configuration can be found in the `common.neon` file inside this package.
 
 You can define the configuration simply using parameters (stored in the super-global array `parameters`).
 
