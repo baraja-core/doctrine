@@ -37,6 +37,10 @@ final class DatabaseExtension extends CompilerExtension
 		return Expect::structure([
 			'debug' => Expect::bool(false),
 			'connection' => Expect::structure([
+				'host' => Expect::string()->required(),
+				'dbname' => Expect::string()->required(),
+				'user' => Expect::string()->required(),
+				'password' => Expect::string()->nullable(),
 				'url' => Expect::string()->nullable(),
 				'pdo' => Expect::string()->nullable(),
 				'memory' => Expect::string()->nullable(),
@@ -44,12 +48,8 @@ final class DatabaseExtension extends CompilerExtension
 				'driverClass' => Expect::string()->nullable(),
 				'driverOptions' => Expect::array(),
 				'unix_socket' => Expect::string()->nullable(),
-				'host' => Expect::string(),
 				'port' => Expect::int()->nullable(),
-				'dbname' => Expect::string(),
 				'servicename' => Expect::string()->nullable(),
-				'user' => Expect::string(),
-				'password' => Expect::string()->nullable(),
 				'charset' => Expect::string('UTF8'),
 				'portability' => Expect::int(PortabilityConnection::PORTABILITY_ALL),
 				'fetchCase' => Expect::int(\PDO::CASE_LOWER),
