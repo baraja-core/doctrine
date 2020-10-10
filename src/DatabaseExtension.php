@@ -77,6 +77,7 @@ final class DatabaseExtension extends CompilerExtension
 
 		$this->loadDoctrineConfiguration();
 		$this->loadConnectionConfiguration();
+		$this->registerInternalServices();
 
 		if (($this->config['debug'] ?? false) === true) {
 			$builder->addDefinition($this->prefix('queryPanel'))
@@ -293,5 +294,23 @@ final class DatabaseExtension extends CompilerExtension
 				'@' . $this->prefix('configuration'),
 				$builder->getDefinitionByType(EventManager::class),
 			]);
+	}
+
+
+	private function registerInternalServices(): void
+	{
+		$builder = $this->getContainerBuilder();
+
+		$builder->addDefinition($this->prefix('entityManagerDependencies'))
+			->setFactory(EntityManagerDependencies::class);
+
+		$builder->addAccessorDefinition($this->prefix('entityManagerDependenciesAccessor'))
+			->setImplement(EntityManagerDependenciesAccessor::class);
+
+		$builder->addDefinition($this->prefix('doctrineHelper'))
+			->setFactory(DoctrineHelper::class);
+
+		$builder->addAccessorDefinition($this->prefix('doctrineHelperAccessor'))
+			->setImplement(DoctrineHelperAccessor::class);
 	}
 }
