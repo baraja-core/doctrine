@@ -34,9 +34,3 @@ console:
 	autoExit: true
 	url: https://baraja.cz
 	lazy: false
-
-services:
-	- Baraja\Doctrine\EntityManagerDependencies
-	- Baraja\Doctrine\EntityManagerDependenciesAccessor
-	- Baraja\Doctrine\DoctrineHelper
-	- Baraja\Doctrine\DoctrineHelperAccessor
