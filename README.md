@@ -1,5 +1,5 @@
-Baraja Doctrine database
-========================
+Baraja Doctrine database 📚
+===========================
 
 ![Integrity check](https://github.com/baraja-core/doctrine/workflows/Integrity%20check/badge.svg)
 
@@ -68,6 +68,11 @@ orm.annotations:
 ```
 
 You can also specify the `ignore` key, which disables browsing a specific directory.
+
+> **Important warning:**
+>
+> The value of the `%rootDir%`, `%appDir%`, `%wwwDir%`, `%vendorDir%` and `%tempDir%` parameters may be corrupted when running schema generation in CLI mode.
+> To resolve this mistake, please install [Package Manager](https://github.com/baraja-core/package-manager) and call the command as a `composer dump`.
 
 Generate database structure from entities
 -----------------------------------------
