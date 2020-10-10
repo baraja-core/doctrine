@@ -47,7 +47,7 @@ You can rewrite it for example for Postgres:
 In your `common.neon` simple type:
 
 ```yaml
-dbal:
+baraja.database:
    connection:
       driverClass: Baraja\Doctrine\Driver\Postgres\PDOPgSqlDriver
 ```
