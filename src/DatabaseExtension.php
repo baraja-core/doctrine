@@ -10,6 +10,7 @@ use Baraja\Doctrine\DBAL\Events\ContainerAwareEventManager;
 use Baraja\Doctrine\DBAL\Events\DebugEventManager;
 use Baraja\Doctrine\DBAL\Tracy\BlueScreen\DbalBlueScreen;
 use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
+use Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\SQLite3Cache;
@@ -30,6 +31,27 @@ use Nette\Utils\Validators;
 final class DatabaseExtension extends CompilerExtension
 {
 	public const TAG_DOCTRINE_SUBSCRIBER = 'doctrine.subscriber';
+
+	/** @var string[] (type => typeClass) */
+	private static $customTypes = [];
+
+
+	/**
+	 * @return string[]
+	 */
+	public static function mustBeDefinedAfter(): array
+	{
+		return [OrmAnnotationsExtension::class];
+	}
+
+
+	public static function addCustomType(string $type, string $typeClass): void
+	{
+		if (isset(self::$customTypes[$type]) === true && self::$customTypes[$type] !== $typeClass) {
+			throw new \InvalidArgumentException('Database type "' . $type . '" already exist.');
+		}
+		self::$customTypes[$type] = $typeClass;
+	}
 
 
 	public function getConfigSchema(): Schema
@@ -120,7 +142,7 @@ final class DatabaseExtension extends CompilerExtension
 		$cache = $this->processCache();
 
 		$types = [];
-		foreach ($this->config['types'] ?? [] as $type => $typeClass) {
+		foreach (array_merge(self::$customTypes, $this->config['types'] ?? []) as $type => $typeClass) {
 			if (\class_exists($typeClass) === false) {
 				ConfiguratorException::typeDoesNotExist($type, $typeClass);
 			}

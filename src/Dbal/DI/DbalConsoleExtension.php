@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\DBAL\DI;
 
 
+use Contributte\Console\DI\ConsoleExtension;
 use Doctrine\DBAL\Tools\Console\Command\ImportCommand;
 use Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand;
 use Doctrine\DBAL\Tools\Console\Command\RunSqlCommand;
@@ -25,6 +26,15 @@ final class DbalConsoleExtension extends CompilerExtension
 	public function __construct(?bool $cliMode = null)
 	{
 		$this->cliMode = $cliMode ?? PHP_SAPI === 'cli';
+	}
+
+
+	/**
+	 * @return string[]
+	 */
+	public static function mustBeDefinedAfter(): array
+	{
+		return [ConsoleExtension::class];
 	}
 
 

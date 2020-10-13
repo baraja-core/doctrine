@@ -42,6 +42,9 @@ final class OrmAnnotationsExtension extends CompilerExtension
 		'xcache' => XcacheCache::class,
 	];
 
+	/** @var string[] */
+	private static $annotationPaths = [];
+
 	/** @var mixed[] */
 	public $defaults = [
 		'paths' => [],
@@ -54,14 +57,31 @@ final class OrmAnnotationsExtension extends CompilerExtension
 
 
 	/**
-	 * Register services
+	 * @return string[]
 	 */
+	public static function mustBeDefinedAfter(): array
+	{
+		return [OrmConsoleExtension::class, OrmExtension::class];
+	}
+
+
+	public static function addAnnotationPath(string $namespace, string $directoryPath): void
+	{
+		if (\is_dir($directoryPath) === false) {
+			throw new \RuntimeException('Path "' . $directoryPath . '" is not valid directory.');
+		}
+		if (isset(self::$annotationPaths[$namespace]) === true) {
+			throw new \RuntimeException('Definition for namespace "' . $namespace . '" already exist.');
+		}
+
+		self::$annotationPaths[$namespace] = $directoryPath;
+	}
+
+
 	public function loadConfiguration(): void
 	{
 		if ($this->compiler->getExtensions(OrmExtension::class) === []) {
-			throw new InvalidStateException(
-				sprintf('You should register %s before %s.', self::class, static::class)
-			);
+			throw new \RuntimeException(__CLASS__ . ': Extension "' . OrmExtension::class . '" must be defined before this extension.');
 		}
 
 		$builder = $this->getContainerBuilder();
@@ -97,15 +117,22 @@ final class OrmAnnotationsExtension extends CompilerExtension
 				$config['debug'],
 			]);
 
+		AnnotationRegistry::registerUniqueLoader('class_exists');
+	}
+
+
+	public function beforeCompile(): void
+	{
+		$builder = $this->getContainerBuilder();
+		$config = $this->validateConfig($this->defaults);
+
 		$builder->addDefinition($this->prefix('annotationDriver'))
-			->setFactory(AnnotationDriver::class, [$this->prefix('@reader'), Helpers::expand($config['paths'], $builder->parameters)])
+			->setFactory(AnnotationDriver::class, [$this->prefix('@reader'), Helpers::expand(array_merge(self::$annotationPaths, $config['paths']), $builder->parameters)])
 			->addSetup('addExcludePaths', [Helpers::expand($config['excludePaths'], $builder->parameters)]);
 
 		/** @var ServiceDefinition $configurationDefinition */
 		$configurationDefinition = $builder->getDefinitionByType(Configuration::class);
 		$configurationDefinition->addSetup('setMetadataDriverImpl', [$this->prefix('@annotationDriver')]);
-
-		AnnotationRegistry::registerUniqueLoader('class_exists');
 	}
 
 

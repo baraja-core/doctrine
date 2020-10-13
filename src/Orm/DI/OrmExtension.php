@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
+use Baraja\Doctrine\DBAL\DI\DbalConsoleExtension;
 use Baraja\Doctrine\ORM\EntityManagerDecorator;
 use Baraja\Doctrine\ORM\Mapping\ContainerEntityListenerResolver;
 use Doctrine\ORM\Configuration;
@@ -40,6 +41,15 @@ final class OrmExtension extends CompilerExtension
 			'defaultQueryHints' => [],
 		],
 	];
+
+
+	/**
+	 * @return string[]
+	 */
+	public static function mustBeDefinedAfter(): array
+	{
+		return [DbalConsoleExtension::class];
+	}
 
 
 	public function loadConfiguration(): void
