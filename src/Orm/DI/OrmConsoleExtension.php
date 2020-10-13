@@ -40,6 +40,15 @@ final class OrmConsoleExtension extends CompilerExtension
 	}
 
 
+	/**
+	 * @return string[]
+	 */
+	public static function mustBeDefinedAfter(): array
+	{
+		return [OrmExtension::class];
+	}
+
+
 	public function loadConfiguration(): void
 	{
 		if ($this->compiler->getExtensions(OrmExtension::class) === []) {
