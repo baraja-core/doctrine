@@ -26,6 +26,8 @@ use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Helpers;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpLiteral;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 use Nette\Utils\Validators;
 
 final class OrmAnnotationsExtension extends CompilerExtension
@@ -44,16 +46,6 @@ final class OrmAnnotationsExtension extends CompilerExtension
 
 	/** @var string[] */
 	private static $annotationPaths = [];
-
-	/** @var mixed[] */
-	public $defaults = [
-		'paths' => [],
-		'excludePaths' => [],
-		'ignore' => [],
-		'defaultCache' => 'filesystem',
-		'cache' => null,
-		'debug' => false,
-	];
 
 
 	/**
@@ -78,14 +70,28 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	}
 
 
+	public function getConfigSchema(): Schema
+	{
+		return Expect::structure([
+			'paths' => Expect::arrayOf(Expect::string()),
+			'excludePaths' => Expect::arrayOf(Expect::string()),
+			'ignore' => Expect::arrayOf(Expect::string()),
+			'defaultCache' => Expect::string('filesystem'),
+			'cache' => Expect::string(),
+			'debug' => Expect::bool(false),
+		])->castTo('array');
+	}
+
+
 	public function loadConfiguration(): void
 	{
 		if ($this->compiler->getExtensions(OrmExtension::class) === []) {
 			throw new \RuntimeException(__CLASS__ . ': Extension "' . OrmExtension::class . '" must be defined before this extension.');
 		}
 
+		/** @var mixed[] $config */
+		$config = $this->config;
 		$builder = $this->getContainerBuilder();
-		$config = $this->validateConfig($this->defaults);
 
 		$reader = $builder->addDefinition($this->prefix('annotationReader'))
 			->setType(AnnotationReader::class)
@@ -123,8 +129,9 @@ final class OrmAnnotationsExtension extends CompilerExtension
 
 	public function beforeCompile(): void
 	{
+		/** @var mixed[] $config */
+		$config = $this->config;
 		$builder = $this->getContainerBuilder();
-		$config = $this->validateConfig($this->defaults);
 
 		$builder->addDefinition($this->prefix('annotationDriver'))
 			->setFactory(AnnotationDriver::class, [$this->prefix('@reader'), Helpers::expand(array_merge(self::$annotationPaths, $config['paths']), $builder->parameters)])
@@ -147,7 +154,8 @@ final class OrmAnnotationsExtension extends CompilerExtension
 
 	private function getDefaultCache(): ServiceDefinition
 	{
-		$config = $this->getConfig();
+		/** @var mixed[] $config */
+		$config = $this->config;
 		$builder = $this->getContainerBuilder();
 
 		if (!isset(self::DRIVERS[$config['defaultCache']])) {
