@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
+use Baraja\Doctrine\Cache\SQLite3Cache;
 use Baraja\Doctrine\DBAL\ConnectionFactory;
 use Baraja\Doctrine\DBAL\Events\ContainerAwareEventManager;
 use Baraja\Doctrine\DBAL\Events\DebugEventManager;
@@ -13,7 +14,6 @@ use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\ApcuCache;
-use Doctrine\Common\Cache\SQLite3Cache;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Configuration;
@@ -86,6 +86,7 @@ final class DatabaseExtension extends CompilerExtension
 				'filterSchemaAssetsExpression' => Expect::string()->nullable(),
 				'autoCommit' => Expect::bool()->default(true),
 			])->castTo('array'),
+			'cache' => Expect::string(),
 			'types' => Expect::arrayOf(Expect::string()),
 			'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string()),
 			'deprecatedParameters' => Expect::array(),
@@ -139,8 +140,6 @@ final class DatabaseExtension extends CompilerExtension
 			}
 		}
 
-		$cache = $this->processCache();
-
 		$types = [];
 		foreach (array_merge(self::$customTypes, $this->config['types'] ?? []) as $type => $typeClass) {
 			if (\class_exists($typeClass) === false) {
@@ -152,7 +151,7 @@ final class DatabaseExtension extends CompilerExtension
 		/** @var ServiceDefinition $generator */
 		$generator = $this->getContainerBuilder()->getDefinitionByType(EntityManager::class);
 		$generator->addSetup(
-			'?->addInit(function(' . EntityManager::class . ' $entityManager) {' . "\n"
+			'?->addInit(static function(' . EntityManager::class . ' $entityManager): void {' . "\n"
 			. "\t" . '// Types' . "\n"
 			. "\t" . 'foreach (? as $type => $typeClass) {' . "\n"
 			. "\t\t" . 'if (\Doctrine\DBAL\Types\Type::hasType($type) === false) {' . "\n"
@@ -163,12 +162,11 @@ final class DatabaseExtension extends CompilerExtension
 			. "\t" . 'foreach (? as $ignorePropertyAnnotation) {' . "\n"
 			. "\t\t" . AnnotationReader::class . '::addGlobalIgnoredName($ignorePropertyAnnotation);' . "\n"
 			. "\t" . '}' . "\n\n"
-			. "\t" . '$entityManager->setCache(' . $cache['cache'] . ');' . "\n"
+			. "\t" . '$entityManager->setCache(' . $this->processCache($this->config['cache'] ?? null) . ');' . "\n"
 			. "\t" . '$entityManager->getConnection()->getSchemaManager()->getDatabasePlatform()'
 			. '->registerDoctrineTypeMapping(\'enum\', \'string\');' . "\n"
 			. "\t" . '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
 			. "\t" . '$entityManager->buildCache();' . "\n"
-			. ($cache['after'] ? "\t" . $cache['after'] . "\n" : '')
 			. '})',
 			[
 				'@self',
@@ -202,43 +200,34 @@ final class DatabaseExtension extends CompilerExtension
 	}
 
 
-	/**
-	 * @return string[]
-	 */
-	private function processCache(): array
+	private function processCache(?string $cache = null): string
 	{
-		if (Utils::functionIsAvailable('apcu_cache_info')) {
-			$cache = new ApcuCache;
-			$cache->deleteAll();
-
+		if ($cache !== null) {
+			if (\class_exists($cache) === true) {
+				return 'new ' . $cache;
+			}
+			if (\in_array($cache, ['apcu', 'sqlite'], true) === false) {
+				throw new \RuntimeException('Cache service "' . $cache . '" does not exist.');
+			}
+		}
+		if (($cache === null || $cache === 'apcu') && Utils::functionIsAvailable('apcu_cache_info')) {
+			$apcuCache = new ApcuCache;
+			$apcuCache->deleteAll();
 			if (Utils::functionIsAvailable('apcu_clear_cache')) {
 				@apcu_clear_cache();
 			}
 
-			return [
-				'cache' => 'new ' . ApcuCache::class,
-				'after' => '',
-			];
+			return 'new ' . ApcuCache::class;
+		}
+		if (($cache === null || $cache === 'sqlite') && extension_loaded('sqlite3')) {
+			/** @var ServiceDefinition $entityManager */
+			$entityManager = $this->getContainerBuilder()->getDefinitionByType(EntityManager::class);
+			$entityManager->addSetup('?->fixDbDirPathPermission()', ['@self']);
+
+			return 'new ' . SQLite3Cache::class . '($entityManager->getDbDirPath())';
 		}
 
-		if (extension_loaded('sqlite3')) {
-			return [
-				'cache' => 'new ' . SQLite3Cache::class . '('
-					. '(function (Baraja\Doctrine\EntityManager $entityManager) {'
-					. "\n\t\t" . '$cache = new \SQLite3($entityManager->getDbDirPath());'
-					. "\n\t\t" . '$cache->busyTimeout(5000);'
-					. "\n\t\t" . '$cache->exec(\'PRAGMA journal_mode = wal;\');'
-					. "\n\t\t" . 'return $cache;'
-					. "\n\t" . '})($entityManager)'
-					. ', \'doctrine\')',
-				'after' => '$entityManager->fixDbDirPathPermission();',
-			];
-		}
-
-		return [
-			'cache' => 'null /* CACHE DOES NOT EXIST! */',
-			'after' => '',
-		];
+		return 'null /* CACHE DOES NOT EXIST! */';
 	}
 
 
