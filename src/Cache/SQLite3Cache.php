@@ -10,7 +10,10 @@ final class SQLite3Cache extends \Doctrine\Common\Cache\SQLite3Cache
 	public function __construct(string $cachePath)
 	{
 		$cache = new \SQLite3($cachePath);
-		$cache->busyTimeout(5000);
+		$cache->enableExceptions(true);
+		if ($cache->busyTimeout(60000) === false) {
+			throw new \RuntimeException('SQLite3 cache: Can not set busy timeout: ' . $cache->lastErrorMsg(), $cache->lastErrorCode());
+		}
 		$cache->exec('PRAGMA journal_mode = wal;');
 
 		parent::__construct($cache, 'doctrine');
