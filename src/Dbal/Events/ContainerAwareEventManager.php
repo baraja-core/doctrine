@@ -15,10 +15,10 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 {
 	protected Container $container;
 
-	/** @var bool[][] */
+	/** @var bool[] */
 	protected array $initialized = [];
 
-	/** @var EventSubscriber[][] */
+	/** @var EventSubscriber[][]|mixed[][] */
 	protected array $listeners = [];
 
 
@@ -36,9 +36,8 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	{
 		if (isset($this->listeners[$eventName])) {
 			$eventArgs = $eventArgs ?? EventArgs::getEmptyInstance();
-			$initialized = isset($this->initialized[$eventName]);
 			foreach ($this->listeners[$eventName] as $hash => $listener) {
-				if (!$initialized && !is_object($listener)) {
+				if (isset($this->initialized[$eventName]) === false) {
 					$this->listeners[$eventName][$hash] = $listener = $this->container->getService($listener);
 				}
 				$listener->$eventName($eventArgs);
