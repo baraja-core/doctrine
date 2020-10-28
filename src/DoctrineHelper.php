@@ -13,9 +13,7 @@ use Tracy\Debugger;
 
 class DoctrineHelper
 {
-
-	/** @var EntityManager */
-	private $entityManager;
+	private EntityManager $entityManager;
 
 
 	public function __construct(EntityManager $entityManager)

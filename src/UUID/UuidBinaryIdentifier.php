@@ -11,13 +11,12 @@ trait UuidBinaryIdentifier
 {
 
 	/**
-	 * @var UuidInterface
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid-binary", unique=true)
 	 * @ORM\GeneratedValue(strategy="CUSTOM")
 	 * @ORM\CustomIdGenerator(class="\Baraja\Doctrine\UUID\UuidBinaryGenerator")
 	 */
-	protected $id;
+	protected UuidInterface $id;
 
 
 	public function getId(): string

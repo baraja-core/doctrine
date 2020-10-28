@@ -45,7 +45,7 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	];
 
 	/** @var string[] */
-	private static $annotationPaths = [];
+	private static array $annotationPaths = [];
 
 
 	/**

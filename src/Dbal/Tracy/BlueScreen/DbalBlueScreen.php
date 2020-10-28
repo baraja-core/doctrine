@@ -23,7 +23,6 @@ final class DbalBlueScreen
 {
 
 	/**
-	 * @param Throwable|null $e
 	 * @return mixed[]|null
 	 */
 	public function __invoke(?Throwable $e): ?array
@@ -31,7 +30,6 @@ final class DbalBlueScreen
 		if ($e === null) {
 			return null;
 		}
-
 		if ($e instanceof DriverException) {
 			if (($prev = $e->getPrevious()) && ($item = Helpers::findTrace($e->getTrace(), DBALException::class . '::driverExceptionDuringQuery'))) {
 				/** @var Driver $driver */
@@ -43,7 +41,6 @@ final class DbalBlueScreen
 					'panel' => QueryUtils::highlight($item['args'][2]),
 				];
 			}
-
 		} elseif ($e instanceof QueryException) {
 			if (($prev = $e->getPrevious()) && preg_match('~^(SELECT|INSERT|UPDATE|DELETE)\s+~i', $prev->getMessage())) {
 				return [

@@ -33,7 +33,7 @@ final class DatabaseExtension extends CompilerExtension
 	public const TAG_DOCTRINE_SUBSCRIBER = 'doctrine.subscriber';
 
 	/** @var string[] (type => typeClass) */
-	private static $customTypes = [];
+	private static array $customTypes = [];
 
 
 	/**

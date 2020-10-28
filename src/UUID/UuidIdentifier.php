@@ -9,13 +9,12 @@ trait UuidIdentifier
 {
 
 	/**
-	 * @var string|null
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid", unique=true)
 	 * @ORM\GeneratedValue(strategy="CUSTOM")
 	 * @ORM\CustomIdGenerator(class="\Baraja\Doctrine\UUID\UuidGenerator")
 	 */
-	protected $id;
+	protected ?string $id;
 
 
 	public function getId(): ?string
@@ -46,6 +45,6 @@ trait UuidIdentifier
 
 	public function __clone()
 	{
-		$this->id = null;
+		throw new \LogicException('Entity "' . $this->getId() . '" can not be cloned.');
 	}
 }

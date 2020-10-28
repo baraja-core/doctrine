@@ -11,9 +11,7 @@ use Doctrine\Common\EventManager as DoctrineEventManager;
 
 final class DebugEventManager extends DoctrineEventManager
 {
-
-	/** @var EventManager */
-	private $inner;
+	private EventManager $inner;
 
 
 	public function __construct(EventManager $inner)
@@ -34,7 +32,7 @@ final class DebugEventManager extends DoctrineEventManager
 
 	/**
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 * @param string|NULL $event
+	 * @param string|null $event
 	 * @return object[]|object[][]
 	 */
 	public function getListeners($event = null): array
@@ -69,7 +67,7 @@ final class DebugEventManager extends DoctrineEventManager
 	/**
 	 * Removes an event listener from the specified events.
 	 *
-	 * @param string|string $events
+	 * @param string|string[] $events
 	 * @param object $listener
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

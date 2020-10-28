@@ -19,7 +19,7 @@ final class OrmExtension extends CompilerExtension
 {
 
 	/** @var mixed[] */
-	private $defaults = [
+	private array $defaults = [
 		'entityManagerDecoratorClass' => EntityManagerDecorator::class,
 		'configurationClass' => Configuration::class,
 		'configuration' => [

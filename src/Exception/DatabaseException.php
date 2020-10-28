@@ -9,7 +9,6 @@ class DatabaseException extends \RuntimeException
 {
 
 	/**
-	 * @param \Throwable $e
 	 * @throws DatabaseException
 	 */
 	public static function e(\Throwable $e): void
@@ -19,7 +18,6 @@ class DatabaseException extends \RuntimeException
 
 
 	/**
-	 * @param string|null $id
 	 * @throws DatabaseException
 	 */
 	public static function canNotSetIdentifier(?string $id): void
@@ -29,8 +27,6 @@ class DatabaseException extends \RuntimeException
 
 
 	/**
-	 * @param string $fromTable
-	 * @param string $to
 	 * @throws DatabaseException
 	 */
 	public static function remapDifferentTypes(string $fromTable, string $to): void
@@ -40,7 +36,6 @@ class DatabaseException extends \RuntimeException
 
 
 	/**
-	 * @param string $className
 	 * @throws DatabaseException
 	 */
 	public static function entityMustImplement(string $className): void

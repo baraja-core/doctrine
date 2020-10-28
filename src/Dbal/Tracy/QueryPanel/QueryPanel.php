@@ -19,17 +19,14 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 
 	private const ICON_QUERY = '<img alt="Queries" style="height: 16px; width: auto;" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTkuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDUzIDUzIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MyA1MzsiIHhtbDpzcGFjZT0icHJlc2VydmUiIHdpZHRoPSI1MTJweCIgaGVpZ2h0PSI1MTJweCI+CjxwYXRoIHN0eWxlPSJmaWxsOiM0MjRBNjA7IiBkPSJNNTAuNDU1LDhMNTAuNDU1LDhDNDkuNzI0LDMuNTM4LDM5LjI4MSwwLDI2LjUsMFMzLjI3NiwzLjUzOCwyLjU0NSw4bDAsMEgyLjV2MC41VjIwdjAuNVYyMXYxMXYwLjUgIFYzM3YxMmgwLjA0NWMwLjczMSw0LjQ2MSwxMS4xNzUsOCwyMy45NTUsOHMyMy4yMjQtMy41MzksMjMuOTU1LThINTAuNVYzM3YtMC41VjMyVjIxdi0wLjVWMjBWOC41VjhINTAuNDU1eiIvPgo8Zz4KCTxwYXRoIHN0eWxlPSJmaWxsOiM0MjRBNjA7IiBkPSJNMjYuNSw0MWMtMTMuMjU1LDAtMjQtMy44MDYtMjQtOC41VjQ1aDAuMDQ1YzAuNzMxLDQuNDYxLDExLjE3NSw4LDIzLjk1NSw4czIzLjIyNC0zLjUzOSwyMy45NTUtOCAgIEg1MC41VjMyLjVDNTAuNSwzNy4xOTQsMzkuNzU1LDQxLDI2LjUsNDF6Ii8+Cgk8cGF0aCBzdHlsZT0iZmlsbDojNDI0QTYwOyIgZD0iTTIuNSwzMnYwLjVjMC0wLjE2OCwwLjAxOC0wLjMzNCwwLjA0NS0wLjVIMi41eiIvPgoJPHBhdGggc3R5bGU9ImZpbGw6IzQyNEE2MDsiIGQ9Ik01MC40NTUsMzJjMC4wMjcsMC4xNjYsMC4wNDUsMC4zMzIsMC4wNDUsMC41VjMySDUwLjQ1NXoiLz4KPC9nPgo8Zz4KCTxwYXRoIHN0eWxlPSJmaWxsOiNFRkNFNEE7IiBkPSJNMjYuNSwyOWMtMTMuMjU1LDAtMjQtMy44MDYtMjQtOC41VjMzaDAuMDQ1YzAuNzMxLDQuNDYxLDExLjE3NSw4LDIzLjk1NSw4czIzLjIyNC0zLjUzOSwyMy45NTUtOCAgIEg1MC41VjIwLjVDNTAuNSwyNS4xOTQsMzkuNzU1LDI5LDI2LjUsMjl6Ii8+Cgk8cGF0aCBzdHlsZT0iZmlsbDojRUZDRTRBOyIgZD0iTTIuNSwyMHYwLjVjMC0wLjE2OCwwLjAxOC0wLjMzNCwwLjA0NS0wLjVIMi41eiIvPgoJPHBhdGggc3R5bGU9ImZpbGw6I0VGQ0U0QTsiIGQ9Ik01MC40NTUsMjBjMC4wMjcsMC4xNjYsMC4wNDUsMC4zMzIsMC4wNDUsMC41VjIwSDUwLjQ1NXoiLz4KPC9nPgo8ZWxsaXBzZSBzdHlsZT0iZmlsbDojN0ZBQkRBOyIgY3g9IjI2LjUiIGN5PSI4LjUiIHJ4PSIyNCIgcnk9IjguNSIvPgo8Zz4KCTxwYXRoIHN0eWxlPSJmaWxsOiM3MzgzQkY7IiBkPSJNMjYuNSwxN2MtMTMuMjU1LDAtMjQtMy44MDYtMjQtOC41VjIxaDAuMDQ1YzAuNzMxLDQuNDYxLDExLjE3NSw4LDIzLjk1NSw4czIzLjIyNC0zLjUzOSwyMy45NTUtOCAgIEg1MC41VjguNUM1MC41LDEzLjE5NCwzOS43NTUsMTcsMjYuNSwxN3oiLz4KCTxwYXRoIHN0eWxlPSJmaWxsOiM3MzgzQkY7IiBkPSJNMi41LDh2MC41YzAtMC4xNjgsMC4wMTgtMC4zMzQsMC4wNDUtMC41SDIuNXoiLz4KCTxwYXRoIHN0eWxlPSJmaWxsOiM3MzgzQkY7IiBkPSJNNTAuNDU1LDhDNTAuNDgyLDguMTY2LDUwLjUsOC4zMzIsNTAuNSw4LjVWOEg1MC40NTV6Ii8+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPGc+CjwvZz4KPC9zdmc+Cg==" />';
 
-	/** @var int */
-	public static $maxLength = 1000;
+	public static int $maxLength = 1000;
 
-	/** @var CacheProvider|null */
-	private static $cache;
+	private static ?CacheProvider $cache = null;
 
-	/** @var bool */
-	private static $invalidCache = false;
+	private static bool $invalidCache = false;
 
 	/** @var string[] */
-	private static $durationColors = [
+	private static array $durationColors = [
 		500 => 'background:#f30808 !important;color:white',
 		300 => 'background:#ff5f17 !important;color:white',
 		150 => 'background:#fb834d !important;color:white',
@@ -38,8 +35,7 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 		5 => 'background:#fbccb7 !important;color:black',
 	];
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
 
 	public function __construct(Connection $connection, EntityManager $entityManager)
@@ -66,7 +62,6 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 		if ($durationMs === null || $durationMs < 5) {
 			return null;
 		}
-
 		foreach (self::$durationColors as $time => $color) {
 			if ($time <= $durationMs) {
 				return $color;

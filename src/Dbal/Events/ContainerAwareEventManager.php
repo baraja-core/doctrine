@@ -12,15 +12,13 @@ use RuntimeException;
 
 final class ContainerAwareEventManager extends DoctrineEventManager
 {
-
-	/** @var Container */
-	protected $container;
+	protected Container $container;
 
 	/** @var mixed[bool[]] */
-	protected $initialized = [];
+	protected array $initialized = [];
 
 	/** @var mixed[EventSubscriber[]] */
-	protected $listeners = [];
+	protected array $listeners = [];
 
 
 	public function __construct(Container $container)
@@ -31,31 +29,26 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 
 	/**
 	 * @param string $eventName
-	 * @param EventArgs|null $eventArgs
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
 	public function dispatchEvent($eventName, ?EventArgs $eventArgs = null): void
 	{
 		if (isset($this->listeners[$eventName])) {
 			$eventArgs = $eventArgs ?? EventArgs::getEmptyInstance();
-
 			$initialized = isset($this->initialized[$eventName]);
-
 			foreach ($this->listeners[$eventName] as $hash => $listener) {
 				if (!$initialized && !is_object($listener)) {
 					$this->listeners[$eventName][$hash] = $listener = $this->container->getService($listener);
 				}
-
 				$listener->$eventName($eventArgs);
 			}
-
 			$this->initialized[$eventName] = true;
 		}
 	}
 
 
 	/**
-	 * @param string|NULL $event
+	 * @param string|null $event
 	 * @return object[]
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -118,7 +111,6 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 			// Picks the hash code related to that listener
 			$hash = spl_object_hash($listener);
 		}
-
 		foreach ((array) $events as $event) {
 			// Check if actually have this listener associated
 			if (isset($this->listeners[$event][$hash])) {

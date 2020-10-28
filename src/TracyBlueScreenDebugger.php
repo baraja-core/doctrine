@@ -17,8 +17,7 @@ use Tracy\Dumper;
 
 final class TracyBlueScreenDebugger
 {
-	/** @var EntityManager|null */
-	private static $entityManager;
+	private static ?EntityManager $entityManager;
 
 
 	/** @throws \Error */

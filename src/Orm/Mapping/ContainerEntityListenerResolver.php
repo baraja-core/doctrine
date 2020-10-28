@@ -13,10 +13,9 @@ final class ContainerEntityListenerResolver implements EntityListenerResolver
 {
 
 	/** @var object[] */
-	private $instances = [];
+	private array $instances = [];
 
-	/** @var Container */
-	private $container;
+	private Container $container;
 
 
 	public function __construct(Container $container)
