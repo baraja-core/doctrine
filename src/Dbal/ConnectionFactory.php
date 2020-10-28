@@ -18,16 +18,15 @@ class ConnectionFactory
 {
 
 	/** @var mixed[] */
-	private $typesConfig;
+	private array $typesConfig;
 
 	/** @var mixed[] */
-	private $typesMapping;
+	private array $typesMapping;
 
 	/** @var mixed[] */
-	private $commentedTypes = [];
+	private array $commentedTypes = [];
 
-	/** @var bool */
-	private $initialized = false;
+	private bool $initialized = false;
 
 
 	/**
@@ -45,8 +44,6 @@ class ConnectionFactory
 	 * Create a connection by name.
 	 *
 	 * @param mixed[] $params
-	 * @param Configuration|null $config
-	 * @param EventManager|null $eventManager
 	 * @return Connection
 	 * @throws DBALException
 	 */
@@ -57,7 +54,6 @@ class ConnectionFactory
 		}
 
 		$connection = DriverManager::getConnection($params, $config, $eventManager);
-
 		if (!empty($this->typesMapping)) {
 			$platform = $this->getDatabasePlatform($connection);
 			foreach ($this->typesMapping as $dbType => $doctrineType) {
@@ -83,8 +79,6 @@ class ConnectionFactory
 	 * and the platform version is unknown.
 	 * For details have a look at DoctrineBundle issue #673.
 	 *
-	 * @param Connection $connection
-	 * @return AbstractPlatform
 	 * @throws DBALException
 	 */
 	private function getDatabasePlatform(Connection $connection): AbstractPlatform

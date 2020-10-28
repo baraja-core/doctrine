@@ -26,29 +26,17 @@ class SlowQuery
 	use UuidIdentifier;
 	use SmartObject;
 
-	/**
-	 * @var string
-	 * @ORM\Column(type="text")
-	 */
-	private $query;
+	/** @ORM\Column(type="text") */
+	private string $query;
 
-	/**
-	 * @var float
-	 * @ORM\Column(type="float")
-	 */
-	private $duration;
+	/** @ORM\Column(type="float") */
+	private float $duration;
 
-	/**
-	 * @var string
-	 * @ORM\Column(type="string", length=32, unique=true)
-	 */
-	private $hash;
+	/** @ORM\Column(type="string", length=32, unique=true) */
+	private string $hash;
 
-	/**
-	 * @var \DateTime
-	 * @ORM\Column(type="datetime")
-	 */
-	private $insertedDate;
+	/** @ORM\Column(type="datetime") */
+	private \DateTime $insertedDate;
 
 
 	public function __construct(string $sql, string $hash, float $duration)

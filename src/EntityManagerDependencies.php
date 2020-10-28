@@ -11,18 +11,13 @@ use Doctrine\ORM\Configuration;
 
 final class EntityManagerDependencies
 {
+	private bool $initClosed = false;
 
-	/** @var bool */
-	private $initClosed = false;
+	private Connection $connection;
 
-	/** @var Connection */
-	private $connection;
+	private Configuration $configuration;
 
-	/** @var Configuration */
-	private $configuration;
-
-	/** @var EventManager */
-	private $eventManager;
+	private EventManager $eventManager;
 
 	/**
 	 * Init events will be called when EntityManager will be connected to database.
@@ -30,7 +25,7 @@ final class EntityManagerDependencies
 	 *
 	 * @var callable[]
 	 */
-	private $initEvents = [];
+	private array $initEvents = [];
 
 	/**
 	 * List of waiting lazy event listeners.
@@ -38,7 +33,7 @@ final class EntityManagerDependencies
 	 *
 	 * @var mixed[][]
 	 */
-	private $lazyEventListeners = [];
+	private array $lazyEventListeners = [];
 
 
 	public function __construct(Connection $connection, Configuration $configuration, EventManager $eventManager)

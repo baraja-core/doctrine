@@ -18,9 +18,7 @@ use Symfony\Component\Console\Application;
 
 final class DbalConsoleExtension extends CompilerExtension
 {
-
-	/** @var bool */
-	private $cliMode;
+	private bool $cliMode;
 
 
 	public function __construct(?bool $cliMode = null)

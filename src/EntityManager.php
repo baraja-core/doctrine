@@ -35,18 +35,13 @@ use Tracy\Debugger;
  */
 final class EntityManager implements EntityManagerInterface
 {
+	private ?Connection $connection = null;
 
-	/** @var Connection */
-	private $connection;
+	private Configuration $configuration;
 
-	/** @var Configuration */
-	private $configuration;
+	private EventManager $eventManager;
 
-	/** @var EventManager */
-	private $eventManager;
-
-	/** @var EntityManagerDependenciesAccessor */
-	private $dependencies;
+	private EntityManagerDependenciesAccessor $dependencies;
 
 
 	public function __construct(EntityManagerDependenciesAccessor $dependencies)
@@ -56,8 +51,8 @@ final class EntityManager implements EntityManagerInterface
 
 
 	/**
-	 * @internal reserved for DIC
 	 * @param callable $callback with value (self $entityManager): void
+	 * @internal reserved for DIC
 	 */
 	public function addInit(callable $callback): void
 	{
@@ -488,9 +483,9 @@ final class EntityManager implements EntityManagerInterface
 
 
 	/**
-	 * @deprecated
 	 * @param string|int $hydrationMode
 	 * @return AbstractHydrator
+	 * @deprecated
 	 */
 	public function getHydrator($hydrationMode): AbstractHydrator
 	{

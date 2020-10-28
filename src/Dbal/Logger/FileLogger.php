@@ -9,9 +9,7 @@ use stdClass;
 
 final class FileLogger extends AbstractLogger
 {
-
-	/** @var string */
-	private $file;
+	private string $file;
 
 
 	public function __construct(string $file)

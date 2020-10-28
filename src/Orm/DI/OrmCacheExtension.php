@@ -37,7 +37,7 @@ final class OrmCacheExtension extends CompilerExtension
 	];
 
 	/** @var mixed[] */
-	private $defaults = [
+	private array $defaults = [
 		'defaultDriver' => 'filesystem',
 		'queryCache' => null,
 		'hydrationCache' => null,

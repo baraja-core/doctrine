@@ -11,9 +11,7 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 
 final class EntityManagerDecorator extends DoctrineEntityManagerDecorator
 {
-
-	/** @var RepositoryFactory */
-	private $repositoryFactory;
+	private RepositoryFactory $repositoryFactory;
 
 
 	public function __construct(EntityManagerInterface $wrapped)

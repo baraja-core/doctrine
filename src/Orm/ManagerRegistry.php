@@ -14,9 +14,7 @@ use Nette\DI\Container;
 
 final class ManagerRegistry extends AbstractManagerRegistry
 {
-
-	/** @var Container */
-	private $container;
+	private Container $container;
 
 
 	public function __construct(Connection $connection, EntityManagerInterface $em, Container $container)

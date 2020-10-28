@@ -9,12 +9,11 @@ trait Id
 {
 
 	/**
-	 * @var int
 	 * @ORM\Column(type="integer", nullable=FALSE)
 	 * @ORM\Id
 	 * @ORM\GeneratedValue
 	 */
-	private $id;
+	private int $id;
 
 
 	public function getId(): int
@@ -25,6 +24,6 @@ trait Id
 
 	public function __clone()
 	{
-		$this->id = null;
+		throw new \LogicException('Entity "' . $this->getId() . '" can not be cloned.');
 	}
 }

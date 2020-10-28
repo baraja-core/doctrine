@@ -11,12 +11,11 @@ trait IdentifierUnsigned
 {
 
 	/**
-	 * @var int|null
 	 * @ORM\Id
 	 * @ORM\Column(type="integer", unique=true, options={"unsigned"=true})
 	 * @ORM\GeneratedValue
 	 */
-	protected $id;
+	protected ?int $id;
 
 
 	public function getId(): ?int
@@ -44,6 +43,6 @@ trait IdentifierUnsigned
 
 	public function __clone()
 	{
-		$this->id = null;
+		throw new \LogicException('Entity "' . $this->getId() . '" can not be cloned.');
 	}
 }

@@ -18,26 +18,19 @@ abstract class AbstractLogger implements SQLLogger
 {
 
 	/** @var mixed[] */
-	protected $queries = [];
+	protected array $queries = [];
 
-	/** @var float */
-	protected $totalTime = 0;
+	protected float $totalTime = 0;
 
-	/** @var EntityManager|null */
-	private $entityManager;
+	private ?EntityManager $entityManager;
 
 	/** @var float[][] */
-	private $queriesTimer = [];
+	private array $queriesTimer = [];
 
-	/** @var int */
-	private $counter = 0;
+	private int $counter = 0;
 
-	/**
-	 * Log an error if this time has been exceeded.
-	 *
-	 * @var int
-	 */
-	private $maxQueryTime = 150;
+	/** Log an error if this time has been exceeded. */
+	private int $maxQueryTime = 150;
 
 
 	public function __construct(EntityManager $entityManager)
