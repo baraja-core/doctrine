@@ -7,6 +7,7 @@ namespace Baraja\Doctrine\DBAL\Events;
 
 use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventManager as DoctrineEventManager;
+use Doctrine\Common\EventSubscriber;
 use Nette\DI\Container;
 use RuntimeException;
 
@@ -14,10 +15,10 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 {
 	protected Container $container;
 
-	/** @var mixed[bool[]] */
+	/** @var bool[][] */
 	protected array $initialized = [];
 
-	/** @var mixed[EventSubscriber[]] */
+	/** @var EventSubscriber[][] */
 	protected array $listeners = [];
 
 
