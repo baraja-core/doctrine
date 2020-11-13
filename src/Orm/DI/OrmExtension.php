@@ -103,7 +103,12 @@ final class OrmExtension extends CompilerExtension
 			$configuration->addSetup('setDefaultRepositoryClassName', [$config['defaultRepositoryClassName']]);
 		}
 		if ($config['namingStrategy'] !== null) {
-			$configuration->addSetup('setNamingStrategy', [new Statement($config['namingStrategy'])]);
+			$configuration->addSetup('setNamingStrategy', [new Statement(
+				$config['namingStrategy'],
+				$config['namingStrategy'] === UnderscoreNamingStrategy::class
+					? [CASE_LOWER, true]
+					: []
+			)]);
 		}
 		if ($config['quoteStrategy'] !== null) {
 			$configuration->addSetup('setQuoteStrategy', [$config['quoteStrategy']]);
