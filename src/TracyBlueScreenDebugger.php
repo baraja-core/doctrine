@@ -14,6 +14,7 @@ use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Tracy\BlueScreen;
 use Tracy\Dumper;
+use Tracy\Helpers;
 
 final class TracyBlueScreenDebugger
 {
@@ -48,7 +49,10 @@ final class TracyBlueScreenDebugger
 			return self::renderQuery($e);
 		}
 		if ($e instanceof MappingException) {
-			return self::renderMapping($e);
+			return [
+				'tab' => 'MappingException',
+				'panel' => self::renderMapping($e),
+			];
 		}
 
 		return self::renderCommon($e);
@@ -150,10 +154,7 @@ final class TracyBlueScreenDebugger
 	}
 
 
-	/**
-	 * @return string[]
-	 */
-	private static function renderMapping(MappingException $e): array
+	private static function renderMapping(MappingException $e): string
 	{
 		if (preg_match('/Class "([^"]+)"/', $e->getMessage(), $parser)) {
 			if (class_exists($className = $parser[1]) === true) {
@@ -169,26 +170,18 @@ final class TracyBlueScreenDebugger
 				} catch (\ReflectionException $e) {
 				}
 				if ($fileName !== null && $fileContent !== null) {
-					return [
-						'tab' => 'Mapping error',
-						'panel' => '<p>Class <b>' . htmlspecialchars($className) . '</b>, path: <b>' . htmlspecialchars($fileName) . '</b></p>'
-							. BlueScreen::highlightPhp(htmlspecialchars($fileContent, ENT_IGNORE, 'UTF-8'), $startLine)
-							. '<p>Doc comment:</p>'
-							. ($docComment === '' ? '<i>Doc comment is empty.</i>' : '<pre>' . htmlspecialchars($docComment) . '</pre>'),
-					];
+					return '<p>File: <b>' . Helpers::editorLink($fileName, $startLine) . '</b> (class <b>' . htmlspecialchars($className) . '</b>)</p>'
+						. '<p>A valid Doctrine entity must contain at least the "@Entity" annotation. See the <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/2.7/reference/basic-mapping.html" target="_blank">documentation for more information</a>.</p>'
+						. BlueScreen::highlightPhp(htmlspecialchars($fileContent, ENT_IGNORE, 'UTF-8'), $startLine)
+						. '<p>Doc comment:</p>'
+						. ($docComment === '' ? '<i>Doc comment is empty.</i>' : '<pre>' . htmlspecialchars($docComment) . '</pre>');
 				}
 			}
 
-			return [
-				'tab' => 'Mapping error',
-				'panel' => '<p>Class "' . htmlspecialchars($className) . '" does not exist!</p>'
-					. '<p>' . htmlspecialchars($e->getMessage()) . '</p>',
-			];
+			return '<p>Class "' . htmlspecialchars($className) . '" does not exist!</p>'
+				. '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
 		}
 
-		return [
-			'tab' => 'Mapping error',
-			'panel' => '<p>' . htmlspecialchars($e->getMessage()) . '</p>',
-		];
+		return '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
 	}
 }
