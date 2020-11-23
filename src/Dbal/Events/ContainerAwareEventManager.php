@@ -38,7 +38,8 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 			$eventArgs = $eventArgs ?? EventArgs::getEmptyInstance();
 			foreach ($this->listeners[$eventName] as $hash => $listener) {
 				if (isset($this->initialized[$eventName]) === false) {
-					$this->listeners[$eventName][$hash] = $listener = $this->container->getService($listener);
+					$listener = \is_string($listener) ? $this->container->getService($listener) : $listener;
+					$this->listeners[$eventName][$hash] = $listener;
 				}
 				$listener->$eventName($eventArgs);
 			}
