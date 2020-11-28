@@ -18,7 +18,7 @@ use Tracy\Helpers;
 
 final class TracyBlueScreenDebugger
 {
-	private static ?EntityManager $entityManager;
+	private static ?EntityManager $entityManager = null;
 
 
 	/** @throws \Error */
@@ -46,7 +46,10 @@ final class TracyBlueScreenDebugger
 			return null;
 		}
 		if ($e instanceof QueryException) {
-			return self::renderQuery($e);
+			return [
+				'tab' => 'Query error',
+				'panel' => self::renderQuery($e),
+			];
 		}
 		if ($e instanceof MappingException) {
 			return [
@@ -142,15 +145,29 @@ final class TracyBlueScreenDebugger
 	}
 
 
-	/**
-	 * @return string[]
-	 */
-	private static function renderQuery(QueryException $e): array
+	private static function renderQuery(QueryException $e): string
 	{
-		return [
-			'tab' => 'Query error',
-			'panel' => '<p>' . htmlspecialchars($e->getMessage()) . '</p>',
-		];
+		if (self::$entityManager !== null && preg_match('/Class\s(?<class>\S+)\shas no field or association named/', $e->getMessage(), $mapping)) {
+			$return = '';
+			foreach (self::$entityManager->getClassMetadata($mapping['class'])->fieldMappings as $field) {
+				$return .= '<tr>'
+					. '<td>' . $field['fieldName'] . '</td>'
+					. '<td>' . $field['columnName'] . '</td>'
+					. '<td>' . $field['type'] . '</td>'
+					. '</tr>';
+			}
+
+			return '<p>' . htmlspecialchars($e->getMessage()) . '</p>'
+				. ($return !== ''
+					? '<p><b>Available and valid fields:</b></p>'
+					. '<table>'
+					. '<tr><th>Field name</th><th>Column name</th><th>Type</th></tr>'
+					. $return
+					. '</table>'
+					: '');
+		}
+
+		return '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
 	}
 
 
