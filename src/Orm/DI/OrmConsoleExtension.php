@@ -60,7 +60,7 @@ final class OrmConsoleExtension extends CompilerExtension
 		}
 
 		$builder = $this->getContainerBuilder();
-		$builder->addDefinition('entityManager')
+		$builder->addDefinition($this->prefix('entityManager'))
 			->setType(EntityManager::class)
 			->setAutowired(true);
 
