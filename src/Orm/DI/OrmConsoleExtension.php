@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
+use Baraja\Doctrine\DatabaseToDoctrineEntityExtractorCommand;
 use Baraja\Doctrine\EntityManager;
 use Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand;
 use Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand;
@@ -125,6 +126,11 @@ final class OrmConsoleExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('clearMetadataCacheCommand'))
 			->setType(MetadataCommand::class)
 			->addTag('console.command', 'orm:clear-cache:metadata')
+			->setAutowired(false);
+		$builder->addDefinition($this->prefix('databaseToDoctrineEntityExtractorCommand'))
+			->setType(DatabaseToDoctrineEntityExtractorCommand::class)
+			->setArgument('rootDir', dirname($builder->parameters['appDir'] ?? ''))
+			->addTag('console.command', 'orm:database-to-doctrine-entity-extractor')
 			->setAutowired(false);
 	}
 
