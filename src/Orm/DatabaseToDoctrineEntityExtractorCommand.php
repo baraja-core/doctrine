@@ -54,7 +54,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$entityNamespace = (string) preg_replace_callback(
 			'/(^(?:[a-z])|(?:\\\\[a-z]))/',
-			fn(array $match) => strtoupper($match[1]),
+			fn (array $match) => strtoupper($match[1]),
 			$namespace
 		);
 
