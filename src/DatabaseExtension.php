@@ -120,6 +120,11 @@ final class DatabaseExtension extends CompilerExtension
 		}
 
 		$builder = $this->getContainerBuilder();
+
+		$builder->addDefinition($this->prefix('databaseToDoctrineEntityExtractorCommand'))
+			->setFactory(DatabaseToDoctrineEntityExtractorCommand::class)
+			->setArgument('rootDir', dirname($builder->parameters['appDir'] ?? ''));
+
 		// Dbal
 		/** @var ServiceDefinition $eventManager */
 		$eventManager = $builder->getDefinition($this->prefix('eventManager'));
