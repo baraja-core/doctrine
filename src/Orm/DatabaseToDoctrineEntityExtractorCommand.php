@@ -7,6 +7,7 @@ namespace Baraja\Doctrine;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\ClassLoader;
+use Doctrine\DBAL\Cache\ArrayStatement;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
@@ -96,9 +97,12 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$output->writeln('<info>Available tables</info> (database "<comment>' . $connection->getDatabase() . '</comment>"):');
 
+		/** @var ArrayStatement $showTablesStatement */
+		$showTablesStatement = $connection->executeQuery('SHOW TABLES');
+
 		$tables = array_map(static function (array $item): ?string {
 			return array_values($item)[0] ?? null;
-		}, $connection->executeQuery('SHOW TABLES')->fetchAllAssociative());
+		}, $showTablesStatement->fetchAllAssociative());
 
 		$output->writeln('"<comment>' . implode('</comment>", "<comment>', $tables) . '</comment>".');
 		$output->writeln('<info>Count tables:</info> ' . \count($tables));
@@ -111,7 +115,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		$classLoader->register();
 
 		$config = new Configuration;
-		$config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(__DIR__ . '/Entities'));
+		$config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([__DIR__ . '/Entities']));
 		$config->setMetadataCacheImpl(new ArrayCache);
 		$config->setProxyDir(__DIR__ . '/Proxies');
 		$config->setProxyNamespace('Proxies');
