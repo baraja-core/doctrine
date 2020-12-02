@@ -133,13 +133,22 @@ if (\count($this->queries) === 0) {
 	?>
 	<table>
 		<tr>
-			<th>Time&nbsp;ms</th>
-			<th>
-				SQL Statement
-				(<?= ($invalidCache ?? false
-				  ? '<span style="color:#bf0014">invalid cache!</span>'
-				  : 'Cache: ' . (isset($cache) === false || ($cache ?? null) === null ? 'NO CACHE' : get_class($cache ?? '')));
-		  ?>)
+			<th style="width:96px">Time&nbsp;ms</th>
+			<th style="padding:0">
+				<table>
+					<tr>
+						<th style="border:0">
+							SQL Statement
+							(<?= ($invalidCache ?? false
+							? '<span style="color:#bf0014">invalid cache!</span>'
+							: 'Cache: ' . (isset($cache) === false || ($cache ?? null) === null ? 'NO CACHE' : get_class($cache ?? '')));
+							?>)
+						</th>
+						<th style="border:0;width:16px;text-align:center;padding:2px 0">
+							<a href="https://github.com/baraja-core/doctrine" target="_blank">?</a>
+						</th>
+					</tr>
+				</table>
 			</th>
 		</tr>
 	  <?= $qExpress . $qs ?>
