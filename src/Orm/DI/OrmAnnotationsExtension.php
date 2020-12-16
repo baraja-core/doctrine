@@ -87,6 +87,7 @@ final class OrmAnnotationsExtension extends CompilerExtension
 			$manager = $builder->getDefinitionByType(EntityAnnotationManager::class);
 		}
 
+		/** @var ServiceDefinition $manager */
 		return $manager;
 	}
 
