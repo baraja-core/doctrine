@@ -21,7 +21,7 @@ final class QueryUtils
 
 		// insert new lines
 		$sql = ' ' . $sql . ' ';
-		$sql = preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i", "\n\$1", $sql);
+		$sql = (string) preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i", "\n\$1", $sql);
 
 		// reduce spaces
 		$sql = (string) preg_replace('#[ \t]{2,}#', ' ', $sql);
@@ -72,6 +72,6 @@ final class QueryUtils
 			$counter++;
 		}
 
-		return $counter;
+		return (int) $counter;
 	}
 }

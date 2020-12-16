@@ -180,9 +180,9 @@ final class TracyBlueScreenDebugger
 				$docComment = '';
 				$startLine = 1;
 				try {
-					$fileName = ($ref = new \ReflectionClass($className))->getFileName();
-					$fileContent = \is_file($fileName) ? file_get_contents($fileName) : null;
-					$startLine = $ref->getStartLine();
+					$fileName = (string) ($ref = new \ReflectionClass($className))->getFileName();
+					$fileContent = \is_file($fileName) ? (string) file_get_contents($fileName) : null;
+					$startLine = (int) $ref->getStartLine();
 					$docComment = trim((string) $ref->getDocComment());
 				} catch (\ReflectionException $e) {
 				}

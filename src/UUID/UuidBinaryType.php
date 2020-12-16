@@ -18,8 +18,6 @@ class UuidBinaryType extends Type
 
 	/**
 	 * @param mixed[] $fieldDeclaration
-	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return string
 	 */
 	public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
 	{
@@ -32,8 +30,6 @@ class UuidBinaryType extends Type
 
 	/**
 	 * @param string|UuidInterface|null $value
-	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return UuidInterface|null
 	 * @throws ConversionException
 	 */
 	public function convertToPHPValue($value, AbstractPlatform $platform): ?UuidInterface
@@ -56,8 +52,6 @@ class UuidBinaryType extends Type
 
 	/**
 	 * @param UuidInterface|string|mixed|null $value
-	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return string|null
 	 * @throws ConversionException
 	 */
 	public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string

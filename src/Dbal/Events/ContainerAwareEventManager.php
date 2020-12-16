@@ -62,7 +62,6 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	/**
 	 * @param string $event
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 * @return bool
 	 */
 	public function hasListeners($event): bool
 	{

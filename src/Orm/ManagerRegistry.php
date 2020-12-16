@@ -32,7 +32,6 @@ final class ManagerRegistry extends AbstractManagerRegistry
 
 	/**
 	 * @param string $alias
-	 * @return string
 	 * @throws ORMException
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

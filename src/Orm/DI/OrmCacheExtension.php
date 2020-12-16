@@ -19,7 +19,7 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\RegionsConfiguration;
 use Doctrine\ORM\Configuration;
 use Nette\DI\CompilerExtension;
-use Nette\DI\ServiceDefinition;
+use Nette\DI\Definitions\ServiceDefinition;
 use Nette\InvalidStateException;
 
 final class OrmCacheExtension extends CompilerExtension
@@ -50,9 +50,7 @@ final class OrmCacheExtension extends CompilerExtension
 	public function loadConfiguration(): void
 	{
 		if ($this->compiler->getExtensions(OrmExtension::class) === []) {
-			throw new InvalidStateException(
-				sprintf('You should register %s before %s.', self::class, static::class)
-			);
+			throw new \RuntimeException('You should register "' . self::class . '" before "' . static::class . '".');
 		}
 
 		$this->validateConfig($this->defaults);
@@ -66,6 +64,7 @@ final class OrmCacheExtension extends CompilerExtension
 
 	public function loadQueryCacheConfiguration(): void
 	{
+		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
@@ -85,6 +84,7 @@ final class OrmCacheExtension extends CompilerExtension
 
 	public function loadResultCacheConfiguration(): void
 	{
+		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
@@ -104,6 +104,7 @@ final class OrmCacheExtension extends CompilerExtension
 
 	public function loadHydrationCacheConfiguration(): void
 	{
+		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
@@ -123,6 +124,7 @@ final class OrmCacheExtension extends CompilerExtension
 
 	public function loadMetadataCacheConfiguration(): void
 	{
+		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
@@ -142,6 +144,7 @@ final class OrmCacheExtension extends CompilerExtension
 
 	public function loadSecondLevelCacheConfiguration(): void
 	{
+		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 		/** @var \Nette\DI\Definitions\ServiceDefinition $configuration */
@@ -170,6 +173,7 @@ final class OrmCacheExtension extends CompilerExtension
 
 	private function getDefaultDriverCache(string $service): ServiceDefinition
 	{
+		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
@@ -181,7 +185,7 @@ final class OrmCacheExtension extends CompilerExtension
 			->setFactory(self::DRIVERS[$config['defaultDriver']])
 			->setAutowired(false);
 
-		if ($config['defaultDriver'] === 'filesystem') {
+		if (($config['defaultDriver'] ?? '') === 'filesystem') {
 			$driverCache->setArguments([$builder->parameters['tempDir'] . '/cache/Doctrine.Cache.' . ucfirst($service)]);
 		}
 

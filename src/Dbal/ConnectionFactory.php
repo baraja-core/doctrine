@@ -44,7 +44,6 @@ class ConnectionFactory
 	 * Create a connection by name.
 	 *
 	 * @param mixed[] $params
-	 * @return Connection
 	 * @throws DBALException
 	 */
 	public function createConnection(array $params, ?Configuration $config = null, ?EventManager $eventManager = null): Connection
