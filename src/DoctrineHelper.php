@@ -177,7 +177,7 @@ class DoctrineHelper
 		if (method_exists($from, 'getId')) {
 			$id = $from->getId();
 		} else {
-			throw new \InvalidArgumentException('Entity "'.\get_class($from).'" do not contain required method getId().');
+			throw new \InvalidArgumentException('Entity "' . \get_class($from) . '" do not contain required method getId().');
 		}
 
 		try {
