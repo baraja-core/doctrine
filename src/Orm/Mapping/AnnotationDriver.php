@@ -10,13 +10,9 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver as DoctrineAnnotationDriver;
 
 final class AnnotationDriver extends DoctrineAnnotationDriver
 {
-
-	/**
-	 * @param string[] $paths
-	 */
-	public function __construct(Reader $reader, array $paths = [])
+	public function __construct(Reader $reader, EntityAnnotationManager $annotationManager)
 	{
-		parent::__construct($reader, $paths);
+		parent::__construct($reader, $paths = $annotationManager->getPaths());
 		$this->reader = $reader;
 		$this->paths = $paths;
 	}
