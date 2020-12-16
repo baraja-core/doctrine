@@ -7,6 +7,7 @@ namespace Baraja\Doctrine\ORM\DI;
 
 use Baraja\Doctrine\ORM\Exception\Logical\InvalidStateException;
 use Baraja\Doctrine\ORM\Mapping\AnnotationDriver;
+use Baraja\Doctrine\ORM\Mapping\EntityAnnotationManager;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
@@ -22,6 +23,8 @@ use Doctrine\Common\Cache\VoidCache;
 use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\ORM\Configuration;
 use Nette\DI\CompilerExtension;
+use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Helpers;
 use Nette\PhpGenerator\ClassType;
@@ -57,16 +60,35 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	}
 
 
+	public static function addAnnotationPathToManager(ContainerBuilder $builder, string $namespace, string $directoryPath): void
+	{
+		self::createEntityAnnotationManager($builder)
+			->addSetup('?->addPath(?, ?)', ['@self', $namespace, $directoryPath]);
+	}
+
+
+	/**
+	 * @deprecated since 2020-12-16
+	 */
 	public static function addAnnotationPath(string $namespace, string $directoryPath): void
 	{
-		if (\is_dir($directoryPath) === false) {
-			throw new \RuntimeException('Path "' . $directoryPath . '" is not valid directory.');
-		}
-		if (isset(self::$annotationPaths[$namespace]) === true) {
-			throw new \RuntimeException('Definition for namespace "' . $namespace . '" already exist.');
+		trigger_error(__METHOD__ . ': Extension method addAnnotationPath() is deprecated, please use better method addAnnotationPathToManager() which is guaranteed.');
+		self::$annotationPaths[$namespace] = $directoryPath;
+	}
+
+
+	private static function createEntityAnnotationManager(ContainerBuilder $builder): Definition
+	{
+		static $exist = false;
+		if ($exist === false) {
+			$manager = $builder->addDefinition('barajaDoctrine.entityAnnotationManager')
+				->setFactory(EntityAnnotationManager::class);
+			$exist = true;
+		} else {
+			$manager = $builder->getDefinitionByType(EntityAnnotationManager::class);
 		}
 
-		self::$annotationPaths[$namespace] = $directoryPath;
+		return $manager;
 	}
 
 
@@ -132,10 +154,20 @@ final class OrmAnnotationsExtension extends CompilerExtension
 		/** @var mixed[] $config */
 		$config = $this->config;
 		$builder = $this->getContainerBuilder();
+		self::createEntityAnnotationManager($builder);
 
-		$builder->addDefinition($this->prefix('annotationDriver'))
-			->setFactory(AnnotationDriver::class, [$this->prefix('@reader'), Helpers::expand(array_merge(self::$annotationPaths, $config['paths']), $builder->parameters)])
-			->addSetup('addExcludePaths', [Helpers::expand($config['excludePaths'], $builder->parameters)]);
+		$annotationDriver = $builder->addDefinition($this->prefix('annotationDriver'))
+			->setFactory(AnnotationDriver::class, [$this->prefix('@reader')]);
+
+		foreach (self::$annotationPaths as $extensionAnnotationPathNamespace => $extensionAnnotationPathPath) {
+			self::addAnnotationPathToManager($builder, $extensionAnnotationPathNamespace, $extensionAnnotationPathPath);
+		}
+		foreach ($config['paths'] ?? [] as $userAnnotationPathNamespace => $userAnnotationPathPath) {
+			self::addAnnotationPathToManager($builder, $userAnnotationPathNamespace, $userAnnotationPathPath);
+		}
+		if (($config['excludePaths'] ?? []) !== []) {
+			$annotationDriver->addSetup('addExcludePaths', [Helpers::expand($config['excludePaths'], $builder->parameters)]);
+		}
 
 		/** @var ServiceDefinition $configurationDefinition */
 		$configurationDefinition = $builder->getDefinitionByType(Configuration::class);

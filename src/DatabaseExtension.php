@@ -97,6 +97,7 @@ final class DatabaseExtension extends CompilerExtension
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
+		OrmAnnotationsExtension::addAnnotationPathToManager($builder, 'Baraja\Doctrine\Entity', __DIR__ . '/Entity');
 
 		$this->loadDoctrineConfiguration();
 		$this->loadConnectionConfiguration();
