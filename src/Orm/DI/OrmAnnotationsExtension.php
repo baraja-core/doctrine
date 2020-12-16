@@ -24,7 +24,6 @@ use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\ORM\Configuration;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
-use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Helpers;
 use Nette\PhpGenerator\ClassType;
@@ -77,7 +76,7 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	}
 
 
-	private static function createEntityAnnotationManager(ContainerBuilder $builder): Definition
+	private static function createEntityAnnotationManager(ContainerBuilder $builder): ServiceDefinition
 	{
 		static $exist = false;
 		if ($exist === false) {
