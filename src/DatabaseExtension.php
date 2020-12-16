@@ -102,7 +102,10 @@ final class DatabaseExtension extends CompilerExtension
 		$this->loadConnectionConfiguration();
 		$this->registerInternalServices();
 
-		if (($this->config['debug'] ?? false) === true) {
+		/** @var mixed[] $config */
+		$config = $this->getConfig();
+
+		if (($config['debug'] ?? false) === true) {
 			$builder->addDefinition($this->prefix('queryPanel'))
 				->setFactory(QueryPanel::class)
 				->setAutowired(false);
@@ -112,7 +115,10 @@ final class DatabaseExtension extends CompilerExtension
 
 	public function beforeCompile(): void
 	{
-		if (\count($this->config['deprecatedParameters'] ?? []) > 0) {
+		/** @var mixed[] $config */
+		$config = $this->getConfig();
+
+		if (\count($config['deprecatedParameters'] ?? []) > 0) {
 			throw new \RuntimeException(
 				'Configuration parameters are deprecated. Please use DI extension instead.' . "\n"
 				. 'More information is available here: https://php.baraja.cz/konfigurace-spojeni-s-baraja-doctrine'
@@ -142,7 +148,7 @@ final class DatabaseExtension extends CompilerExtension
 		}
 
 		$types = [];
-		foreach (array_merge(self::$customTypes, $this->config['types'] ?? []) as $type => $typeClass) {
+		foreach (array_merge(self::$customTypes, $config['types'] ?? []) as $type => $typeClass) {
 			if (\class_exists($typeClass) === false) {
 				ConfiguratorException::typeDoesNotExist($type, $typeClass);
 			}
@@ -163,7 +169,7 @@ final class DatabaseExtension extends CompilerExtension
 			. "\t" . 'foreach (? as $ignorePropertyAnnotation) {' . "\n"
 			. "\t\t" . AnnotationReader::class . '::addGlobalIgnoredName($ignorePropertyAnnotation);' . "\n"
 			. "\t" . '}' . "\n\n"
-			. "\t" . '$entityManager->setCache(' . $this->processCache($this->config['cache'] ?? null) . ');' . "\n"
+			. "\t" . '$entityManager->setCache(' . $this->processCache($config['cache'] ?? null) . ');' . "\n"
 			. "\t" . '$entityManager->getConnection()->getSchemaManager()->getDatabasePlatform()'
 			. '->registerDoctrineTypeMapping(\'enum\', \'string\');' . "\n"
 			. "\t" . '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
@@ -172,7 +178,7 @@ final class DatabaseExtension extends CompilerExtension
 			[
 				'@self',
 				$types,
-				$this->config['propertyIgnoreAnnotations'] ?? [],
+				$config['propertyIgnoreAnnotations'] ?? [],
 			]
 		);
 	}
@@ -183,7 +189,10 @@ final class DatabaseExtension extends CompilerExtension
 	 */
 	public function afterCompile(ClassType $class): void
 	{
-		if (($this->config['debug'] ?? false) === true) {
+		/** @var mixed[] $config */
+		$config = $this->getConfig();
+
+		if (($config['debug'] ?? false) === true) {
 			$initialize = $class->getMethod('initialize');
 			$initialize->addBody(
 				'$this->getService(?)->addPanel($this->getService(?));',
@@ -237,6 +246,8 @@ final class DatabaseExtension extends CompilerExtension
 	 */
 	private function loadDoctrineConfiguration(): void
 	{
+		/** @var mixed[] $config */
+		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
 		$logger = $builder->addDefinition($this->prefix('logger'))
@@ -248,40 +259,42 @@ final class DatabaseExtension extends CompilerExtension
 			->setAutowired(false)
 			->addSetup('setSQLLogger', [$this->prefix('@logger')]);
 
-		if ($this->config['configuration']['sqlLogger'] !== null) { // SqlLogger (append to chain)
-			$logger->addSetup('addLogger', [$this->config['configuration']['sqlLogger']]);
+		if ($config['configuration']['sqlLogger'] !== null) { // SqlLogger (append to chain)
+			$logger->addSetup('addLogger', [$config['configuration']['sqlLogger']]);
 		}
-		if ($this->config['configuration']['resultCacheImpl'] !== null) { // ResultCacheImpl
-			$configuration->addSetup('setResultCacheImpl', [$this->config['configuration']['resultCacheImpl']]);
+		if ($config['configuration']['resultCacheImpl'] !== null) { // ResultCacheImpl
+			$configuration->addSetup('setResultCacheImpl', [$config['configuration']['resultCacheImpl']]);
 		}
-		if ($this->config['configuration']['filterSchemaAssetsExpression'] !== null) { // FilterSchemaAssetsExpression
-			$configuration->addSetup('setFilterSchemaAssetsExpression', [$this->config['configuration']['filterSchemaAssetsExpression']]);
+		if ($config['configuration']['filterSchemaAssetsExpression'] !== null) { // FilterSchemaAssetsExpression
+			$configuration->addSetup('setFilterSchemaAssetsExpression', [$config['configuration']['filterSchemaAssetsExpression']]);
 		}
 
 		// AutoCommit
-		Validators::assert($this->config['configuration']['autoCommit'], 'bool', 'configuration.autoCommit');
-		$configuration->addSetup('setAutoCommit', [$this->config['configuration']['autoCommit']]);
+		Validators::assert($config['configuration']['autoCommit'], 'bool', 'configuration.autoCommit');
+		$configuration->addSetup('setAutoCommit', [$config['configuration']['autoCommit']]);
 	}
 
 
 	private function loadConnectionConfiguration(): void
 	{
+		/** @var mixed[] $config */
+		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
-		if (preg_match('/^([^:]+):(\d+)$/', $this->config['connection']['host'], $hostParser)) { // parse port from host
-			if (isset($this->config['connection']['port']) === true && $this->config['connection']['port'] !== (int) $hostParser[2]) {
+		if (preg_match('/^([^:]+):(\d+)$/', $config['connection']['host'], $hostParser)) { // parse port from host
+			if (isset($config['connection']['port']) === true && $config['connection']['port'] !== (int) $hostParser[2]) {
 				throw new \RuntimeException(
 					'Connection port (suffix included in host string) and given port are different.' . "\n"
-					. 'Given host "' . $this->config['connection']['host'] . '" contains port "' . $hostParser[2] . '", but given port is "' . $this->config['connection']['port'] . '".' . "\n"
-					. 'To solve this issue: Change "host" string to "' . $hostParser[1] . '" (without ":' . $hostParser[2] . '") or change port to "' . $this->config['connection']['port'] . '".'
+					. 'Given host "' . $config['connection']['host'] . '" contains port "' . $hostParser[2] . '", but given port is "' . $config['connection']['port'] . '".' . "\n"
+					. 'To solve this issue: Change "host" string to "' . $hostParser[1] . '" (without ":' . $hostParser[2] . '") or change port to "' . $config['connection']['port'] . '".'
 				);
 			}
-			$this->config['connection']['host'] = $hostParser[1];
-			$this->config['connection']['port'] = (int) $hostParser[2];
+			$config['connection']['host'] = $hostParser[1];
+			$config['connection']['port'] = (int) $hostParser[2];
 		}
-		if (isset($this->config['connection']['port']) === false && preg_match('/^.+?\.ondigitalocean\.com$/', $this->config['connection']['host'])) { // DigitalOcean managed database support
+		if (isset($config['connection']['port']) === false && preg_match('/^.+?\.ondigitalocean\.com$/', $config['connection']['host'])) { // DigitalOcean managed database support
 			throw new \RuntimeException(
-				'In case of DigitalOcean (host is "' . $this->config['connection']['host'] . '") you must define port (as integer) in your NEON configuration, but NULL given.' . "\n"
+				'In case of DigitalOcean (host is "' . $config['connection']['host'] . '") you must define port (as integer) in your NEON configuration, but NULL given.' . "\n"
 				. 'Hint: Check if your current IP "' . Utils::userIp() . '" is allowed for connection.'
 			);
 		}
@@ -289,7 +302,7 @@ final class DatabaseExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('eventManager'))
 			->setFactory(ContainerAwareEventManager::class);
 
-		if (($this->config['debug'] ?? false) === true) {
+		if (($config['debug'] ?? false) === true) {
 			$builder->getDefinition($this->prefix('eventManager'))
 				->setAutowired(false);
 			$builder->addDefinition($this->prefix('eventManager.debug'))
@@ -297,12 +310,12 @@ final class DatabaseExtension extends CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix('connectionFactory'))
-			->setFactory(ConnectionFactory::class, [$this->config['connection']['types'], $this->config['connection']['typesMapping']]);
+			->setFactory(ConnectionFactory::class, [$config['connection']['types'], $config['connection']['typesMapping']]);
 
 		$builder->addDefinition($this->prefix('connection'))
 			->setFactory(Connection::class)
 			->setFactory('@' . $this->prefix('connectionFactory') . '::createConnection', [
-				$this->config['connection'],
+				$config['connection'],
 				'@' . $this->prefix('configuration'),
 				$builder->getDefinitionByType(EventManager::class),
 			]);

@@ -64,14 +64,14 @@ final class OrmExtension extends CompilerExtension
 		$config = $this->defaults['configuration'] + $this->config;
 		$config = Helpers::expand($config, $builder->parameters);
 
-		$configurationClass = $this->config['configurationClass'] ?? Configuration::class;
+		$configurationClass = $config['configurationClass'] ?? Configuration::class;
 
 		if (!is_a($configurationClass, Configuration::class, true)) {
 			throw new InvalidArgumentException('Configuration class must be subclass of ' . Configuration::class . ', ' . $configurationClass . ' given.');
 		}
 
 		$configuration = $builder->addDefinition($this->prefix('configuration'))
-			->setType($configurationClass);
+			->setType(is_object($configurationClass) ? (string) get_class($configurationClass) : $configurationClass);
 
 		if ($config['proxyDir'] !== null) {
 			$configuration->addSetup('setProxyDir', [$config['proxyDir']]);

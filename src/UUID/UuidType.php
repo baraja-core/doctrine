@@ -11,15 +11,13 @@ use Doctrine\DBAL\Types\Type;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
-class UuidType extends Type
+final class UuidType extends Type
 {
 	public const NAME = 'uuid';
 
 
 	/**
 	 * @param mixed[] $fieldDeclaration
-	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return string
 	 */
 	public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
 	{
@@ -29,8 +27,6 @@ class UuidType extends Type
 
 	/**
 	 * @param string|UuidInterface|mixed|null $value
-	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return string|null
 	 * @throws ConversionException
 	 */
 	public function convertToPHPValue($value, AbstractPlatform $platform): ?string
@@ -52,22 +48,27 @@ class UuidType extends Type
 
 	/**
 	 * @param UuidInterface|string|mixed|null $value
-	 * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-	 * @return string|null
 	 * @throws ConversionException
 	 */
 	public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
 	{
-		if (empty($value)) {
+		if ($value === null) {
 			return null;
 		}
-		if ($value instanceof UuidInterface
-			|| ((\is_string($value) || method_exists($value, '__toString')) && Uuid::isValid((string) $value))
-		) {
-			return (string) $value;
+		if (\is_string($value)) {
+			$return = $value;
+		} elseif ($value instanceof UuidInterface) {
+			$return = $value->toString();
+		} elseif (\is_object($value) && method_exists($value, '__toString')) {
+			$return = (string) $value;
+		} else {
+			throw new \InvalidArgumentException('Value must be string or instance of "' . UuidInterface::class . '", but type "' . \gettype($value) . '" given.');
+		}
+		if (Uuid::isValid($return)) {
+			return $return;
 		}
 
-		throw ConversionException::conversionFailed($value, static::NAME);
+		throw ConversionException::conversionFailed($return, static::NAME);
 	}
 
 

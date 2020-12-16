@@ -27,7 +27,7 @@ class DoctrineHelper
 	 * By $exclude you can define list of entities which will be skipped.
 	 *
 	 * @param string[]|null $exclude
-	 * @return string[]
+	 * @return string[] (variant => type)
 	 */
 	public function getEntityVariants(string $entity, ?array $exclude = null): array
 	{
@@ -35,7 +35,7 @@ class DoctrineHelper
 		if (\is_array(($meta = $this->entityManager->getClassMetadata($entity))->discriminatorMap) && \count($meta->discriminatorMap) > 0) {
 			foreach ($meta->discriminatorMap as $variant) {
 				try {
-					$return[$variant] = Utils::reflectionClassDocComment($variant, 'name');
+					$return[$variant] = (string) Utils::reflectionClassDocComment($variant, 'name');
 				} catch (\ReflectionException $e) {
 					$return[$variant] = (string) preg_replace_callback(
 						'/([a-z0-9])([A-Z])/',
@@ -174,11 +174,17 @@ class DoctrineHelper
 			DatabaseException::e($e);
 		}
 
+		if (method_exists($from, 'getId')) {
+			$id = $from->getId();
+		} else {
+			throw new \InvalidArgumentException('Entity "'.\get_class($from).'" do not contain required method getId().');
+		}
+
 		try {
 			$this->entityManager->getConnection()->executeUpdate(
 				str_replace(
 					['{table}', '{discriminatorColumn}', '{discriminator}', '{id}'],
-					[$fromTable, $discriminatorColumn, $toDiscriminator, $from->getId()],
+					[$fromTable, $discriminatorColumn, $toDiscriminator, $id],
 					'UPDATE `{table}` '
 					. 'SET `{discriminatorColumn}` = \'{discriminator}\' '
 					. 'WHERE `id` = \'{id}\''
@@ -189,7 +195,7 @@ class DoctrineHelper
 			trigger_error($e->getMessage());
 		}
 
-		return $this->entityManager->getRepository($toType)->find($from->getId());
+		return $this->entityManager->getRepository($toType)->find($id);
 	}
 
 

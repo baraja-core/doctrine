@@ -30,7 +30,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 	public function __construct(string $rootDir, EntityManager $entityManager)
 	{
 		parent::__construct();
-		$this->rootDir = realpath($rootDir);
+		$this->rootDir = realpath($rootDir) ?: $rootDir;
 		$this->entityManager = $entityManager;
 	}
 
@@ -49,13 +49,19 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		if (($namespace = $input->getOption('namespace')) === null) {
 			throw new InvalidArgumentException('Option "namespace" is required.');
 		}
+		if (\is_string($namespace) === false) {
+			throw new InvalidArgumentException('Option "namespace" must be string.');
+		}
 		if (($path = $input->getOption('path')) === null) {
 			throw new InvalidArgumentException('Option "path" is required.');
+		}
+		if (\is_string($path) === false) {
+			throw new InvalidArgumentException('Option "path" must be string.');
 		}
 
 		$entityNamespace = (string) preg_replace_callback(
 			'/(^(?:[a-z])|(?:\\\\[a-z]))/',
-			fn (array $match) => strtoupper($match[1]),
+			fn (array $match): string => strtoupper((string) $match[1]),
 			$namespace
 		);
 
@@ -142,7 +148,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$output->writeln('Done. Formatting...');
 
-		foreach (glob($realPath . '/*.php') as $entityFilePath) {
+		foreach (glob($realPath . '/*.php') ?: [] as $entityFilePath) {
 			$this->formatCodingStandard($entityFilePath, $entityNamespace);
 		}
 

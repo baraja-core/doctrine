@@ -66,7 +66,6 @@ final class EntityManager implements EntityManagerInterface
 	 *
 	 * @param string|string[] $events The event(s) to listen on.
 	 * @param object $listener The listener object.
-	 * @return EntityManager
 	 */
 	public function addEventListener($events, $listener): self
 	{
@@ -136,7 +135,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param object $entity
-	 * @return EntityManager
 	 */
 	public function persist($entity): self
 	{
@@ -152,7 +150,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param object|mixed[]|null $entity
-	 * @return EntityManager
 	 */
 	public function flush($entity = null): self
 	{
@@ -173,7 +170,11 @@ final class EntityManager implements EntityManagerInterface
 	 */
 	public function find($className, $id)
 	{
+		if (\class_exists($className) === false) {
+			throw new \InvalidArgumentException('Entity name "' . $className . '" must be valid class name. Is your class autoloadable?');
+		}
 		try {
+			/* @phpstan-ignore-next-line */
 			return $this->em()->find($className, $id);
 		} catch (ORMException | OptimisticLockException | TransactionRequiredException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
@@ -183,7 +184,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param object $object The object instance to remove.
-	 * @return EntityManager
 	 */
 	public function remove($object): self
 	{
@@ -267,7 +267,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param string $className
-	 * @return ClassMetadata
 	 */
 	public function getClassMetadata($className): ClassMetadata
 	{
@@ -292,7 +291,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param object $object
-	 * @return bool
 	 */
 	public function contains($object): bool
 	{
@@ -353,7 +351,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param string $dql The DQL string.
-	 * @return Query
 	 */
 	public function createQuery($dql = ''): Query
 	{
@@ -363,7 +360,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param string $name
-	 * @return Query
 	 */
 	public function createNamedQuery($name): Query
 	{
@@ -374,7 +370,6 @@ final class EntityManager implements EntityManagerInterface
 	/**
 	 * @param string $sql
 	 * @param ResultSetMapping $rsm The ResultSetMapping to use.
-	 * @return NativeQuery
 	 */
 	public function createNativeQuery($sql, ResultSetMapping $rsm): NativeQuery
 	{
@@ -384,7 +379,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param string $name
-	 * @return NativeQuery
 	 */
 	public function createNamedNativeQuery($name): NativeQuery
 	{
@@ -406,6 +400,9 @@ final class EntityManager implements EntityManagerInterface
 	 */
 	public function getReference($entityName, $id)
 	{
+		if (\class_exists($entityName) === false) {
+			throw new \InvalidArgumentException('Entity name "' . $entityName . '" must be valid class name. Is your class autoloadable?');
+		}
 		try {
 			return $this->em()->getReference($entityName, $id);
 		} catch (ORMException $e) {
@@ -485,7 +482,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param string|int $hydrationMode
-	 * @return AbstractHydrator
 	 * @deprecated
 	 */
 	public function getHydrator($hydrationMode): AbstractHydrator
@@ -498,7 +494,6 @@ final class EntityManager implements EntityManagerInterface
 
 	/**
 	 * @param string|int $hydrationMode
-	 * @return AbstractHydrator
 	 * @throws EntityManagerException
 	 */
 	public function newHydrator($hydrationMode): AbstractHydrator
@@ -587,6 +582,9 @@ final class EntityManager implements EntityManagerInterface
 		if ($cache === null) {
 			$this->init();
 			try {
+				if ($this->connection === null) {
+					throw new \RuntimeException('You must be connected to physical database before create instance of "' . \Doctrine\ORM\EntityManager::class . '".');
+				}
 				$cache = \Doctrine\ORM\EntityManager::create($this->connection, $this->configuration, $this->eventManager);
 			} catch (ORMException $e) {
 				Debugger::log($e);

@@ -48,6 +48,9 @@ final class Utils
 	{
 		static $cache = [];
 		if (isset($cache[$class]) === false) {
+			if (\class_exists($class) === false) {
+				throw new \RuntimeException('Class "' . $class . '" does not exist.');
+			}
 			$cache[$class] = new \ReflectionClass($class);
 		}
 
@@ -63,7 +66,7 @@ final class Utils
 		static $disabled;
 		if (\function_exists($functionName) === true) {
 			if ($disabled === null && \is_string($disableFunctions = ini_get('disable_functions'))) {
-				$disabled = explode(',', $disableFunctions);
+				$disabled = explode(',', (string) $disableFunctions);
 			}
 
 			return \in_array($functionName, $disabled ?? [], true) === false;
