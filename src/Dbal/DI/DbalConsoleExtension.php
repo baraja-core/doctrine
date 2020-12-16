@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\DBAL\DI;
 
 
-use Contributte\Console\DI\ConsoleExtension;
 use Doctrine\DBAL\Tools\Console\Command\ImportCommand;
 use Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand;
 use Doctrine\DBAL\Tools\Console\Command\RunSqlCommand;
@@ -18,35 +17,13 @@ use Symfony\Component\Console\Application;
 
 final class DbalConsoleExtension extends CompilerExtension
 {
-	private bool $cliMode;
-
-
-	public function __construct(?bool $cliMode = null)
-	{
-		$this->cliMode = $cliMode ?? PHP_SAPI === 'cli';
-	}
-
-
-	/**
-	 * @return string[]
-	 */
-	public static function mustBeDefinedAfter(): array
-	{
-		return [ConsoleExtension::class];
-	}
-
-
-	/**
-	 * Register services
-	 */
 	public function loadConfiguration(): void
 	{
 		if (!class_exists('Symfony\Component\Console\Application')) {
 			throw new ServiceCreationException('Missing Symfony\Component\Console\Application service');
 		}
-
-		if (!$this->cliMode) {
-			return; // Skip if it's not CLI mode
+		if (PHP_SAPI !== 'cli') { // Skip if it's not CLI mode
+			return;
 		}
 
 		$builder = $this->getContainerBuilder();
@@ -74,18 +51,15 @@ final class DbalConsoleExtension extends CompilerExtension
 	}
 
 
-	/**
-	 * Decorate services
-	 */
 	public function beforeCompile(): void
 	{
-		if (!$this->cliMode) {
-			return; // Skip if it's not CLI mode
+		if (PHP_SAPI !== 'cli') { // Skip if it's not CLI mode
+			return;
 		}
 
 		$builder = $this->getContainerBuilder();
 
-		/** @var Application|ServiceDefinition $application */
+		/** @var ServiceDefinition $application */
 		$application = $builder->getDefinitionByType(Application::class);
 
 		// Register helpers

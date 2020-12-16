@@ -8,7 +8,7 @@ namespace Baraja\Doctrine;
 use Baraja\PackageManager\Composer\BaseTask;
 use Baraja\PackageManager\Helpers;
 use Baraja\PackageManager\PackageRegistrator;
-use Contributte\Console\Application;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Tracy\Debugger;
 
