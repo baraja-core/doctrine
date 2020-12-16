@@ -3,8 +3,7 @@ parameters:
 		primary: [] # deprecated since 2020-09-10
 
 extensions:
-	console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-	dbal.console: Baraja\Doctrine\DBAL\DI\DbalConsoleExtension(%consoleMode%)
+	dbal.console: Baraja\Doctrine\DBAL\DI\DbalConsoleExtension
 	orm: Baraja\Doctrine\ORM\DI\OrmExtension
 	orm.console: Baraja\Doctrine\ORM\DI\OrmConsoleExtension
 	orm.annotations: Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension
@@ -26,11 +25,3 @@ baraja.database:
 orm.annotations:
 	paths: []
 	ignore: []
-
-console:
-	name: Baraja sandbox
-	version: '3.0'
-	catchExceptions: true
-	autoExit: true
-	url: https://baraja.cz
-	lazy: false
