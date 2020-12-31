@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
+use Baraja\Console\Helpers;
 use Baraja\PackageManager\Composer\BaseTask;
-use Baraja\PackageManager\Helpers;
 use Baraja\PackageManager\PackageRegistrator;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
