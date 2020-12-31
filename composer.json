@@ -13,10 +13,10 @@
 		"ext-json": "*",
 		"ext-pdo": "*",
 		"ext-tokenizer": "*",
-		"baraja-core/package-manager": "^2.4",
+		"baraja-core/nette-symfony-console": "^1.0",
+		"baraja-core/package-manager": "^2.5",
 		"nette/di": "^3.0",
 		"nette/utils": "^3.0",
-		"nette/finder": "^2.5",
 		"doctrine/orm": "^2.7",
 		"doctrine/dbal": "^2.9",
 		"ramsey/uuid": "^3.0"
@@ -30,6 +30,9 @@
 	"autoload": {
 		"classmap": [
 			"src/"
+		],
+		"files": [
+			"src/task_autoload.php"
 		]
 	},
 	"scripts": {
