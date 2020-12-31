@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-if (PHP_SAPI !== 'cli') {
+if (PHP_SAPI !== 'cli' || class_exists(\Baraja\PackageManager\Composer\TaskManager::class) === false) {
 	return;
 }
 
