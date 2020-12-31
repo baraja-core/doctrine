@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// --package-registrator-task--
+
 if (PHP_SAPI !== 'cli' || class_exists(\Baraja\PackageManager\Composer\TaskManager::class) === false) {
 	return;
 }
