@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
+use Baraja\Doctrine\Entity\SlowQuery;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 final class Utils
 {
@@ -121,9 +124,24 @@ final class Utils
 			return $cache[$hash];
 		}
 		try {
-			$hashExist = $em->getConnection()
-				->executeQuery('SELECT 1 FROM `core__database_slow_query` WHERE hash = \'' . $hash . '\'')
-				->fetch();
+			if (($em->getConnection()->getParams()['driver'] ?? '') === 'pdo_mysql') { // fast native query for MySql
+				$hashExist = $em->getConnection()
+					->executeQuery('SELECT 1 FROM `core__database_slow_query` WHERE hash = \'' . $hash . '\'')
+					->fetch();
+			} else {
+				try {
+					(new Repository($em, $em->getClassMetadata(SlowQuery::class)))
+						->createQueryBuilder('s')
+						->where('s.hash = :hash')
+						->setParameter('hash', $hash)
+						->setMaxResults(1)
+						->getQuery()
+						->getSingleResult();
+					$hashExist = true;
+				} catch (NoResultException | NonUniqueResultException $e) {
+					$hashExist = false;
+				}
+			}
 		} catch (DBALException $e) {
 			throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
 		}
