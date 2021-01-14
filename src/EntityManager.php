@@ -257,11 +257,10 @@ final class EntityManager implements EntityManagerInterface
 	 */
 	public function getRepository($className): EntityRepository
 	{
-		$em = $this->em();
-		$metadata = $em->getClassMetadata($className);
+		$metadata = $this->em()->getClassMetadata($className);
 		$repository = $metadata->customRepositoryClassName ?? Repository::class;
 
-		return new $repository($em, $metadata);
+		return new $repository($this, $metadata);
 	}
 
 
