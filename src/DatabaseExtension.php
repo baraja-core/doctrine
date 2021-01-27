@@ -35,6 +35,11 @@ final class DatabaseExtension extends CompilerExtension
 	/** @var string[] (type => typeClass) */
 	private static array $customTypes = [];
 
+	/** @var string[] (name => typeClass) */
+	private static array $customNumericFunctions = [
+		'RAND' => RandFunction::class,
+	];
+
 
 	/**
 	 * @return string[]
@@ -51,6 +56,12 @@ final class DatabaseExtension extends CompilerExtension
 			throw new \InvalidArgumentException('Database type "' . $type . '" already exist.');
 		}
 		self::$customTypes[$type] = $typeClass;
+	}
+
+
+	public static function addCustomNumericFunction(string $name, string $type): void
+	{
+		self::$customNumericFunctions[$name] = $type;
 	}
 
 
@@ -88,6 +99,7 @@ final class DatabaseExtension extends CompilerExtension
 			])->castTo('array'),
 			'cache' => Expect::string(),
 			'types' => Expect::arrayOf(Expect::string()),
+			'customNumericFunctions' => Expect::arrayOf(Expect::string()),
 			'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string()),
 			'deprecatedParameters' => Expect::array(),
 		])->castTo('array');
@@ -151,9 +163,18 @@ final class DatabaseExtension extends CompilerExtension
 		$types = [];
 		foreach (array_merge(self::$customTypes, $config['types'] ?? []) as $type => $typeClass) {
 			if (\class_exists($typeClass) === false) {
-				ConfiguratorException::typeDoesNotExist($type, $typeClass);
+				throw new ConfiguratorException('Doctrine type "' . $type . '" does not exist, because class "' . $typeClass . '" is not defined.');
 			}
 			$types[$type] = $typeClass;
+		}
+
+		$functionsCode = '';
+		foreach (array_merge(self::$customNumericFunctions, $config['customNumericFunctions'] ?? []) as $functionName => $functionType) {
+			if (\class_exists($functionType) === false) {
+				throw new ConfiguratorException('Doctrine function definition "' . $functionName . '" does not exist, because class "' . $functionType . '" is not defined.');
+			}
+			$functionsCode .= ($functionsCode ? "\n\t" : '')
+				. '$entityManager->getConfiguration()->addCustomNumericFunction(\'' . strtoupper($functionName) . '\', ' . $functionType . '::class);';
 		}
 
 		/** @var ServiceDefinition $generator */
@@ -173,7 +194,7 @@ final class DatabaseExtension extends CompilerExtension
 			. "\t" . '$entityManager->setCache(' . $this->processCache($config['cache'] ?? null) . ');' . "\n"
 			. "\t" . '$entityManager->getConnection()->getSchemaManager()->getDatabasePlatform()'
 			. '->registerDoctrineTypeMapping(\'enum\', \'string\');' . "\n"
-			. "\t" . '$entityManager->getConfiguration()->addCustomNumericFunction(\'rand\', ' . Rand::class . '::class);' . "\n"
+			. "\t" . $functionsCode . "\n"
 			. "\t" . '$entityManager->buildCache();' . "\n"
 			. '})',
 			[
