@@ -38,6 +38,9 @@ final class DatabaseExtension extends CompilerExtension
 	/** @var string[] (name => typeClass) */
 	private static array $customNumericFunctions = [
 		'RAND' => RandFunction::class,
+		'ROUND' => RoundFunction::class,
+		'GEODISTANCE' => GeoDistanceFunction::class,
+		'MATCH' => MatchAgainstFunction::class,
 	];
 
 
