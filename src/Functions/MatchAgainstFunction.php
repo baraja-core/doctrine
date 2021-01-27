@@ -49,7 +49,7 @@ class MatchAgainstFunction extends FunctionNode
 
 		$parser->match(Lexer::T_CLOSE_PARENTHESIS);
 
-		if (strtolower($lexer->lookahead['value']) !== 'against') {
+		if (strtolower($lexer->lookahead['value'] ?? '') !== 'against') {
 			$parser->syntaxError('against');
 		}
 
@@ -57,11 +57,11 @@ class MatchAgainstFunction extends FunctionNode
 		$parser->match(Lexer::T_OPEN_PARENTHESIS);
 		$this->against = $parser->StringPrimary();
 
-		if (strtolower($lexer->lookahead['value']) === 'boolean') {
+		if (strtolower($lexer->lookahead['value'] ?? '') === 'boolean') {
 			$parser->match(Lexer::T_IDENTIFIER);
 			$this->booleanMode = true;
 		}
-		if (strtolower($lexer->lookahead['value']) === 'expand') {
+		if (strtolower($lexer->lookahead['value'] ?? '') === 'expand') {
 			$parser->match(Lexer::T_IDENTIFIER);
 			$this->queryExpansion = true;
 		}
@@ -73,7 +73,7 @@ class MatchAgainstFunction extends FunctionNode
 	public function getSql(SqlWalker $walker): string
 	{
 		$fields = [];
-		foreach ($this->pathExp as $pathExp) {
+		foreach ($this->pathExp ?? [] as $pathExp) {
 			$fields[] = $pathExp->dispatch($walker);
 		}
 
