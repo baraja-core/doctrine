@@ -143,7 +143,7 @@ abstract class AbstractLogger implements SQLLogger
 		}
 
 		if (isset($location['file'], $location['line']) && is_file($location['file'] ?? '')) {
-			/* @phpstan-ignore-next-line */
+			/** @phpstan-ignore-next-line */
 			$locationLine = file($location['file'] ?? '')[((int) ($location['line'] ?? 0)) - 1] ?? 1;
 
 			return [
