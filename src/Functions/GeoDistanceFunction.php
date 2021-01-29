@@ -28,8 +28,8 @@ class GeoDistanceFunction extends FunctionNode
 		$lat2 = $sqlWalker->walkSimpleArithmeticExpression($this->lat2);
 		$lng1 = $sqlWalker->walkSimpleArithmeticExpression($this->lng1);
 		$lng2 = $sqlWalker->walkSimpleArithmeticExpression($this->lng2);
-		$kmPerLat2 = 6372.795;
-		$kmPerLng2 = 6372.795;
+		$kmPerLat2 = 6_372.795;
+		$kmPerLng2 = 6_372.795;
 
 		// sqrt(k1*(lat1-lat2)*(lat1-lat2) + k2*(lng1-lng2)*(lng1-lng2)
 		return "(SQRT($kmPerLat2 * ($lat1 - $lat2) * ($lat1 - $lat2) + $kmPerLng2 * ($lng1 - $lng2) * ($lng1 - $lng2)))";

@@ -69,8 +69,8 @@ abstract class AbstractLogger implements SQLLogger
 		$keys = array_keys($this->queriesTimer);
 		$this->queriesTimer[$key = end($keys)]['end'] = microtime(true);
 		$this->queriesTimer[$key]['duration'] = $this->queriesTimer[$key]['end'] - $this->queriesTimer[$key]['start'];
-		$this->queriesTimer[$key]['ms'] = $this->queriesTimer[$key]['duration'] * 1000;
-		$this->totalTime += $this->queriesTimer[$key]['duration'] * 1000;
+		$this->queriesTimer[$key]['ms'] = $this->queriesTimer[$key]['duration'] * 1_000;
+		$this->totalTime += $this->queriesTimer[$key]['duration'] * 1_000;
 
 		if (isset($this->queries[$key]) === true) {
 			$this->queries[$key]->end = $this->queriesTimer[$key]['end'];
@@ -80,7 +80,7 @@ abstract class AbstractLogger implements SQLLogger
 			if (
 				$locked === false
 				&& $this->entityManager !== null
-				&& ($durationMs = $duration * 1000) > $this->maxQueryTime
+				&& ($durationMs = $duration * 1_000) > $this->maxQueryTime
 			) {
 				$locked = true;
 				if (Utils::queryExistsByHash($hash = Utils::createSqlHash($this->queries[$key]->sql), $this->entityManager) === false) {
@@ -118,8 +118,8 @@ abstract class AbstractLogger implements SQLLogger
 	{
 		if ($maxQueryTime < 0) {
 			$maxQueryTime = 0;
-		} elseif ($maxQueryTime > 30000) {
-			$maxQueryTime = 30000;
+		} elseif ($maxQueryTime > 30_000) {
+			$maxQueryTime = 30_000;
 		}
 
 		$this->maxQueryTime = $maxQueryTime;
