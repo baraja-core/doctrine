@@ -12,7 +12,6 @@ use Ramsey\Uuid\Uuid;
 
 class UuidGenerator extends AbstractIdGenerator
 {
-
 	/**
 	 * @param Entity|null $entity
 	 */

@@ -10,7 +10,6 @@ use Doctrine\DBAL\Schema\Sequence;
 
 class Postgre10SqlSchemaManager extends PostgreSqlSchemaManager
 {
-
 	/**
 	 * {@inheritdoc}
 	 */

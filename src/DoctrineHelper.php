@@ -32,17 +32,18 @@ class DoctrineHelper
 	public function getEntityVariants(string $entity, ?array $exclude = null): array
 	{
 		$return = [];
-		if (\is_array(($meta = $this->entityManager->getClassMetadata($entity))->discriminatorMap) && \count($meta->discriminatorMap) > 0) {
+		if (
+			\is_array(($meta = $this->entityManager->getClassMetadata($entity))->discriminatorMap)
+			&& \count($meta->discriminatorMap) > 0
+		) {
 			foreach ($meta->discriminatorMap as $variant) {
 				try {
 					$return[$variant] = (string) Utils::reflectionClassDocComment($variant, 'name');
 				} catch (\ReflectionException $e) {
 					$return[$variant] = (string) preg_replace_callback(
 						'/([a-z0-9])([A-Z])/',
-						static function (array $match) {
-							return $match[1] . ' ' . strtolower($match[2]);
-						},
-						(string) preg_replace('/^.*?\\\\([^\\\\]+)$/', '$1', $variant)
+						static fn (array $match) => $match[1] . ' ' . strtolower($match[2]),
+						(string) preg_replace('/^.*?\\\\([^\\\\]+)$/', '$1', $variant),
 					);
 				}
 			}
@@ -187,8 +188,8 @@ class DoctrineHelper
 					[$fromTable, $discriminatorColumn, $toDiscriminator, $id],
 					'UPDATE `{table}` '
 					. 'SET `{discriminatorColumn}` = \'{discriminator}\' '
-					. 'WHERE `id` = \'{id}\''
-				)
+					. 'WHERE `id` = \'{id}\'',
+				),
 			);
 		} catch (DBALException $e) {
 			Debugger::log($e);
@@ -212,7 +213,11 @@ class DoctrineHelper
 			&& method_exists($itemEntity, 'setParent')
 			&& method_exists($itemEntity, 'setPosition')
 		) {
-			if (($parent = $itemEntity->getParent()) !== null && method_exists($parent, 'getId') && $parent->getId() !== $parentId) {
+			if (
+				($parent = $itemEntity->getParent()) !== null
+				&& method_exists($parent, 'getId')
+				&& $parent->getId() !== $parentId
+			) {
 				try {
 					$parent = $this->entityManager->getRepository(\get_class($itemEntity))
 						->createQueryBuilder('e')

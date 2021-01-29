@@ -35,10 +35,12 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	public function dispatchEvent($eventName, ?EventArgs $eventArgs = null): void
 	{
 		if (isset($this->listeners[$eventName])) {
-			$eventArgs = $eventArgs ?? EventArgs::getEmptyInstance();
+			$eventArgs ??= EventArgs::getEmptyInstance();
 			foreach ($this->listeners[$eventName] as $hash => $listener) {
 				if (isset($this->initialized[$eventName]) === false) {
-					$listener = \is_string($listener) ? $this->container->getService($listener) : $listener;
+					$listener = \is_string($listener)
+						? $this->container->getService($listener)
+						: $listener;
 					$this->listeners[$eventName][$hash] = $listener;
 				}
 				$listener->$eventName($eventArgs);

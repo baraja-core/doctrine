@@ -77,7 +77,11 @@ abstract class AbstractLogger implements SQLLogger
 			$this->queries[$key]->duration = ($duration = (float) $this->queriesTimer[$key]['duration']);
 			$this->queries[$key]->ms = $this->queriesTimer[$key]['ms'];
 
-			if ($locked === false && $this->entityManager !== null && ($durationMs = $duration * 1000) > $this->maxQueryTime) {
+			if (
+				$locked === false
+				&& $this->entityManager !== null
+				&& ($durationMs = $duration * 1000) > $this->maxQueryTime
+			) {
 				$locked = true;
 				if (Utils::queryExistsByHash($hash = Utils::createSqlHash($this->queries[$key]->sql), $this->entityManager) === false) {
 					try {
@@ -130,11 +134,17 @@ abstract class AbstractLogger implements SQLLogger
 	private function findLocation(): ?array
 	{
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
-			if (isset($item['class']) && $item['class'] === __CLASS__) {
+			if (isset($item['class']) && $item['class'] === self::class) {
 				$location = $item;
 				continue;
 			}
-			if (preg_match('/\/vendor\/([^\/]+\/[^\/]+)\//', $item['file'] ?? '', $parser) && ($parser[1] === 'baraja-core/doctrine' || strncmp($parser[1], 'doctrine/', 9) === 0)) {
+			if (
+				preg_match('/\/vendor\/([^\/]+\/[^\/]+)\//', $item['file'] ?? '', $parser)
+				&& (
+					$parser[1] === 'baraja-core/doctrine'
+					|| strncmp($parser[1], 'doctrine/', 9) === 0
+				)
+			) {
 				continue;
 			}
 
@@ -144,7 +154,7 @@ abstract class AbstractLogger implements SQLLogger
 
 		if (isset($location['file'], $location['line']) && is_file($location['file'] ?? '')) {
 			/** @phpstan-ignore-next-line */
-			$locationLine = file($location['file'] ?? '')[((int) ($location['line'] ?? 0)) - 1] ?? 1;
+			$locationLine = file($location['file'] ?? '')[(int) ($location['line'] ?? 0) - 1] ?? 1;
 
 			return [
 				'file' => $location['file'] ?? '',

@@ -59,8 +59,11 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	}
 
 
-	public static function addAnnotationPathToManager(ContainerBuilder $builder, string $namespace, string $directoryPath): void
-	{
+	public static function addAnnotationPathToManager(
+		ContainerBuilder $builder,
+		string $namespace,
+		string $directoryPath
+	): void {
 		self::createEntityAnnotationManager($builder)
 			->addSetup('?->addPath(?, ?)', ['@self', $namespace, $directoryPath]);
 	}
@@ -108,7 +111,7 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	public function loadConfiguration(): void
 	{
 		if ($this->compiler->getExtensions(OrmExtension::class) === []) {
-			throw new \RuntimeException(__CLASS__ . ': Extension "' . OrmExtension::class . '" must be defined before this extension.');
+			throw new \RuntimeException(self::class . ': Extension "' . OrmExtension::class . '" must be defined before this extension.');
 		}
 
 		/** @var mixed[] $config */

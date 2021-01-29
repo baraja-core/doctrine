@@ -156,7 +156,7 @@ final class EntityManager implements EntityManagerInterface
 		if ($entity !== null) {
 			@trigger_error(
 				'Calling flush() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-				E_USER_DEPRECATED
+				E_USER_DEPRECATED,
 			);
 		}
 		try {
@@ -550,7 +550,7 @@ final class EntityManager implements EntityManagerInterface
 			trigger_error(
 				'Doctrine cache is not available. Application will run slowly!' . "\n"
 				. 'Please install ApcuCache (function "apcu_cache_info()") or SQLite3 (function "sqlite_open()").',
-				E_USER_WARNING
+				E_USER_WARNING,
 			);
 		} else {
 			$cache->setNamespace(md5(__FILE__));

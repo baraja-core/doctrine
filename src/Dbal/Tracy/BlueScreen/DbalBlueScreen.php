@@ -21,7 +21,6 @@ use Tracy\Helpers;
  */
 final class DbalBlueScreen
 {
-
 	/**
 	 * @return mixed[]|null
 	 */
@@ -31,7 +30,10 @@ final class DbalBlueScreen
 			return null;
 		}
 		if ($e instanceof DriverException) {
-			if (($prev = $e->getPrevious()) && ($item = Helpers::findTrace($e->getTrace(), DBALException::class . '::driverExceptionDuringQuery'))) {
+			if (
+				($prev = $e->getPrevious())
+				&& ($item = Helpers::findTrace($e->getTrace(), DBALException::class . '::driverExceptionDuringQuery'))
+			) {
 				/** @var Driver $driver */
 				$driver = $item['args'][0];
 				$params = $item['args'][3] ?? [];
@@ -42,7 +44,10 @@ final class DbalBlueScreen
 				];
 			}
 		} elseif ($e instanceof QueryException) {
-			if (($prev = $e->getPrevious()) && preg_match('~^(SELECT|INSERT|UPDATE|DELETE)\s+~i', $prev->getMessage())) {
+			if (
+				($prev = $e->getPrevious())
+				&& preg_match('~^(SELECT|INSERT|UPDATE|DELETE)\s+~i', $prev->getMessage())
+			) {
 				return [
 					'tab' => 'DQL',
 					'panel' => QueryUtils::highlight($prev->getMessage()),

@@ -24,7 +24,7 @@ final class TracyBlueScreenDebugger
 	/** @throws \Error */
 	public function __construct()
 	{
-		throw new \Error('Class ' . get_class($this) . ' is static and cannot be instantiated.');
+		throw new \Error('Class ' . static::class . ' is static and cannot be instantiated.');
 	}
 
 
@@ -102,11 +102,12 @@ final class TracyBlueScreenDebugger
 			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>';
 		}
 
-		if (self::$entityManager !== null && preg_match('/Table\s\\\'([^\\\']+)\\\'\sdoesn\\\'t\sexist/', $e->getMessage(), $parser)) {
+		if (
+			self::$entityManager !== null
+			&& preg_match('/Table\s\\\'([^\\\']+)\\\'\sdoesn\\\'t\sexist/', $e->getMessage(), $parser)
+		) {
 			try {
-				$tableList = array_map(static function (array $item): string {
-					return (string) (array_values($item)[0] ?? '');
-				}, self::$entityManager->getConnection()->executeQuery('show tables')->fetchAll());
+				$tableList = array_map(static fn (array $item): string => (string) (array_values($item)[0] ?? ''), self::$entityManager->getConnection()->executeQuery('show tables')->fetchAll());
 
 				$panelMeta = [];
 				foreach (self::$entityManager->getMetadataFactory()->getAllMetadata() as $metaData) {
@@ -147,7 +148,10 @@ final class TracyBlueScreenDebugger
 
 	private static function renderQuery(QueryException $e): string
 	{
-		if (self::$entityManager !== null && preg_match('/Class\s(?<class>\S+)\shas no field or association named/', $e->getMessage(), $mapping)) {
+		if (
+			self::$entityManager !== null
+			&& preg_match('/Class\s(?<class>\S+)\shas no field or association named/', $e->getMessage(), $mapping)
+		) {
 			$return = '';
 			foreach (self::$entityManager->getClassMetadata($mapping['class'])->fieldMappings as $field) {
 				$return .= '<tr>'
@@ -181,7 +185,9 @@ final class TracyBlueScreenDebugger
 				$startLine = 1;
 				try {
 					$fileName = (string) ($ref = new \ReflectionClass($className))->getFileName();
-					$fileContent = \is_file($fileName) ? (string) file_get_contents($fileName) : null;
+					$fileContent = \is_file($fileName)
+						? (string) file_get_contents($fileName)
+						: null;
 					$startLine = (int) $ref->getStartLine();
 					$docComment = trim((string) $ref->getDocComment());
 				} catch (\ReflectionException $e) {
