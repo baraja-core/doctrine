@@ -143,6 +143,7 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 			'queries' => $this->queries,
 		];
 
+		/** @phpstan-ignore-next-line */
 		extract($args, EXTR_OVERWRITE);
 
 		require __DIR__ . '/templates/panel.phtml';
