@@ -153,6 +153,12 @@ final class EntityManager implements EntityManagerInterface
 	 */
 	public function flush($entity = null): self
 	{
+		if ($entity !== null) {
+			@trigger_error(
+				'Calling flush() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+				E_USER_DEPRECATED
+			);
+		}
 		try {
 			$this->em()->flush($entity);
 		} catch (ORMException | OptimisticLockException $e) {
