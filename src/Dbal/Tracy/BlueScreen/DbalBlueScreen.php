@@ -8,7 +8,6 @@ namespace Baraja\Doctrine\DBAL\Tracy\BlueScreen;
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\DriverException;
 use Doctrine\DBAL\Query\QueryException;
 use PDO;
@@ -34,10 +33,6 @@ final class DbalBlueScreen
 				($prev = $e->getPrevious())
 				&& ($item = Helpers::findTrace($e->getTrace(), DBALException::class . '::driverExceptionDuringQuery'))
 			) {
-				/** @var Driver $driver */
-				$driver = $item['args'][0];
-				$params = $item['args'][3] ?? [];
-
 				return [
 					'tab' => 'SQL',
 					'panel' => QueryUtils::highlight($item['args'][2]),
@@ -54,12 +49,10 @@ final class DbalBlueScreen
 				];
 			}
 		} elseif ($e instanceof PDOException) {
-			$params = [];
 			if (isset($e->queryString)) {
 				$sql = $e->queryString;
 			} elseif ($item = Helpers::findTrace($e->getTrace(), Connection::class . '::executeQuery')) {
 				$sql = $item['args'][0];
-				$params = $item['args'][1];
 			} elseif ($item = Helpers::findTrace($e->getTrace(), PDO::class . '::query')) {
 				$sql = $item['args'][0];
 			} elseif ($item = Helpers::findTrace($e->getTrace(), PDO::class . '::prepare')) {

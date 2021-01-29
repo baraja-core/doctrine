@@ -127,8 +127,8 @@ final class EntityManager implements EntityManagerInterface
 	 */
 	public function fixDbDirPathPermission(): void
 	{
-		if (is_file($path = $this->getDbDirPath()) === true && fileperms($path) < 33204) {
-			chmod($path, 0664);
+		if (is_file($path = $this->getDbDirPath()) === true && fileperms($path) < 33_204) {
+			chmod($path, 0_664);
 		}
 	}
 

@@ -146,7 +146,7 @@ final class DatabaseExtension extends CompilerExtension
 		// Dbal
 		/** @var ServiceDefinition $eventManager */
 		$eventManager = $builder->getDefinition($this->prefix('eventManager'));
-		foreach ($builder->findByTag(self::TAG_DOCTRINE_SUBSCRIBER) as $serviceName => $tag) {
+		foreach (array_keys($builder->findByTag(self::TAG_DOCTRINE_SUBSCRIBER)) as $serviceName) {
 			$class = $builder->getDefinition($serviceName)->getType();
 
 			if ($class === null || !is_subclass_of($class, EventSubscriber::class)) {
