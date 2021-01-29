@@ -30,7 +30,7 @@ final class QueryProfiler extends AbstractLogger implements IBarPanel
 		return sprintf(
 			'<h1>Queries: %s / %s</h1>',
 			count($this->queries),
-			($this->totalTime ? ', time: ' . sprintf('%0.3f', $this->totalTime * 1000) . ' ms' : '')
+			($this->totalTime ? ', time: ' . sprintf('%0.3f', $this->totalTime * 1000) . ' ms' : ''),
 		);
 	}
 }

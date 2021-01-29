@@ -9,14 +9,13 @@ use Doctrine\ORM\EntityRepository;
 
 final class Repository extends EntityRepository
 {
-
 	/**
 	 * @return mixed[]
 	 */
 	public function findPairs(string $value, ?string $key = null): array
 	{
 		$return = [];
-		$key = $key ?? 'id';
+		$key ??= 'id';
 
 		$categories = $this->createQueryBuilder('e')
 			->select('e.' . $key, 'e.' . $value)

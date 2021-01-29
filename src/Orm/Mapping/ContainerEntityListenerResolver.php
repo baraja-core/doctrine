@@ -26,7 +26,7 @@ final class ContainerEntityListenerResolver implements EntityListenerResolver
 
 	/**
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 * @param string|NULL $className
+	 * @param string|null $className
 	 */
 	public function clear($className = null): void
 	{
@@ -70,7 +70,7 @@ final class ContainerEntityListenerResolver implements EntityListenerResolver
 		if ($this->container->getByType($className, false)) {
 			$this->instances[$className] = $this->container->getByType($className);
 		} else {
-			$this->instances[$className] = new $className();
+			$this->instances[$className] = new $className;
 		}
 
 		return $this->instances[$className];

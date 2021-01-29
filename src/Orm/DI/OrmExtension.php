@@ -107,7 +107,7 @@ final class OrmExtension extends CompilerExtension
 				$config['namingStrategy'],
 				$config['namingStrategy'] === UnderscoreNamingStrategy::class
 					? [CASE_LOWER, true]
-					: []
+					: [],
 			)]);
 		}
 		if ($config['quoteStrategy'] !== null) {

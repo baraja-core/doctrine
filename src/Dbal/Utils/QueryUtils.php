@@ -6,11 +6,10 @@ namespace Baraja\Doctrine\DBAL\Utils;
 
 final class QueryUtils
 {
-
 	/** @throws \Error */
 	public function __construct()
 	{
-		throw new \Error('Class ' . get_class($this) . ' is static and cannot be instantiated.');
+		throw new \Error('Class ' . static::class . ' is static and cannot be instantiated.');
 	}
 
 
@@ -53,7 +52,7 @@ final class QueryUtils
 
 				return '';
 			},
-			$sql
+			$sql,
 		);
 
 		return '<span class="dump" style="font-family: monospace">'

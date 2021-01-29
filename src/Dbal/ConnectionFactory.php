@@ -46,8 +46,11 @@ class ConnectionFactory
 	 * @param mixed[] $params
 	 * @throws DBALException
 	 */
-	public function createConnection(array $params, ?Configuration $config = null, ?EventManager $eventManager = null): Connection
-	{
+	public function createConnection(
+		array $params,
+		?Configuration $config = null,
+		?EventManager $eventManager = null
+	): Connection {
 		if (!$this->initialized) {
 			$this->initializeTypes();
 		}
@@ -92,7 +95,7 @@ class ConnectionFactory
 					'For further information have a look at:' . PHP_EOL .
 					'https://github.com/doctrine/DoctrineBundle/issues/673',
 					0,
-					$driverException
+					$driverException,
 				);
 			}
 

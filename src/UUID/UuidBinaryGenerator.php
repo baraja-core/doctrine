@@ -13,7 +13,6 @@ use Ramsey\Uuid\UuidInterface;
 
 final class UuidBinaryGenerator extends AbstractIdGenerator
 {
-
 	/**
 	 * @param Entity|null $entity
 	 */

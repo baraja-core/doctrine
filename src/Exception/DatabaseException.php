@@ -7,7 +7,6 @@ namespace Baraja\Doctrine;
 
 class DatabaseException extends \RuntimeException
 {
-
 	/**
 	 * @throws DatabaseException
 	 */

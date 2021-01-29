@@ -137,7 +137,7 @@ final class DatabaseExtension extends CompilerExtension
 		if (\count($config['deprecatedParameters'] ?? []) > 0) {
 			throw new \RuntimeException(
 				'Configuration parameters are deprecated. Please use DI extension instead.' . "\n"
-				. 'More information is available here: https://php.baraja.cz/konfigurace-spojeni-s-baraja-doctrine'
+				. 'More information is available here: https://php.baraja.cz/konfigurace-spojeni-s-baraja-doctrine',
 			);
 		}
 
@@ -204,7 +204,7 @@ final class DatabaseExtension extends CompilerExtension
 				'@self',
 				$types,
 				$config['propertyIgnoreAnnotations'] ?? [],
-			]
+			],
 		);
 	}
 
@@ -221,15 +221,15 @@ final class DatabaseExtension extends CompilerExtension
 			$initialize = $class->getMethod('initialize');
 			$initialize->addBody(
 				'$this->getService(?)->addPanel($this->getService(?));',
-				['tracy.bar', $this->prefix('queryPanel')]
+				['tracy.bar', $this->prefix('queryPanel')],
 			);
 			$initialize->addBody(
 				'$this->getService(?)->getConfiguration()->getSqlLogger()->addLogger($this->getService(?));',
-				[$this->prefix('connection'), $this->prefix('queryPanel')]
+				[$this->prefix('connection'), $this->prefix('queryPanel')],
 			);
 			$initialize->addBody(
 				'$this->getService(?)->addPanel(new ?);',
-				['tracy.blueScreen', ContainerBuilder::literal(DbalBlueScreen::class)]
+				['tracy.blueScreen', ContainerBuilder::literal(DbalBlueScreen::class)],
 			);
 		}
 	}
@@ -307,20 +307,26 @@ final class DatabaseExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		if (preg_match('/^([^:]+):(\d+)$/', $config['connection']['host'], $hostParser)) { // parse port from host
-			if (isset($config['connection']['port']) === true && $config['connection']['port'] !== (int) $hostParser[2]) {
+			if (
+				isset($config['connection']['port']) === true
+				&& $config['connection']['port'] !== (int) $hostParser[2]
+			) {
 				throw new \RuntimeException(
 					'Connection port (suffix included in host string) and given port are different.' . "\n"
 					. 'Given host "' . $config['connection']['host'] . '" contains port "' . $hostParser[2] . '", but given port is "' . $config['connection']['port'] . '".' . "\n"
-					. 'To solve this issue: Change "host" string to "' . $hostParser[1] . '" (without ":' . $hostParser[2] . '") or change port to "' . $config['connection']['port'] . '".'
+					. 'To solve this issue: Change "host" string to "' . $hostParser[1] . '" (without ":' . $hostParser[2] . '") or change port to "' . $config['connection']['port'] . '".',
 				);
 			}
 			$config['connection']['host'] = $hostParser[1];
 			$config['connection']['port'] = (int) $hostParser[2];
 		}
-		if (isset($config['connection']['port']) === false && preg_match('/^.+?\.ondigitalocean\.com$/', $config['connection']['host'])) { // DigitalOcean managed database support
+		if (
+			isset($config['connection']['port']) === false
+			&& preg_match('/^.+?\.ondigitalocean\.com$/', $config['connection']['host'])
+		) { // DigitalOcean managed database support
 			throw new \RuntimeException(
 				'In case of DigitalOcean (host is "' . $config['connection']['host'] . '") you must define port (as integer) in your NEON configuration, but NULL given.' . "\n"
-				. 'Hint: Check if your current IP "' . Utils::userIp() . '" is allowed for connection.'
+				. 'Hint: Check if your current IP "' . Utils::userIp() . '" is allowed for connection.',
 			);
 		}
 

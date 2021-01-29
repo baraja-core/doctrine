@@ -103,7 +103,7 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 					}
 
 					return $quotedParams;
-				})
+				}),
 			);
 		} else {
 			$query = $sql;

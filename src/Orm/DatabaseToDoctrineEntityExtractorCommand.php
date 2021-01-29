@@ -62,7 +62,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		$entityNamespace = (string) preg_replace_callback(
 			'/(^(?:[a-z])|(?:\\\\[a-z]))/',
 			fn (array $match): string => strtoupper((string) $match[1]),
-			$namespace
+			$namespace,
 		);
 
 		$output->writeln("\n");
@@ -74,14 +74,14 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		$questionNamespace = new ConfirmationQuestion(
 			'Given namespace is "<comment>' . $namespace . '</comment>", '
 			. 'so entity class-name should be "<comment>' . $entityNamespace . '\User</comment>" for example?',
-			false
+			false,
 		);
 		$realPath = rtrim($this->rootDir . '/' . $path, '/');
 		$questionPath = new ConfirmationQuestion(
 			'Given path is "<comment>' . $path . '</comment>", '
 			. 'your project root dir is "<comment>' . $this->rootDir . '</comment>", '
 			. 'so entity can be stored in directory "<comment>' . $realPath . '</comment>"?',
-			false
+			false,
 		);
 		$questionEntityDir = new ConfirmationQuestion('Can the "<comment>Entity</comment>" directory be added to the end of the path?', false);
 
@@ -106,9 +106,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		/** @var Statement $showTablesStatement */
 		$showTablesStatement = $connection->executeQuery('SHOW TABLES');
 
-		$tables = array_map(static function (array $item): ?string {
-			return array_values($item)[0] ?? null;
-		}, $showTablesStatement->fetchAllAssociative());
+		$tables = array_map(static fn (array $item): ?string => array_values($item)[0] ?? null, $showTablesStatement->fetchAllAssociative());
 
 		$output->writeln('"<comment>' . implode('</comment>", "<comment>', $tables) . '</comment>".');
 		$output->writeln('<info>Count tables:</info> ' . \count($tables));
@@ -166,32 +164,22 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		$content = str_replace('    ', "\t", $content);
 
 		// 2. Add strict declare and namespace
-		$content = (string) preg_replace_callback('/^<\?php(\s+)use\s/', static function (array $match) use ($namespace): string {
-			return '<?php' . "\n\n"
+		$content = (string) preg_replace_callback('/^<\?php(\s+)use\s/', static fn (array $match): string => '<?php' . "\n\n"
 				. 'declare(strict_types=1);' . "\n\n"
 				. 'namespace ' . $namespace . ';' . "\n\n\n"
-				. 'use ';
-		}, $content);
+				. 'use ', $content);
 
 		// 3. Fix relations to other entity
-		$content = (string) preg_replace_callback('/@(param|return|var)\s(\\\\\w+)/', static function (array $match): string {
-			return '@' . $match[1] . ' ' . (\class_exists($match[2]) ? $match[2] : trim($match[2], '\\'));
-		}, $content);
+		$content = (string) preg_replace_callback('/@(param|return|var)\s(\\\\\w+)/', static fn (array $match): string => '@' . $match[1] . ' ' . (\class_exists($match[2]) ? $match[2] : trim($match[2], '\\')), $content);
 
 		// 4. Fix namespace in relation annotation
-		$content = (string) preg_replace_callback('/(@ORM\\\\\w+\(targetEntity=")([^"]+)"/', static function (array $match) use ($namespace): string {
-			return $match[1] . '\\' . $namespace . '\\' . $match[2] . '"';
-		}, $content);
+		$content = (string) preg_replace_callback('/(@ORM\\\\\w+\(targetEntity=")([^"]+)"/', static fn (array $match): string => $match[1] . '\\' . $namespace . '\\' . $match[2] . '"', $content);
 
 		// 5. Fix annotation type in setter
-		$content = (string) preg_replace_callback('/(function\sset\w+)\((\\\\\w+)\s/', static function (array $match): string {
-			return $match[1] . '(' . (\class_exists($match[2]) ? $match[2] : trim($match[2], '\\')) . ' ';
-		}, $content);
+		$content = (string) preg_replace_callback('/(function\sset\w+)\((\\\\\w+)\s/', static fn (array $match): string => $match[1] . '(' . (\class_exists($match[2]) ? $match[2] : trim($match[2], '\\')) . ' ', $content);
 
 		// 6. Add self typehint to setters
-		$content = (string) preg_replace_callback('/(public\sfunction\s\w+[^)]+)\)(\s*[^:](?:\n|[^}])+?return\s\$this;)/', static function (array $match): string {
-			return $match[1] . '): self' . $match[2];
-		}, $content);
+		$content = (string) preg_replace_callback('/(public\sfunction\s\w+[^)]+)\)(\s*[^:](?:\n|[^}])+?return\s\$this;)/', static fn (array $match): string => $match[1] . '): self' . $match[2], $content);
 
 		FileSystem::write($path, $content);
 	}
