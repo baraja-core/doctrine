@@ -180,7 +180,6 @@ final class EntityManager implements EntityManagerInterface
 			throw new \InvalidArgumentException('Entity name "' . $className . '" must be valid class name. Is your class autoloadable?');
 		}
 		try {
-			/** @phpstan-ignore-next-line */
 			return $this->em()->find($className, $id);
 		} catch (ORMException | OptimisticLockException | TransactionRequiredException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
