@@ -21,7 +21,7 @@
 		"ramsey/uuid": "^3.0"
 	},
 	"require-dev": {
-		"baraja-core/package-manager": "^2.5",
+		"baraja-core/package-manager": "^3.0",
 		"phpstan/phpstan": "^0.12.74",
 		"tracy/tracy": "^2.8",
 		"phpstan/phpstan-nette": "^0.12.14",
