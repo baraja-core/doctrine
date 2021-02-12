@@ -155,7 +155,9 @@ final class EntityManager implements EntityManagerInterface
 	{
 		if ($entity !== null) {
 			@trigger_error(
-				'Calling flush() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+				'Calling flush() with any arguments to flush specific entities is deprecated '
+				. 'and will not be supported in Doctrine ORM 3.0. '
+				. 'Did you mean ->getUnitOfWork()->commit($entity)?',
 				E_USER_DEPRECATED,
 			);
 		}
