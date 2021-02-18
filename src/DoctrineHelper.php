@@ -130,11 +130,9 @@ class DoctrineHelper
 	 * This method can fail if you are tried save missing required columns.
 	 * For more information please follow exception messages.
 	 *
-	 * @param object $from instance of specific entity.
-	 * @return object|null
 	 * @throws DatabaseException
 	 */
-	public function remapEntityToBestType($from)
+	public function remapEntityToBestType(object $from): ?object
 	{
 		if (($fromType = get_class($from)) === ($bestType = $this->getBestOfType($fromType))) {
 			return $from;
@@ -150,12 +148,11 @@ class DoctrineHelper
 	 * When you remap entity type, please select all data again, because Doctrine internal memory can be damaged.
 	 * Best practice is refresh page or break CLI process after this change.
 	 *
-	 * @param object $from instance of specific entity.
-	 * @param object|string $to
-	 * @return object|null
+	 * @param object $from instance of specific entity
+	 * @param object|string $to instance of specific entity or class-name
 	 * @throws DatabaseException
 	 */
-	public function remapEntity($from, $to)
+	public function remapEntity(object $from, object|string $to): ?object
 	{
 		if ($this->getDiscriminatorByEntity(\get_class($from)) === ($toDiscriminator = $this->getDiscriminatorByEntity($toType = is_string($to) ? $to : \get_class($to)))) {
 			return $from;
@@ -203,10 +200,9 @@ class DoctrineHelper
 	/**
 	 * Count position of entity in list and save integer back by setPosition().
 	 *
-	 * @param object $itemEntity
 	 * @throws DatabaseException|EntityManagerException
 	 */
-	public function sortEntities($itemEntity, ?string $previousId = null, ?string $parentId = null): void
+	public function sortEntities(object $itemEntity, ?string $previousId = null, ?string $parentId = null): void
 	{
 		if (method_exists($itemEntity, 'getId')
 			&& method_exists($itemEntity, 'getParent')
@@ -294,7 +290,6 @@ class DoctrineHelper
 	private function getParentClassLength(\ReflectionClass $reflection, int $bind = 1): int
 	{
 		$length = 0;
-
 		while (($parent = ($length === 0 ? $reflection : $parent ?? $reflection)->getParentClass()) !== false) {
 			$length++;
 		}
