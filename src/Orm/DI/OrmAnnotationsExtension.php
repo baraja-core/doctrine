@@ -69,16 +69,6 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	}
 
 
-	/**
-	 * @deprecated since 2020-12-16
-	 */
-	public static function addAnnotationPath(string $namespace, string $directoryPath): void
-	{
-		trigger_error(__METHOD__ . ': Extension method addAnnotationPath() is deprecated, please use better method addAnnotationPathToManager() which is guaranteed.');
-		self::$annotationPaths[$namespace] = $directoryPath;
-	}
-
-
 	private static function createEntityAnnotationManager(ContainerBuilder $builder): ServiceDefinition
 	{
 		static $exist = false;
