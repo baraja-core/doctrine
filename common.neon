@@ -9,7 +9,6 @@ orm:
 	entityManagerClass: Baraja\Doctrine\EntityManager
 
 baraja.database:
-	debug: %debugMode%
 	types:
 		uuid: Baraja\Doctrine\UUID\UuidType
 		uuid-binary: Baraja\Doctrine\UUID\UuidBinaryType
