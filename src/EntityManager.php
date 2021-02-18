@@ -50,7 +50,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		parent::__construct(
 			$dependencies->get()->getConnection(),
 			$dependencies->get()->getConfiguration(),
-			$dependencies->get()->getEventManager()
+			$dependencies->get()->getEventManager(),
 		);
 	}
 
