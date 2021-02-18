@@ -37,7 +37,7 @@ final class DatabaseExtension extends CompilerExtension
 	/** @var string[] (type => typeClass) */
 	private static array $customTypes = [
 		'uuid' => UuidType::class,
-		'uuid-binary' => UuidBinaryType::class
+		'uuid-binary' => UuidBinaryType::class,
 	];
 
 	/** @var string[] (name => typeClass) */
