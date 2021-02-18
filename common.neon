@@ -1,7 +1,3 @@
-parameters:
-	database:
-		primary: [] # deprecated since 2020-09-10
-
 extensions:
 	dbal.console: Baraja\Doctrine\DBAL\DI\DbalConsoleExtension
 	orm: Baraja\Doctrine\ORM\DI\OrmExtension
@@ -14,7 +10,6 @@ orm:
 
 baraja.database:
 	debug: %debugMode%
-	deprecatedParameters: %database.primary%
 	types:
 		uuid: Baraja\Doctrine\UUID\UuidType
 		uuid-binary: Baraja\Doctrine\UUID\UuidBinaryType

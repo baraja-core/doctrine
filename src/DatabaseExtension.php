@@ -104,7 +104,6 @@ final class DatabaseExtension extends CompilerExtension
 			'types' => Expect::arrayOf(Expect::string()),
 			'customNumericFunctions' => Expect::arrayOf(Expect::string()),
 			'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string()),
-			'deprecatedParameters' => Expect::array(),
 		])->castTo('array');
 	}
 
@@ -133,14 +132,6 @@ final class DatabaseExtension extends CompilerExtension
 	{
 		/** @var mixed[] $config */
 		$config = $this->getConfig();
-
-		if (\count($config['deprecatedParameters'] ?? []) > 0) {
-			throw new \RuntimeException(
-				'Configuration parameters are deprecated. Please use DI extension instead.' . "\n"
-				. 'More information is available here: https://php.baraja.cz/konfigurace-spojeni-s-baraja-doctrine',
-			);
-		}
-
 		$builder = $this->getContainerBuilder();
 
 		// Dbal
