@@ -8,11 +8,6 @@ extensions:
 orm:
 	entityManagerClass: Baraja\Doctrine\EntityManager
 
-baraja.database:
-	propertyIgnoreAnnotations:
-		- sample
-		- endpointName
-
 orm.annotations:
 	paths: []
 	ignore: []

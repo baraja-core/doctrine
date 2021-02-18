@@ -105,9 +105,9 @@ final class DatabaseExtension extends CompilerExtension
 				'autoCommit' => Expect::bool()->default(true),
 			])->castTo('array'),
 			'cache' => Expect::string(),
-			'types' => Expect::arrayOf(Expect::string()),
+			'types' => Expect::arrayOf(Expect::string())->default([]),
 			'customNumericFunctions' => Expect::arrayOf(Expect::string()),
-			'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string()),
+			'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string())->default([]),
 		])->castTo('array');
 	}
 
@@ -195,7 +195,10 @@ final class DatabaseExtension extends CompilerExtension
 			[
 				'@self',
 				$types,
-				$config['propertyIgnoreAnnotations'] ?? [],
+				array_merge([
+					'sample',
+					'endpointName',
+				], $config['propertyIgnoreAnnotations'] ?? []),
 			],
 		);
 	}
