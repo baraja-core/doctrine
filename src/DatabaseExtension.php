@@ -108,7 +108,7 @@ final class DatabaseExtension extends CompilerExtension
 			'types' => Expect::arrayOf(Expect::string())->default([]),
 			'customNumericFunctions' => Expect::arrayOf(Expect::string()),
 			'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string())->default([]),
-		])->castTo('array');
+		])->castTo('array')->otherItems(Expect::mixed());
 	}
 
 
