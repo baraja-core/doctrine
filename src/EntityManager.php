@@ -28,7 +28,12 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	private Configuration $configuration;
 
 
-	public function __construct(Connection $connection, Configuration $configuration, EventManager $eventManager, ?QueryPanel $panel = null)
+	public function __construct(
+		Connection $connection,
+		Configuration $configuration,
+		EventManager $eventManager,
+		?QueryPanel $panel = null
+	)
 	{
 		if (\class_exists(Debugger::class) === true) {
 			Debugger::getBlueScreen()->addPanel([TracyBlueScreenDebugger::class, 'render']);
