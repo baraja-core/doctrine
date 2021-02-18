@@ -71,7 +71,6 @@ final class DatabaseExtension extends CompilerExtension
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
-			'debug' => Expect::bool(false),
 			'connection' => Expect::structure([
 				'host' => Expect::string()->required(),
 				'dbname' => Expect::string()->required(),
@@ -117,10 +116,7 @@ final class DatabaseExtension extends CompilerExtension
 		$this->loadConnectionConfiguration();
 		$this->registerInternalServices();
 
-		/** @var mixed[] $config */
-		$config = $this->getConfig();
-
-		if (($config['debug'] ?? false) === true) {
+		if (($builder->parameters['debugMode'] ?? false) === true) {
 			$builder->addDefinition($this->prefix('queryPanel'))
 				->setFactory(QueryPanel::class)
 				->setAutowired(false);
@@ -205,10 +201,7 @@ final class DatabaseExtension extends CompilerExtension
 	 */
 	public function afterCompile(ClassType $class): void
 	{
-		/** @var mixed[] $config */
-		$config = $this->getConfig();
-
-		if (($config['debug'] ?? false) === true) {
+		if (($builder->parameters['debugMode'] ?? false) === true) {
 			$initialize = $class->getMethod('initialize');
 			$initialize->addBody(
 				'$this->getService(?)->addPanel($this->getService(?));',
@@ -324,7 +317,7 @@ final class DatabaseExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('eventManager'))
 			->setFactory(ContainerAwareEventManager::class);
 
-		if (($config['debug'] ?? false) === true) {
+		if (($builder->parameters['debugMode'] ?? false) === true) {
 			$builder->getDefinition($this->prefix('eventManager'))
 				->setAutowired(false);
 			$builder->addDefinition($this->prefix('eventManager.debug'))
