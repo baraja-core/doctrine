@@ -88,9 +88,9 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
-			'paths' => Expect::arrayOf(Expect::string()),
-			'excludePaths' => Expect::arrayOf(Expect::string()),
-			'ignore' => Expect::arrayOf(Expect::string()),
+			'paths' => Expect::arrayOf(Expect::string())->default([]),
+			'excludePaths' => Expect::arrayOf(Expect::string())->default([]),
+			'ignore' => Expect::arrayOf(Expect::string())->default([]),
 			'defaultCache' => Expect::string('filesystem'),
 			'cache' => Expect::string(),
 			'debug' => Expect::bool(false),

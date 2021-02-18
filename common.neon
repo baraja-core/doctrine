@@ -4,7 +4,3 @@ extensions:
 	orm.console: Baraja\Doctrine\ORM\DI\OrmConsoleExtension
 	orm.annotations: Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension
 	baraja.database: Baraja\Doctrine\DatabaseExtension
-
-orm.annotations:
-	paths: []
-	ignore: []
