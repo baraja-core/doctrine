@@ -11,7 +11,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -34,7 +33,7 @@ use Tracy\Debugger;
 /**
  * Improved implementation of EntityManager with configure cache automatically and add data types.
  */
-final class EntityManager implements EntityManagerInterface
+final class EntityManager extends \Doctrine\ORM\EntityManager
 {
 	private ?Connection $connection = null;
 
@@ -48,6 +47,11 @@ final class EntityManager implements EntityManagerInterface
 	public function __construct(EntityManagerDependenciesAccessor $dependencies)
 	{
 		$this->dependencies = $dependencies;
+		parent::__construct(
+			$dependencies->get()->getConnection(),
+			$dependencies->get()->getConfiguration(),
+			$dependencies->get()->getEventManager()
+		);
 	}
 
 
@@ -174,15 +178,18 @@ final class EntityManager implements EntityManagerInterface
 	/**
 	 * @param string $className The class name of the object to find.
 	 * @param mixed $id The identity of the object to find.
+	 * @param int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+	 *        or NULL if no specific lock mode should be used during the search.
+	 * @param int|null $lockVersion The version of the entity to find when using ptimistic locking.
 	 * @return object|null The found object.
 	 */
-	public function find($className, $id)
+	public function find($className, $id, $lockMode = null, $lockVersion = null)
 	{
 		if (\class_exists($className) === false) {
 			throw new \InvalidArgumentException('Entity name "' . $className . '" must be valid class name. Is your class autoloadable?');
 		}
 		try {
-			return $this->em()->find($className, $id);
+			return $this->em()->find($className, $id, $lockMode, $lockVersion);
 		} catch (ORMException | OptimisticLockException | TransactionRequiredException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
