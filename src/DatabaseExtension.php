@@ -12,6 +12,8 @@ use Baraja\Doctrine\DBAL\Events\DebugEventManager;
 use Baraja\Doctrine\DBAL\Tracy\BlueScreen\DbalBlueScreen;
 use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension;
+use Baraja\Doctrine\UUID\UuidBinaryType;
+use Baraja\Doctrine\UUID\UuidType;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\EventManager;
@@ -33,7 +35,10 @@ final class DatabaseExtension extends CompilerExtension
 	public const TAG_DOCTRINE_SUBSCRIBER = 'doctrine.subscriber';
 
 	/** @var string[] (type => typeClass) */
-	private static array $customTypes = [];
+	private static array $customTypes = [
+		'uuid' => UuidType::class,
+		'uuid-binary' => UuidBinaryType::class
+	];
 
 	/** @var string[] (name => typeClass) */
 	private static array $customNumericFunctions = [

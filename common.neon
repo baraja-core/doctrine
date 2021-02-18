@@ -9,9 +9,6 @@ orm:
 	entityManagerClass: Baraja\Doctrine\EntityManager
 
 baraja.database:
-	types:
-		uuid: Baraja\Doctrine\UUID\UuidType
-		uuid-binary: Baraja\Doctrine\UUID\UuidBinaryType
 	propertyIgnoreAnnotations:
 		- sample
 		- endpointName
