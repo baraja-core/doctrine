@@ -6,6 +6,7 @@ namespace Baraja\Doctrine\ORM\DI;
 
 
 use Baraja\Doctrine\DBAL\DI\DbalConsoleExtension;
+use Baraja\Doctrine\EntityManager;
 use Baraja\Doctrine\ORM\EntityManagerDecorator;
 use Baraja\Doctrine\ORM\Mapping\ContainerEntityListenerResolver;
 use Doctrine\ORM\Configuration;
@@ -22,6 +23,7 @@ final class OrmExtension extends CompilerExtension
 	private array $defaults = [
 		'entityManagerDecoratorClass' => EntityManagerDecorator::class,
 		'configurationClass' => Configuration::class,
+		'entityManagerClass' => EntityManager::class,
 		'configuration' => [
 			'proxyDir' => '%tempDir%/proxies',
 			'autoGenerateProxyClasses' => null,

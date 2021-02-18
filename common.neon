@@ -5,9 +5,6 @@ extensions:
 	orm.annotations: Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension
 	baraja.database: Baraja\Doctrine\DatabaseExtension
 
-orm:
-	entityManagerClass: Baraja\Doctrine\EntityManager
-
 orm.annotations:
 	paths: []
 	ignore: []
