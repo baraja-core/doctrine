@@ -33,8 +33,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		Configuration $configuration,
 		EventManager $eventManager,
 		?QueryPanel $panel = null
-	)
-	{
+	) {
 		if (\class_exists(Debugger::class) === true) {
 			Debugger::getBlueScreen()->addPanel([TracyBlueScreenDebugger::class, 'render']);
 			TracyBlueScreenDebugger::setEntityManager($this);
