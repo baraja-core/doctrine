@@ -9,23 +9,13 @@ use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\PessimisticLockException;
-use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\TransactionRequiredException;
-use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Mapping\MappingException;
 use Nette\Utils\FileSystem;
 use Tracy\Debugger;
@@ -35,22 +25,22 @@ use Tracy\Debugger;
  */
 final class EntityManager extends \Doctrine\ORM\EntityManager
 {
-	private ?Connection $connection = null;
-
 	private Configuration $configuration;
 
-	private EventManager $eventManager;
 
-	private EntityManagerDependenciesAccessor $dependencies;
-
-
-	public function __construct(EntityManagerDependenciesAccessor $dependencies)
+	public function __construct(Connection $connection, Configuration $configuration, EventManager $eventManager, ?QueryPanel $panel = null)
 	{
-		$this->dependencies = $dependencies;
+		if (\class_exists(Debugger::class) === true) {
+			Debugger::getBlueScreen()->addPanel([TracyBlueScreenDebugger::class, 'render']);
+			TracyBlueScreenDebugger::setEntityManager($this);
+			if ($panel !== null) {
+				Debugger::getBar()->addPanel($panel);
+			}
+		}
 		parent::__construct(
-			$dependencies->get()->getConnection(),
-			$dependencies->get()->getConfiguration(),
-			$dependencies->get()->getEventManager(),
+			$connection,
+			$this->configuration = $configuration,
+			$eventManager,
 		);
 	}
 
@@ -61,7 +51,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	 */
 	public function addInit(callable $callback): void
 	{
-		$this->dependencies->get()->addInitEvent($callback);
+		$callback($this);
 	}
 
 
@@ -73,40 +63,9 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	 */
 	public function addEventListener($events, $listener): self
 	{
-		if ($this->connection === null) {
-			$this->dependencies->get()->addLazyEventListener([$events, $listener]);
-		} else {
-			$this->getEventManager()->addEventListener($events, $listener);
-		}
+		$this->getEventManager()->addEventListener($events, $listener);
 
 		return $this;
-	}
-
-
-	/**
-	 * @internal
-	 */
-	public function init(): void
-	{
-		if ($this->connection === null) {
-			if (\class_exists(Debugger::class) === true) {
-				Debugger::getBlueScreen()->addPanel([TracyBlueScreenDebugger::class, 'render']);
-				TracyBlueScreenDebugger::setEntityManager($this);
-			}
-			$this->connection = ($manager = $this->dependencies->get())->getConnection();
-			$this->configuration = $manager->getConfiguration();
-			$this->eventManager = $manager->getEventManager();
-
-			foreach ($manager->getInitEvents() as $initCallback) {
-				$initCallback($this);
-			}
-
-			foreach ($manager->getLazyEventListeners() as $eventListener) {
-				$this->getEventManager()->addEventListener($eventListener[0], $eventListener[1]);
-			}
-
-			$manager->setInitClosed();
-		}
 	}
 
 
@@ -143,7 +102,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function persist($entity): self
 	{
 		try {
-			$this->em()->persist($entity);
+			parent::persist($entity);
 		} catch (ORMException $e) {
 			EntityManagerException::e($e);
 		}
@@ -166,7 +125,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 			);
 		}
 		try {
-			$this->em()->flush($entity);
+			parent::flush($entity);
 		} catch (ORMException | OptimisticLockException $e) {
 			EntityManagerException::e($e);
 		}
@@ -189,7 +148,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 			throw new \InvalidArgumentException('Entity name "' . $className . '" must be valid class name. Is your class autoloadable?');
 		}
 		try {
-			return $this->em()->find($className, $id, $lockMode, $lockVersion);
+			return parent::find($className, $id, $lockMode, $lockVersion);
 		} catch (ORMException | OptimisticLockException | TransactionRequiredException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
@@ -202,7 +161,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function remove($object): self
 	{
 		try {
-			$this->em()->remove($object);
+			parent::remove($object);
 		} catch (ORMException $e) {
 			EntityManagerException::e($e);
 		}
@@ -219,7 +178,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function merge($object)
 	{
 		try {
-			return $this->em()->merge($object);
+			return parent::merge($object);
 		} catch (ORMException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
@@ -236,19 +195,10 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 			$objectName = \get_class($objectName);
 		}
 		try {
-			$this->em()->clear($objectName);
+			parent::clear($objectName);
 		} catch (MappingException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
-	}
-
-
-	/**
-	 * @param object $object The object to detach.
-	 */
-	public function detach($object): void
-	{
-		$this->em()->detach($object);
 	}
 
 
@@ -259,7 +209,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function refresh($object): void
 	{
 		try {
-			$this->em()->refresh($object);
+			parent::refresh($object);
 		} catch (ORMException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
@@ -271,67 +221,10 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	 */
 	public function getRepository($className): EntityRepository
 	{
-		$metadata = $this->em()->getClassMetadata($className);
+		$metadata = parent::getClassMetadata($className);
 		$repository = $metadata->customRepositoryClassName ?? Repository::class;
 
 		return new $repository($this, $metadata);
-	}
-
-
-	/**
-	 * @param string $className
-	 */
-	public function getClassMetadata($className): ClassMetadata
-	{
-		return $this->em()->getClassMetadata($className);
-	}
-
-
-	public function getMetadataFactory(): ClassMetadataFactory
-	{
-		return $this->em()->getMetadataFactory();
-	}
-
-
-	/**
-	 * @param object $obj
-	 */
-	public function initializeObject($obj): void
-	{
-		$this->em()->initializeObject($obj);
-	}
-
-
-	/**
-	 * @param object $object
-	 */
-	public function contains($object): bool
-	{
-		return $this->em()->contains($object);
-	}
-
-
-	public function getCache(): ?Cache
-	{
-		return $this->em()->getCache();
-	}
-
-
-	public function getConnection(): Connection
-	{
-		return $this->em()->getConnection();
-	}
-
-
-	public function getExpressionBuilder(): Query\Expr
-	{
-		return $this->em()->getExpressionBuilder();
-	}
-
-
-	public function beginTransaction(): void
-	{
-		$this->em()->beginTransaction();
 	}
 
 
@@ -343,65 +236,10 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function transactional($func)
 	{
 		try {
-			return $this->em()->transactional($func);
+			return parent::transactional($func);
 		} catch (\Throwable $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
-	}
-
-
-	public function commit(): void
-	{
-		$this->em()->commit();
-	}
-
-
-	public function rollback(): void
-	{
-		$this->em()->rollback();
-	}
-
-
-	/**
-	 * @param string $dql The DQL string.
-	 */
-	public function createQuery($dql = ''): Query
-	{
-		return $this->em()->createQuery($dql ?? '');
-	}
-
-
-	/**
-	 * @param string $name
-	 */
-	public function createNamedQuery($name): Query
-	{
-		return $this->em()->createNamedQuery($name);
-	}
-
-
-	/**
-	 * @param string $sql
-	 * @param ResultSetMapping $rsm The ResultSetMapping to use.
-	 */
-	public function createNativeQuery($sql, ResultSetMapping $rsm): NativeQuery
-	{
-		return $this->em()->createNativeQuery($sql, $rsm);
-	}
-
-
-	/**
-	 * @param string $name
-	 */
-	public function createNamedNativeQuery($name): NativeQuery
-	{
-		return $this->em()->createNamedNativeQuery($name);
-	}
-
-
-	public function createQueryBuilder(): QueryBuilder
-	{
-		return $this->em()->createQueryBuilder();
 	}
 
 
@@ -417,27 +255,10 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 			throw new \InvalidArgumentException('Entity name "' . $entityName . '" must be valid class name. Is your class autoloadable?');
 		}
 		try {
-			return $this->em()->getReference($entityName, $id);
+			return parent::getReference($entityName, $id);
 		} catch (ORMException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
-	}
-
-
-	/**
-	 * @param string $entityName The name of the entity type.
-	 * @param mixed $identifier The entity identifier.
-	 * @return object|null The (partial) entity reference.
-	 */
-	public function getPartialReference($entityName, $identifier)
-	{
-		return $this->em()->getPartialReference($entityName, $identifier);
-	}
-
-
-	public function close(): void
-	{
-		$this->em()->close();
 	}
 
 
@@ -450,46 +271,10 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function copy($entity, $deep = false)
 	{
 		try {
-			return $this->em()->copy($entity, $deep);
+			return parent::copy($entity, $deep);
 		} catch (\BadMethodCallException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
-	}
-
-
-	/**
-	 * @param object $entity
-	 * @param int $lockMode
-	 * @param int|null $lockVersion
-	 * @throws OptimisticLockException|PessimisticLockException
-	 */
-	public function lock($entity, $lockMode, $lockVersion = null): void
-	{
-		$this->em()->lock($entity, $lockMode, $lockVersion);
-	}
-
-
-	public function getEventManager(): EventManager
-	{
-		return $this->em()->getEventManager();
-	}
-
-
-	public function getConfiguration(): Configuration
-	{
-		return $this->em()->getConfiguration();
-	}
-
-
-	public function isOpen(): bool
-	{
-		return $this->em()->isOpen();
-	}
-
-
-	public function getUnitOfWork(): UnitOfWork
-	{
-		return $this->em()->getUnitOfWork();
 	}
 
 
@@ -501,7 +286,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	{
 		trigger_error(__METHOD__ . ': Method getHydrator() is deprecated, use DIC.', E_DEPRECATED);
 
-		return $this->em()->getHydrator($hydrationMode);
+		return parent::getHydrator($hydrationMode);
 	}
 
 
@@ -512,46 +297,15 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function newHydrator($hydrationMode): AbstractHydrator
 	{
 		try {
-			return $this->em()->newHydrator($hydrationMode);
+			return parent::newHydrator($hydrationMode);
 		} catch (ORMException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
 	}
 
 
-	public function getProxyFactory(): ProxyFactory
-	{
-		return $this->em()->getProxyFactory();
-	}
-
-
-	public function getFilters(): Query\FilterCollection
-	{
-		return $this->em()->getFilters();
-	}
-
-
-	/**
-	 * @return bool -> True, if the filter collection is clean.
-	 */
-	public function isFiltersStateClean(): bool
-	{
-		return $this->em()->isFiltersStateClean();
-	}
-
-
-	/**
-	 * @return bool -> True, if the EM has a filter collection.
-	 */
-	public function hasFilters(): bool
-	{
-		return $this->em()->hasFilters();
-	}
-
-
 	public function setCache(?CacheProvider $cache = null): void
 	{
-		$this->init();
 		QueryPanel::setCache($cache);
 
 		if ($cache === null) {
@@ -572,9 +326,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 	public function buildCache(bool $saveMode = false, bool $invalidCache = false): void
 	{
-		$this->init();
 		QueryPanel::setInvalidCache($invalidCache);
-
 		if ($invalidCache === true) {
 			if (empty($metadata = $this->getMetadataFactory()->getAllMetadata())) {
 				return;
@@ -585,26 +337,5 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 			$schemaTool->updateSchema($metadata, $saveMode);
 		}
-	}
-
-
-	private function em(): \Doctrine\ORM\EntityManager
-	{
-		static $cache;
-
-		if ($cache === null) {
-			$this->init();
-			try {
-				if ($this->connection === null) {
-					throw new \RuntimeException('You must be connected to physical database before create instance of "' . \Doctrine\ORM\EntityManager::class . '".');
-				}
-				$cache = \Doctrine\ORM\EntityManager::create($this->connection, $this->configuration, $this->eventManager);
-			} catch (ORMException $e) {
-				Debugger::log($e);
-				trigger_error($e->getMessage(), E_ERROR);
-			}
-		}
-
-		return $cache;
 	}
 }

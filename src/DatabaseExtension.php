@@ -29,6 +29,7 @@ use Nette\PhpGenerator\ClassType;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nette\Utils\Validators;
+use Tracy\Debugger;
 
 final class DatabaseExtension extends CompilerExtension
 {
@@ -209,7 +210,7 @@ final class DatabaseExtension extends CompilerExtension
 	 */
 	public function afterCompile(ClassType $class): void
 	{
-		if (($builder->parameters['debugMode'] ?? false) === true) {
+		if (($this->getContainerBuilder()->parameters['debugMode'] ?? false) === true) {
 			$initialize = $class->getMethod('initialize');
 			$initialize->addBody(
 				'$this->getService(?)->addPanel($this->getService(?));',
@@ -223,6 +224,12 @@ final class DatabaseExtension extends CompilerExtension
 				'$this->getService(?)->addPanel(new ?);',
 				['tracy.blueScreen', ContainerBuilder::literal(DbalBlueScreen::class)],
 			);
+
+			if (\class_exists(Debugger::class) === true) {
+				/** @var ServiceDefinition $entityManager */
+				$entityManager = $this->getContainerBuilder()->getDefinitionByType(EntityManager::class);
+				$entityManager->setArgument('panel', '@' . QueryPanel::class);
+			}
 		}
 	}
 
@@ -348,12 +355,6 @@ final class DatabaseExtension extends CompilerExtension
 	private function registerInternalServices(): void
 	{
 		$builder = $this->getContainerBuilder();
-
-		$builder->addDefinition($this->prefix('entityManagerDependencies'))
-			->setFactory(EntityManagerDependencies::class);
-
-		$builder->addAccessorDefinition($this->prefix('entityManagerDependenciesAccessor'))
-			->setImplement(EntityManagerDependenciesAccessor::class);
 
 		$builder->addDefinition($this->prefix('doctrineHelper'))
 			->setFactory(DoctrineHelper::class);
