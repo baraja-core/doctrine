@@ -212,7 +212,7 @@ class DoctrineHelper
 		) {
 			throw new \InvalidArgumentException(
 				'Entity "' . \get_class($itemEntity) . '" must implement getParent(), '
-				. 'setParent() and getPosition().'
+				. 'setParent() and getPosition().',
 			);
 		}
 		$parent = $itemEntity->getParent();
