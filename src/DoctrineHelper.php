@@ -204,78 +204,79 @@ class DoctrineHelper
 	 */
 	public function sortEntities(object $itemEntity, ?string $previousId = null, ?string $parentId = null): void
 	{
-		if (method_exists($itemEntity, 'getId')
-			&& method_exists($itemEntity, 'getParent')
-			&& method_exists($itemEntity, 'setParent')
-			&& method_exists($itemEntity, 'setPosition')
+		trigger_error('Method "' . __METHOD__ . '" is deprecated, please define this logic user-land.');
+		if (!method_exists($itemEntity, 'getId')
+			|| !method_exists($itemEntity, 'getParent')
+			|| !method_exists($itemEntity, 'setParent')
+			|| !method_exists($itemEntity, 'setPosition')
 		) {
-			if (
-				($parent = $itemEntity->getParent()) !== null
-				&& method_exists($parent, 'getId')
-				&& $parent->getId() !== $parentId
-			) {
-				try {
-					$parent = $this->entityManager->getRepository(\get_class($itemEntity))
-						->createQueryBuilder('e')
-						->where('e.id = :id')
-						->setParameter('id', $parentId)
-						->orderBy('e.position', 'ASC')
-						->getQuery()
-						->getSingleResult();
-				} catch (NoResultException | NonUniqueResultException $e) {
-					DatabaseException::e($e);
-				}
-
-				$itemEntity->setParent($parent);
-			}
-
-			if ($parent === null) { // root entity
-				$items = $this->entityManager->getRepository(\get_class($itemEntity))
+			throw new \InvalidArgumentException(
+				'Entity "' . \get_class($itemEntity) . '" must implement getParent(), '
+				. 'setParent() and getPosition().'
+			);
+		}
+		$parent = $itemEntity->getParent();
+		/** @phpstan-ignore-next-line */
+		if ($parent !== null && method_exists($parent, 'getId') && $parent->getId() !== $parentId) {
+			try {
+				$parent = $this->entityManager->getRepository(\get_class($itemEntity))
 					->createQueryBuilder('e')
-					->where('e.parent IS NULL')
+					->where('e.id = :id')
+					->setParameter('id', $parentId)
 					->orderBy('e.position', 'ASC')
 					->getQuery()
-					->getResult();
-			} else {
-				$items = $parent->getChildren();
+					->getSingleResult();
+			} catch (NoResultException | NonUniqueResultException $e) {
+				DatabaseException::e($e);
 			}
 
-			$position = 0;
-			$categoryWasSet = false;
-
-			if ($previousId === null) {
-				$itemEntity->setPosition(0);
-				$position++;
-				foreach ($items ?? [] as $item) {
-					if ($item->getId() !== $itemEntity->getId()) {
-						$item->setPosition($position);
-						$position++;
-					}
-				}
-			} else {
-				foreach ($items ?? [] as $item) {
-					if ($item->getId() === $previousId) {
-						$item->setPosition($position);
-						$position++;
-						$itemEntity->setPosition($position);
-						$position++;
-					} elseif ($item->getId() !== $previousId) {
-						$item->setPosition($position);
-						$position++;
-					} elseif ($previousId !== null) {
-						$categoryWasSet = true;
-					}
-				}
-
-				if ($categoryWasSet === false) {
-					$itemEntity->setPosition($position);
-				}
-			}
-
-			$this->entityManager->flush();
-		} else {
-			DatabaseException::entityMustImplement(\get_class($itemEntity));
+			$itemEntity->setParent($parent);
 		}
+
+		if ($parent === null) { // root entity
+			$items = $this->entityManager->getRepository(\get_class($itemEntity))
+				->createQueryBuilder('e')
+				->where('e.parent IS NULL')
+				->orderBy('e.position', 'ASC')
+				->getQuery()
+				->getResult();
+		} else {
+			$items = $parent->getChildren();
+		}
+
+		$position = 0;
+		$categoryWasSet = false;
+
+		if ($previousId === null) {
+			$itemEntity->setPosition(0);
+			$position++;
+			foreach ($items ?? [] as $item) {
+				if ($item->getId() !== $itemEntity->getId()) {
+					$item->setPosition($position);
+					$position++;
+				}
+			}
+		} else {
+			foreach ($items ?? [] as $item) {
+				if ($item->getId() === $previousId) {
+					$item->setPosition($position);
+					$position++;
+					$itemEntity->setPosition($position);
+					$position++;
+				} elseif ($item->getId() !== $previousId) {
+					$item->setPosition($position);
+					$position++;
+				} elseif ($previousId !== null) {
+					$categoryWasSet = true;
+				}
+			}
+
+			if ($categoryWasSet === false) {
+				$itemEntity->setPosition($position);
+			}
+		}
+
+		$this->entityManager->flush();
 	}
 
 
