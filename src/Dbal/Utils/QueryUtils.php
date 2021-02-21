@@ -30,32 +30,28 @@ final class QueryUtils
 
 		// syntax highlight
 		self::getCounter(true);
-		$sql = htmlspecialchars($sql, ENT_IGNORE, 'UTF-8');
 		$sql = (string) preg_replace_callback(
 			"#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is",
-			function ($matches) {
+			static function (array $matches) {
 				if (!empty($matches[1])) { // comment
-					return '<em style="color:gray">' . $matches[1] . '</em>';
+					return '<em style="color:#424242" style="font-family:monospace">' . $matches[1] . '</em>';
 				}
-
 				if (!empty($matches[2])) { // error
-					return '<strong style="color:red">' . $matches[2] . '</strong>';
+					return '<strong style="color:#c62828" style="font-family:monospace">' . $matches[2] . '</strong>';
 				}
-
 				if (!empty($matches[3])) { // most important keywords
-					return (self::getCounter() > 1 ? '<br>' : '') . '<strong style="color:blue">' . $matches[3] . '</strong>';
+					return (self::getCounter() > 1 ? '<br>' : '') . '<strong style="color:#283593" style="font-family:monospace">' . $matches[3] . '</strong>';
 				}
-
 				if (!empty($matches[4])) { // other keywords
-					return '<strong style="color:green">' . $matches[4] . '</strong>';
+					return '<strong style="color:#2e7d32" style="font-family:monospace">' . $matches[4] . '</strong>';
 				}
 
 				return '';
 			},
-			$sql,
+			htmlspecialchars($sql, ENT_IGNORE),
 		);
 
-		return '<span class="dump" style="font-family: monospace">'
+		return '<span class="dump">'
 			. trim((string) preg_replace('/<\/strong>\s+/', '</strong>&nbsp;', $sql))
 			. '</span>' . "\n";
 	}
