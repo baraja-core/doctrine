@@ -7,6 +7,15 @@ A simple and easy to use, maximum performance database layer with connection to 
 
 This package automatically installs Doctrine to your project (also sets everything up in the configuration) and runs stably.
 
+🐛 Best debug Tracy panel
+-------------------------
+
+This package contains the most advanced native tools for debugging your application and SQL queries. You can very easily view the performed queries, click directly on the place of their original invocation and watch the time graphs on the output (with the possibility of analyzing slow queries). Write query types are displayed separately for quick control of data flow.
+
+![Baraja Doctrine debug Tracy panel](doc/tracy-panel-design.png)
+
+The package also includes advanced logic for debugging corrupted entities and queries directly through Tracy Bluescreen. Using the debugger turns on automatically and you will never lose any useful information.
+
 📦 Installation & Basic Usage
 -----------------------------
 
