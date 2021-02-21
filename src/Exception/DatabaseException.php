@@ -32,13 +32,4 @@ class DatabaseException extends \RuntimeException
 	{
 		throw new self('Entities for remap must be same table type, "' . $fromTable . '" and "' . $to . '" given.');
 	}
-
-
-	/**
-	 * @throws DatabaseException
-	 */
-	public static function entityMustImplement(string $className): void
-	{
-		throw new self('Entity "' . $className . '" must implement getParent(), setParent() and getPosition().');
-	}
 }
