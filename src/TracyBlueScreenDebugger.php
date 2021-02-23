@@ -81,7 +81,7 @@ final class TracyBlueScreenDebugger
 	{
 		$tab = null;
 		$panel = null;
-		if (strpos($e->getMessage(), 'The server requested authentication method unknown to the client') !== false) {
+		if (str_contains($e->getMessage(), 'The server requested authentication method unknown to the client')) {
 			$tab = 'Connection error';
 			$panel = '<p>' . htmlspecialchars($e->getMessage()) . '</p>'
 				. '<p>If the database is connected to the cloud (for example, DigitalOcean), an <b>enabled SSL mode</b> may be required for a functional connection.</p>'
@@ -100,6 +100,26 @@ final class TracyBlueScreenDebugger
 		} elseif (preg_match('/while executing \'(.+)\'/', $e->getMessage(), $parser)) {
 			$tab = 'Driver error';
 			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>';
+		} elseif (str_contains($e->getMessage(), 'Connection refused')) {
+			$tab = 'Broken connection';
+			$panel = '<p>The connection to the database was rejected by the database. '
+				. 'Verify that your database is running and that you are using functional data for the connection '
+				. '(there is often a problem of confusing host <b>localhost</b> vs. <b>127.0.0.1</b> '
+				. 'or other host depending on your configuration).</p>'
+				. (self::$entityManager
+					? '<p><b>Please check your local connection configuration</b> '
+					. '(<i>You can change this configuration in the <b>local.neon</b> file</i>):</p>'
+					. (static function (array $params): string {
+						$return = '';
+						foreach ($params as $key => $value) {
+							$return .= '<tr><th>' . htmlspecialchars($key) . '</th>'
+								. '<td>' . Dumper::toHtml($value) . '</td></tr>';
+						}
+
+						return '<table>' . $return . '</table>';
+					})(self::$entityManager->getConnection()->getParams())
+					. '<p>The usual settings are: Host: localhost, port: 3306 (for MySql).</p>'
+					: '');
 		}
 
 		if (
