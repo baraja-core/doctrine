@@ -139,7 +139,7 @@ abstract class AbstractLogger implements SQLLogger
 				continue;
 			}
 			if (
-				preg_match('/\/vendor\/([^\/]+\/[^\/]+)\//', $item['file'] ?? '', $parser)
+				preg_match('/\/vendor\/([^\/]+\/[^\/]+)\//', str_replace(DIRECTORY_SEPARATOR, '/', $item['file'] ?? ''), $parser)
 				&& (
 					$parser[1] === 'baraja-core/doctrine'
 					|| strncmp($parser[1], 'doctrine/', 9) === 0
