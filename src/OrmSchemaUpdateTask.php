@@ -29,6 +29,7 @@ final class OrmSchemaUpdateTask extends BaseTask
 		}
 
 		echo 'Using PHP version: ' . PHP_VERSION . "\n\n";
+		echo 'Starting application, please wait...' . "\n\n";
 
 		try {
 			/** @var Application $app */
