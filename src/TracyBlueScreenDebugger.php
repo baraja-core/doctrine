@@ -127,7 +127,7 @@ final class TracyBlueScreenDebugger
 			&& preg_match('/Table\s\\\'([^\\\']+)\\\'\sdoesn\\\'t\sexist/', $e->getMessage(), $parser)
 		) {
 			try {
-				$tableList = array_map(static fn (array $item): string => (string) (array_values($item)[0] ?? ''), self::$entityManager->getConnection()->executeQuery('show tables')->fetchAll());
+				$tableList = array_map(static fn(array $item): string => (string) (array_values($item)[0] ?? ''), self::$entityManager->getConnection()->executeQuery('show tables')->fetchAll());
 
 				$panelMeta = [];
 				foreach (self::$entityManager->getMetadataFactory()->getAllMetadata() as $metaData) {
