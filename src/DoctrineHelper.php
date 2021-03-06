@@ -42,7 +42,7 @@ class DoctrineHelper
 				} catch (\ReflectionException $e) {
 					$return[$variant] = (string) preg_replace_callback(
 						'/([a-z0-9])([A-Z])/',
-						static fn (array $match) => $match[1] . ' ' . strtolower($match[2]),
+						static fn(array $match) => $match[1] . ' ' . strtolower($match[2]),
 						(string) preg_replace('/^.*?\\\\([^\\\\]+)$/', '$1', $variant),
 					);
 				}
