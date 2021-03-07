@@ -199,6 +199,7 @@ final class DatabaseExtension extends CompilerExtension
 				array_merge([
 					'sample',
 					'endpointName',
+					'editable',
 				], $config['propertyIgnoreAnnotations'] ?? []),
 			],
 		);
