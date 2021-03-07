@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
+use Baraja\Doctrine\Bridge\DoctrineEntityRepository;
 use Baraja\Doctrine\Cache\SQLite3Cache;
 use Baraja\Doctrine\DBAL\ConnectionFactory;
 use Baraja\Doctrine\DBAL\Events\ContainerAwareEventManager;
@@ -14,6 +15,7 @@ use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension;
 use Baraja\Doctrine\UUID\UuidBinaryType;
 use Baraja\Doctrine\UUID\UuidType;
+use Baraja\ServiceMethodInvoker\ProjectEntityRepository;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\EventManager;
@@ -171,6 +173,11 @@ final class DatabaseExtension extends CompilerExtension
 			}
 			$functionsCode .= ($functionsCode ? "\n\t" : '')
 				. '$entityManager->getConfiguration()->addCustomNumericFunction(\'' . strtoupper($functionName) . '\', ' . $functionType . '::class);';
+		}
+
+		if (interface_exists(ProjectEntityRepository::class)) {
+			$builder->addDefinition($this->prefix('projectEntityRepository'))
+				->setFactory(DoctrineEntityRepository::class);
 		}
 
 		/** @var ServiceDefinition $generator */
