@@ -18,6 +18,7 @@ final class DoctrineEntityRepository implements ProjectEntityRepository
 
 	public function find(string $className, int|string $id): ?object
 	{
+		/** @phpstan-ignore-next-line */
 		return $this->entityManager->find($className, $id);
 	}
 }
