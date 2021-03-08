@@ -11,7 +11,9 @@ use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\SQLParserUtils;
 use Doctrine\DBAL\SQLParserUtilsException;
+use Tracy\Debugger;
 use Tracy\IBarPanel;
+use Tracy\ILogger;
 
 final class QueryPanel extends AbstractLogger implements IBarPanel
 {
@@ -93,18 +95,24 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 			} catch (SQLParserUtilsException $e) {
 			}
 
-			$query = vsprintf(
-				str_replace(['%', '?'], ['%%', '%s'], (string) $sql),
-				call_user_func(function () use ($params, $types) {
-					$quotedParams = [];
-					foreach ($params as $typeIndex => $value) {
-						$type = $types[$typeIndex] ?? null;
-						$quotedParams[] = $this->connection->quote($value, $type);
-					}
+			$sql = str_replace(['%', '?'], ['%%', '%s'], (string) $sql);
+			try {
+				$query = vsprintf(
+					$sql,
+					call_user_func(function () use ($params, $types): array {
+						$quotedParams = [];
+						foreach ($params as $typeIndex => $value) {
+							$type = $types[$typeIndex] ?? null;
+							$quotedParams[] = $this->connection->quote($value, $type);
+						}
 
-					return $quotedParams;
-				}),
-			);
+						return $quotedParams;
+					}),
+				);
+			} catch (\Throwable $e) {
+				$query = $sql;
+				Debugger::log($e, ILogger::WARNING);
+			}
 		} else {
 			$query = $sql;
 		}
