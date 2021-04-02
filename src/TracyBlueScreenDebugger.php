@@ -175,9 +175,9 @@ final class TracyBlueScreenDebugger
 			$return = '';
 			foreach (self::$entityManager->getClassMetadata($mapping['class'])->fieldMappings as $field) {
 				$return .= '<tr>'
-					. '<td>' . $field['fieldName'] . '</td>'
-					. '<td>' . $field['columnName'] . '</td>'
-					. '<td>' . $field['type'] . '</td>'
+					. '<td>' . htmlspecialchars($field['fieldName']) . '</td>'
+					. '<td>' . htmlspecialchars($field['columnName'] ?? '') . '</td>'
+					. '<td>' . htmlspecialchars($field['type']) . '</td>'
 					. '</tr>';
 			}
 
