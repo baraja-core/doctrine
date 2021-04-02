@@ -55,7 +55,7 @@ class MatchAgainstFunction extends FunctionNode
 
 		$parser->match(Lexer::T_IDENTIFIER);
 		$parser->match(Lexer::T_OPEN_PARENTHESIS);
-		$this->against = $parser->StringPrimary();
+		$this->against = (string) $parser->StringPrimary();
 
 		if (strtolower($lexer->lookahead['value'] ?? '') === 'boolean') {
 			$parser->match(Lexer::T_IDENTIFIER);
