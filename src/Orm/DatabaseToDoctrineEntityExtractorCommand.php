@@ -9,6 +9,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\DBAL\Driver\PDO\Statement;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
@@ -22,16 +23,13 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 final class DatabaseToDoctrineEntityExtractorCommand extends Command
 {
-	private string $rootDir;
-
-	private EntityManager $entityManager;
-
-
-	public function __construct(string $rootDir, EntityManager $entityManager)
+	public function __construct(
+		private string $rootDir,
+		private EntityManager $entityManager
+	)
 	{
 		parent::__construct();
 		$this->rootDir = realpath($rootDir) ?: $rootDir;
-		$this->entityManager = $entityManager;
 	}
 
 
@@ -136,6 +134,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$cmf = new DisconnectedClassMetadataFactory;
 		$cmf->setEntityManager($em);
+		/** @var ClassMetadataInfo[] $metadata */
 		$metadata = $cmf->getAllMetadata();
 
 		$generator = new EntityGenerator;
