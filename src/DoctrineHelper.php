@@ -32,6 +32,7 @@ class DoctrineHelper
 		$return = [];
 		if (\is_array($meta->discriminatorMap) && \count($meta->discriminatorMap) > 0) {
 			foreach ($meta->discriminatorMap as $variant) {
+				$variant = (string) $variant;
 				try {
 					$return[$variant] = (string) Utils::reflectionClassDocComment($variant, 'name');
 				} catch (\ReflectionException) {
