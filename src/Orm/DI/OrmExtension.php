@@ -73,7 +73,7 @@ final class OrmExtension extends CompilerExtension
 		}
 
 		$configuration = $builder->addDefinition($this->prefix('configuration'))
-			->setType(is_object($configurationClass) ? (string) get_class($configurationClass) : $configurationClass);
+			->setType(is_object($configurationClass) ? $configurationClass::class : $configurationClass);
 
 		if ($config['proxyDir'] !== null) {
 			$configuration->addSetup('setProxyDir', [$config['proxyDir']]);

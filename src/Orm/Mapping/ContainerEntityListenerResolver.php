@@ -12,15 +12,13 @@ use Nette\DI\Container;
 final class ContainerEntityListenerResolver implements EntityListenerResolver
 {
 
-	/** @var object[] */
+	/** @var array<string, object> */
 	private array $instances = [];
 
-	private Container $container;
 
-
-	public function __construct(Container $container)
-	{
-		$this->container = $container;
+	public function __construct(
+		private Container $container,
+	) {
 	}
 
 
@@ -36,7 +34,8 @@ final class ContainerEntityListenerResolver implements EntityListenerResolver
 			return;
 		}
 
-		if (isset($this->instances[$className = trim($className, '\\')])) {
+		$className = trim($className, '\\');
+		if (isset($this->instances[$className])) {
 			unset($this->instances[$className]);
 		}
 	}
@@ -51,7 +50,7 @@ final class ContainerEntityListenerResolver implements EntityListenerResolver
 			throw new InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
 		}
 
-		$this->instances[get_class($object)] = $object;
+		$this->instances[$object::class] = $object;
 	}
 
 
@@ -63,7 +62,8 @@ final class ContainerEntityListenerResolver implements EntityListenerResolver
 	 */
 	public function resolve($className)
 	{
-		if (isset($this->instances[$className = trim($className, '\\')])) {
+		$className = trim($className, '\\');
+		if (isset($this->instances[$className])) {
 			return $this->instances[$className];
 		}
 

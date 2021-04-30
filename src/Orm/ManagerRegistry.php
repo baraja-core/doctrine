@@ -19,8 +19,8 @@ final class ManagerRegistry extends AbstractManagerRegistry
 
 	public function __construct(Connection $connection, EntityManagerInterface $em, Container $container)
 	{
-		$defaultConnection = $container->findByType(get_class($connection))[0];
-		$defaultManager = $container->findByType(get_class($em))[0];
+		$defaultConnection = $container->findByType($connection::class)[0];
+		$defaultManager = $container->findByType($em::class)[0];
 
 		$connections = ['default' => $defaultConnection];
 		$managers = ['default' => $defaultManager];
