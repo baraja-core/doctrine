@@ -13,12 +13,9 @@ use Tracy\Debugger;
 
 class DoctrineHelper
 {
-	private EntityManager $entityManager;
-
-
-	public function __construct(EntityManager $entityManager)
-	{
-		$this->entityManager = $entityManager;
+	public function __construct(
+		private EntityManager $entityManager,
+	) {
 	}
 
 
@@ -27,19 +24,17 @@ class DoctrineHelper
 	 * By $exclude you can define list of entities which will be skipped.
 	 *
 	 * @param string[]|null $exclude
-	 * @return string[] (variant => type)
+	 * @return array<string, string> (variant => type)
 	 */
 	public function getEntityVariants(string $entity, ?array $exclude = null): array
 	{
+		$meta = $this->entityManager->getClassMetadata($entity);
 		$return = [];
-		if (
-			\is_array(($meta = $this->entityManager->getClassMetadata($entity))->discriminatorMap)
-			&& \count($meta->discriminatorMap) > 0
-		) {
+		if (\is_array($meta->discriminatorMap) && \count($meta->discriminatorMap) > 0) {
 			foreach ($meta->discriminatorMap as $variant) {
 				try {
 					$return[$variant] = (string) Utils::reflectionClassDocComment($variant, 'name');
-				} catch (\ReflectionException $e) {
+				} catch (\ReflectionException) {
 					$return[$variant] = (string) preg_replace_callback(
 						'/([a-z0-9])([A-Z])/',
 						static fn(array $match) => $match[1] . ' ' . strtolower($match[2]),
@@ -63,7 +58,8 @@ class DoctrineHelper
 	 */
 	public function getBestOfType(string $entityClassName): string
 	{
-		if (\in_array(\count($variants = $this->getEntityVariants($entityClassName)), [0, 1], true) === true) {
+		$variants = $this->getEntityVariants($entityClassName);
+		if (\in_array(\count($variants), [0, 1], true) === true) {
 			return $entityClassName;
 		}
 
@@ -71,11 +67,13 @@ class DoctrineHelper
 		$topType = $entityClassName;
 		foreach (array_keys($variants) as $variant) {
 			try {
-				if (($length = $this->getParentClassLength(Utils::getReflectionClass($variant))) > $topLength) {
+				$length = $this->getParentClassLength(Utils::getReflectionClass($variant));
+				if ($length > $topLength) {
 					$topLength = $length;
 					$topType = $variant;
 				}
-			} catch (\ReflectionException $e) {
+			} catch (\ReflectionException) {
+				// Silence is golden.
 			}
 		}
 
@@ -134,7 +132,9 @@ class DoctrineHelper
 	 */
 	public function remapEntityToBestType(object $from): ?object
 	{
-		if (($fromType = get_class($from)) === ($bestType = $this->getBestOfType($fromType))) {
+		$fromType = $from::class;
+		$bestType = $this->getBestOfType($fromType);
+		if ($fromType === $bestType) {
 			return $from;
 		}
 
@@ -154,11 +154,13 @@ class DoctrineHelper
 	 */
 	public function remapEntity(object $from, object|string $to): ?object
 	{
-		if ($this->getDiscriminatorByEntity(\get_class($from)) === ($toDiscriminator = $this->getDiscriminatorByEntity($toType = is_string($to) ? $to : \get_class($to)))) {
+		$toType = is_string($to) ? $to : $to::class;
+		$toDiscriminator = $this->getDiscriminatorByEntity($toType);
+		if ($this->getDiscriminatorByEntity($from::class) === $toDiscriminator) {
 			return $from;
 		}
 
-		$fromTable = ($fromMetaData = $this->entityManager->getClassMetadata(\get_class($from)))->getTableName();
+		$fromTable = ($fromMetaData = $this->entityManager->getClassMetadata($from::class))->getTableName();
 		$discriminatorColumn = $fromMetaData->discriminatorColumn['fieldName'];
 
 		if ($fromTable !== ($toTable = $this->entityManager->getClassMetadata($toType)->getTableName())) {
@@ -166,7 +168,7 @@ class DoctrineHelper
 		}
 
 		try {
-			$this->entityManager->clear($this->getRootEntityName(\get_class($from)));
+			$this->entityManager->clear($this->getRootEntityName($from::class));
 		} catch (MappingException $e) {
 			Debugger::log($e);
 			DatabaseException::e($e);
@@ -175,7 +177,7 @@ class DoctrineHelper
 		if (method_exists($from, 'getId')) {
 			$id = $from->getId();
 		} else {
-			throw new \InvalidArgumentException('Entity "' . \get_class($from) . '" do not contain required method getId().');
+			throw new \InvalidArgumentException('Entity "' . $from::class . '" do not contain required method getId().');
 		}
 
 		try {
@@ -211,7 +213,7 @@ class DoctrineHelper
 			|| !method_exists($itemEntity, 'setPosition')
 		) {
 			throw new \InvalidArgumentException(
-				'Entity "' . \get_class($itemEntity) . '" must implement getParent(), '
+				'Entity "' . $itemEntity::class . '" must implement getParent(), '
 				. 'setParent() and getPosition().',
 			);
 		}
@@ -219,7 +221,7 @@ class DoctrineHelper
 		/** @phpstan-ignore-next-line */
 		if ($parent !== null && method_exists($parent, 'getId') && $parent->getId() !== $parentId) {
 			try {
-				$parent = $this->entityManager->getRepository(\get_class($itemEntity))
+				$parent = $this->entityManager->getRepository($itemEntity::class)
 					->createQueryBuilder('e')
 					->where('e.id = :id')
 					->setParameter('id', $parentId)
@@ -234,7 +236,7 @@ class DoctrineHelper
 		}
 
 		if ($parent === null) { // root entity
-			$items = $this->entityManager->getRepository(\get_class($itemEntity))
+			$items = $this->entityManager->getRepository($itemEntity::class)
 				->createQueryBuilder('e')
 				->where('e.parent IS NULL')
 				->orderBy('e.position', 'ASC')
@@ -291,9 +293,13 @@ class DoctrineHelper
 	private function getParentClassLength(\ReflectionClass $reflection, int $bind = 1): int
 	{
 		$length = 0;
-		while (($parent = ($length === 0 ? $reflection : $parent ?? $reflection)->getParentClass()) !== false) {
+		do {
+			$parent = ($length === 0 ? $reflection : $parent ?? $reflection)->getParentClass();
+			if ($parent === false) {
+				break;
+			}
 			$length++;
-		}
+		} while (true);
 
 		return $length + ($bind > 0 ? $bind : 0);
 	}

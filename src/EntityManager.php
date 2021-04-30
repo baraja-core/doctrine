@@ -81,7 +81,8 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		static $cache;
 
 		if ($cache === null) {
-			FileSystem::createDir($dir = \dirname(__DIR__, 4) . '/temp/cache/baraja.doctrine');
+			$dir = \dirname(__DIR__, 4) . '/temp/cache/baraja.doctrine';
+			FileSystem::createDir($dir);
 			$cache = $dir . '/doctrine.db';
 		}
 
@@ -94,7 +95,8 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	 */
 	public function fixDbDirPathPermission(): void
 	{
-		if (is_file($path = $this->getDbDirPath()) === true && fileperms($path) < 33_204) {
+		$path = $this->getDbDirPath();
+		if (is_file($path) === true && fileperms($path) < 33_204) {
 			chmod($path, 0_664);
 		}
 	}
@@ -196,7 +198,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function clear($objectName = null): void
 	{
 		if ($objectName !== null && \is_string($objectName) === false) {
-			$objectName = \get_class($objectName);
+			$objectName = $objectName::class;
 		}
 		try {
 			parent::clear($objectName);
@@ -332,10 +334,12 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	{
 		QueryPanel::setInvalidCache($invalidCache);
 		if ($invalidCache === true) {
-			if (empty($metadata = $this->getMetadataFactory()->getAllMetadata())) {
+			$metadata = $this->getMetadataFactory()->getAllMetadata();
+			if (empty($metadata)) {
 				return;
 			}
-			if (empty(($schemaTool = new SchemaTool($this))->getUpdateSchemaSql($metadata, $saveMode))) {
+			$schemaTool = new SchemaTool($this);
+			if (empty($schemaTool->getUpdateSchemaSql($metadata, $saveMode))) {
 				return;
 			}
 
