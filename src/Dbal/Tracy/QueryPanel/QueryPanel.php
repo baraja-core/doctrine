@@ -37,13 +37,12 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 		5 => 'background:#fbccb7 !important;color:black',
 	];
 
-	private Connection $connection;
 
-
-	public function __construct(Connection $connection, EntityManager $entityManager)
-	{
+	public function __construct(
+		private Connection $connection,
+		EntityManager $entityManager,
+	) {
 		parent::__construct($entityManager);
-		$this->connection = $connection;
 	}
 
 
@@ -92,7 +91,8 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 		if ($params !== null && $params !== []) {
 			try {
 				[$sql, $params, $types] = SQLParserUtils::expandListParameters($sql, $params ?? [], $types ?? []);
-			} catch (SQLParserUtilsException $e) {
+			} catch (SQLParserUtilsException) {
+				// Silence is golden.
 			}
 
 			$sql = str_replace(['%', '?'], ['%%', '%s'], (string) $sql);

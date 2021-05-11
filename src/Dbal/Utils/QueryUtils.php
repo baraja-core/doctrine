@@ -40,7 +40,8 @@ final class QueryUtils
 					return '<strong style="color:#c62828" style="font-family:monospace">' . $matches[2] . '</strong>';
 				}
 				if (!empty($matches[3])) { // most important keywords
-					return (self::getCounter() > 1 ? '<br>' : '') . '<strong style="color:#283593" style="font-family:monospace">' . $matches[3] . '</strong>';
+					return (self::getCounter() > 1 ? '<br>' : '')
+						. '<strong style="color:#283593" style="font-family:monospace">' . $matches[3] . '</strong>';
 				}
 				if (!empty($matches[4])) { // other keywords
 					return '<strong style="color:#2e7d32" style="font-family:monospace">' . $matches[4] . '</strong>';

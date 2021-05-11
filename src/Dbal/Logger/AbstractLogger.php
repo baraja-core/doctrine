@@ -16,13 +16,10 @@ use Tracy\ILogger;
 
 abstract class AbstractLogger implements SQLLogger
 {
-
 	/** @var mixed[] */
 	protected array $queries = [];
 
 	protected float $totalTime = 0;
-
-	private ?EntityManager $entityManager;
 
 	/** @var float[][] */
 	private array $queriesTimer = [];
@@ -33,9 +30,9 @@ abstract class AbstractLogger implements SQLLogger
 	private int $maxQueryTime = 150;
 
 
-	public function __construct(EntityManager $entityManager)
-	{
-		$this->entityManager = $entityManager;
+	public function __construct(
+		private ?EntityManager $entityManager,
+	) {
 	}
 
 
@@ -83,9 +80,12 @@ abstract class AbstractLogger implements SQLLogger
 				&& ($durationMs = $duration * 1_000) > $this->maxQueryTime
 			) {
 				$locked = true;
-				if (Utils::queryExistsByHash($hash = Utils::createSqlHash($this->queries[$key]->sql), $this->entityManager) === false) {
+				$hash = Utils::createSqlHash($this->queries[$key]->sql);
+				if (Utils::queryExistsByHash($hash, $this->entityManager) === false) {
 					try {
-						$this->entityManager->persist($slowQuery = new SlowQuery($this->queries[$key]->sql, $hash, $durationMs))->flush($slowQuery);
+						$slowQuery = new SlowQuery($this->queries[$key]->sql, $hash, $durationMs);
+						$this->entityManager->persist($slowQuery);
+						$this->entityManager->flush($slowQuery);
 					} catch (EntityManagerException $e) {
 						Debugger::log($e, ILogger::DEBUG);
 					}
@@ -139,7 +139,15 @@ abstract class AbstractLogger implements SQLLogger
 				continue;
 			}
 			if (
-				preg_match('/\/vendor\/([^\/]+\/[^\/]+)\//', str_replace(DIRECTORY_SEPARATOR, '/', $item['file'] ?? ''), $parser)
+				preg_match(
+					'/\/vendor\/([^\/]+\/[^\/]+)\//',
+					str_replace(
+						DIRECTORY_SEPARATOR,
+						'/',
+						$item['file'] ?? ''
+					),
+					$parser
+				)
 				&& (
 					$parser[1] === 'baraja-core/doctrine'
 					|| strncmp($parser[1], 'doctrine/', 9) === 0
@@ -159,7 +167,13 @@ abstract class AbstractLogger implements SQLLogger
 			return [
 				'file' => $location['file'] ?? '',
 				'line' => $location['line'] ?? '',
-				'snippet' => trim((string) preg_match('#\w*dump(er::\w+)?\(.*\)#i', (string) $locationLine, $m) ? $m[0] ?? '' : (string) $locationLine),
+				'snippet' => trim(
+					(string) preg_match(
+						'#\w*dump(er::\w+)?\(.*\)#i',
+						(string) $locationLine,
+						$m
+					) ? $m[0] ?? '' : (string) $locationLine
+				),
 			];
 		}
 

@@ -25,12 +25,9 @@ use Tracy\Debugger;
  */
 final class EntityManager extends \Doctrine\ORM\EntityManager
 {
-	private Configuration $configuration;
-
-
 	public function __construct(
 		Connection $connection,
-		Configuration $configuration,
+		private Configuration $configuration,
 		EventManager $eventManager,
 		?QueryPanel $panel = null
 	) {
@@ -43,7 +40,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		}
 		parent::__construct(
 			$connection,
-			$this->configuration = $configuration,
+			$configuration,
 			$eventManager,
 		);
 	}
@@ -151,7 +148,9 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function find($className, $id, $lockMode = null, $lockVersion = null)
 	{
 		if (\class_exists($className) === false) {
-			throw new \InvalidArgumentException('Entity name "' . $className . '" must be valid class name. Is your class autoloadable?');
+			throw new \InvalidArgumentException(
+				'Entity name "' . $className . '" must be valid class name. Is your class autoloadable?',
+			);
 		}
 		try {
 			return parent::find($className, $id, $lockMode, $lockVersion);
@@ -258,7 +257,9 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	public function getReference($entityName, $id)
 	{
 		if (\class_exists($entityName) === false) {
-			throw new \InvalidArgumentException('Entity name "' . $entityName . '" must be valid class name. Is your class autoloadable?');
+			throw new \InvalidArgumentException(
+				'Entity name "' . $entityName . '" must be valid class name. Is your class autoloadable?',
+			);
 		}
 		try {
 			return parent::getReference($entityName, $id);

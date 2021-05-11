@@ -28,38 +28,44 @@ final class DbalBlueScreen
 		if ($e === null) {
 			return null;
 		}
+		$prev = $e->getPrevious();
 		if ($e instanceof DriverException) {
-			if (
-				($prev = $e->getPrevious())
-				&& ($item = Helpers::findTrace($e->getTrace(), DBALException::class . '::driverExceptionDuringQuery'))
-			) {
+			$itemDriver = Helpers::findTrace($e->getTrace(), DBALException::class . '::driverExceptionDuringQuery');
+			if ($prev && $itemDriver) {
 				return [
 					'tab' => 'SQL',
-					'panel' => QueryUtils::highlight($item['args'][2]),
+					'panel' => QueryUtils::highlight($itemDriver['args'][2]),
 				];
 			}
 		} elseif ($e instanceof QueryException) {
-			if (
-				($prev = $e->getPrevious())
-				&& preg_match('~^(SELECT|INSERT|UPDATE|DELETE)\s+~i', $prev->getMessage())
-			) {
+			if ($prev && preg_match('~^(SELECT|INSERT|UPDATE|DELETE)\s+~i', $prev->getMessage())) {
 				return [
 					'tab' => 'DQL',
 					'panel' => QueryUtils::highlight($prev->getMessage()),
 				];
 			}
 		} elseif ($e instanceof PDOException) {
-			if (isset($e->queryString)) {
-				$sql = $e->queryString;
-			} elseif ($item = Helpers::findTrace($e->getTrace(), Connection::class . '::executeQuery')) {
-				$sql = $item['args'][0];
-			} elseif ($item = Helpers::findTrace($e->getTrace(), PDO::class . '::query')) {
-				$sql = $item['args'][0];
-			} elseif ($item = Helpers::findTrace($e->getTrace(), PDO::class . '::prepare')) {
-				$sql = $item['args'][0];
-			}
+			$sql = (function (\Throwable $e): ?string {
+				if (isset($e->queryString)) {
+					return $e->queryString;
+				}
+				$itemExecute = Helpers::findTrace($e->getTrace(), Connection::class . '::executeQuery');
+				if ($itemExecute) {
+					return $itemExecute['args'][0];
+				}
+				$itemQuery = Helpers::findTrace($e->getTrace(), PDO::class . '::query');
+				if ($itemQuery) {
+					return $itemQuery['args'][0];
+				}
+				$itemPrepare = Helpers::findTrace($e->getTrace(), PDO::class . '::prepare');
+				if ($itemPrepare) {
+					return $itemPrepare['args'][0];
+				}
 
-			return isset($sql) ? [
+				return null;
+			})($e);
+
+			return $sql !== null ? [
 				'tab' => 'SQL',
 				'panel' => QueryUtils::highlight($sql),
 			] : null;

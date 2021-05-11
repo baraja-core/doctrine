@@ -94,17 +94,25 @@ final class Utils
 		static $ip = null;
 
 		if ($ip === null) {
-			if (isset($_SERVER['REMOTE_ADDR'])) {
-				if (\in_array($_SERVER['REMOTE_ADDR'], ['::1', '0.0.0.0', 'localhost'], true)) {
-					$ip = '127.0.0.1';
-				} else {
-					$ip = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
-
-					if ($ip === false) {
-						$ip = '127.0.0.1';
+			if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) { // Cloudflare support
+				$ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+			} elseif (isset($_SERVER['REMOTE_ADDR']) === true) {
+				$ip = $_SERVER['REMOTE_ADDR'];
+				if ($ip === '127.0.0.1') {
+					if (isset($_SERVER['HTTP_X_REAL_IP'])) {
+						$ip = $_SERVER['HTTP_X_REAL_IP'];
+					} elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+						$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 					}
 				}
 			} else {
+				$ip = '127.0.0.1';
+			}
+			if (in_array($ip, ['::1', '0.0.0.0', 'localhost'], true)) {
+				$ip = '127.0.0.1';
+			}
+			$filter = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+			if ($filter === false) {
 				$ip = '127.0.0.1';
 			}
 		}

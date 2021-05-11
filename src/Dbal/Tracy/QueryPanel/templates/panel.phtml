@@ -21,12 +21,10 @@ foreach ($queries ?? [] as $query) {
 		$isTransaction = true;
 		$background = 'rgb(204,255,204)';
 	}
-
 	if ($query->sql === '"COMMIT"' || $query->sql === '"ROLLBACK"') {
 		$isTransaction = false;
 		$background = 'rgb(253,169,157)';
 	}
-
 	if ($isTransaction === true && $background === null) {
 		$background = 'rgb(255,244,204)';
 	}
