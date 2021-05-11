@@ -37,11 +37,9 @@ class UuidBinaryType extends Type
 		if (empty($value)) {
 			return null;
 		}
-
 		if ($value instanceof UuidInterface) {
 			return $value;
 		}
-
 		try {
 			return Uuid::fromBytes($value);
 		} catch (\InvalidArgumentException $e) {
@@ -59,11 +57,9 @@ class UuidBinaryType extends Type
 		if ($value === null) {
 			return null;
 		}
-
 		if ($value instanceof UuidInterface) {
 			return $value->getBytes();
 		}
-
 		try {
 			if (is_string($value) || method_exists($value, '__toString')) {
 				return Uuid::fromString((string) $value)->getBytes();

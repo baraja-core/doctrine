@@ -24,7 +24,6 @@ use Nette\Utils\DateTime;
 class SlowQuery
 {
 	use UuidIdentifier;
-	use SmartObject;
 
 	/** @ORM\Column(type="text") */
 	private string $query;

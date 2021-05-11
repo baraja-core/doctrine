@@ -11,12 +11,9 @@ use Doctrine\Common\EventManager as DoctrineEventManager;
 
 final class DebugEventManager extends DoctrineEventManager
 {
-	private EventManager $inner;
-
-
-	public function __construct(EventManager $inner)
-	{
-		$this->inner = $inner;
+	public function __construct(
+		private EventManager $inner,
+	) {
 	}
 
 

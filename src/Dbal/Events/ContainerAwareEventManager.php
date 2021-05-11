@@ -13,8 +13,6 @@ use RuntimeException;
 
 final class ContainerAwareEventManager extends DoctrineEventManager
 {
-	protected Container $container;
-
 	/** @var bool[] */
 	protected array $initialized = [];
 
@@ -22,9 +20,9 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	protected array $listeners = [];
 
 
-	public function __construct(Container $container)
-	{
-		$this->container = $container;
+	public function __construct(
+		protected Container $container,
+	) {
 	}
 
 

@@ -12,7 +12,10 @@ final class SQLite3Cache extends \Doctrine\Common\Cache\SQLite3Cache
 		$cache = new \SQLite3($cachePath);
 		$cache->enableExceptions(true);
 		if ($cache->busyTimeout(60_000) === false) {
-			throw new \RuntimeException('SQLite3 cache: Can not set busy timeout: ' . $cache->lastErrorMsg(), $cache->lastErrorCode());
+			throw new \RuntimeException(
+				'SQLite3 cache: Can not set busy timeout: ' . $cache->lastErrorMsg(),
+				$cache->lastErrorCode(),
+			);
 		}
 		do {
 			try {

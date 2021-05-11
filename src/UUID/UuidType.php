@@ -37,10 +37,9 @@ final class UuidType extends Type
 		if ($value instanceof UuidInterface) {
 			return $value->toString();
 		}
-
 		try {
 			return (string) Uuid::fromString($value)->toString();
-		} catch (\InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException) {
 			throw ConversionException::conversionFailed($value, static::NAME);
 		}
 	}
@@ -62,7 +61,10 @@ final class UuidType extends Type
 		} elseif (\is_object($value) && method_exists($value, '__toString')) {
 			$return = (string) $value;
 		} else {
-			throw new \InvalidArgumentException('Value must be string or instance of "' . UuidInterface::class . '", but type "' . \gettype($value) . '" given.');
+			throw new \InvalidArgumentException(
+				'Value must be string or instance of "' . UuidInterface::class . '", '
+				. 'but type "' . \gettype($value) . '" given.',
+			);
 		}
 		if (Uuid::isValid($return)) {
 			return $return;

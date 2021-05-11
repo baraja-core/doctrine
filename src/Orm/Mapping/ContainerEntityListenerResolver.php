@@ -11,7 +11,6 @@ use Nette\DI\Container;
 
 final class ContainerEntityListenerResolver implements EntityListenerResolver
 {
-
 	/** @var array<string, object> */
 	private array $instances = [];
 

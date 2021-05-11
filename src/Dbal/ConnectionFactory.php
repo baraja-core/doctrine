@@ -16,13 +16,6 @@ use Doctrine\DBAL\Types\Type;
 
 class ConnectionFactory
 {
-
-	/** @var mixed[] */
-	private array $typesConfig;
-
-	/** @var mixed[] */
-	private array $typesMapping;
-
 	/** @var mixed[] */
 	private array $commentedTypes = [];
 
@@ -33,10 +26,10 @@ class ConnectionFactory
 	 * @param mixed[] $typesConfig
 	 * @param mixed[] $typesMapping
 	 */
-	public function __construct(array $typesConfig = [], array $typesMapping = [])
-	{
-		$this->typesConfig = $typesConfig;
-		$this->typesMapping = $typesMapping;
+	public function __construct(
+		private array $typesConfig = [],
+		private array $typesMapping = [],
+	) {
 	}
 
 
@@ -115,7 +108,6 @@ class ConnectionFactory
 			} else {
 				Type::addType($type, $typeConfig['class']);
 			}
-
 			if ($typeConfig['commented']) {
 				$this->commentedTypes[] = $type;
 			}

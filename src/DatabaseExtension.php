@@ -37,13 +37,13 @@ final class DatabaseExtension extends CompilerExtension
 {
 	public const TAG_DOCTRINE_SUBSCRIBER = 'doctrine.subscriber';
 
-	/** @var string[] (type => typeClass) */
+	/** @var array<string, string> (type => typeClass) */
 	private static array $customTypes = [
 		'uuid' => UuidType::class,
 		'uuid-binary' => UuidBinaryType::class,
 	];
 
-	/** @var string[] (name => typeClass) */
+	/** @var array<string, string> (name => typeClass) */
 	private static array $customNumericFunctions = [
 		'RAND' => RandFunction::class,
 		'ROUND' => RoundFunction::class,
@@ -78,47 +78,57 @@ final class DatabaseExtension extends CompilerExtension
 
 	public function getConfigSchema(): Schema
 	{
-		return Expect::structure([
-			'connection' => Expect::structure([
-				'host' => Expect::string()->required(),
-				'dbname' => Expect::string()->required(),
-				'user' => Expect::string()->required(),
-				'password' => Expect::string()->nullable(),
-				'url' => Expect::string()->nullable(),
-				'pdo' => Expect::string()->nullable(),
-				'memory' => Expect::string()->nullable(),
-				'driver' => Expect::string('pdo_mysql'),
-				'driverClass' => Expect::string()->nullable(),
-				'driverOptions' => Expect::array(),
-				'unix_socket' => Expect::string()->nullable(),
-				'port' => Expect::int()->nullable(),
-				'servicename' => Expect::string()->nullable(),
-				'charset' => Expect::string('UTF8'),
-				'portability' => Expect::int(PortabilityConnection::PORTABILITY_ALL),
-				'fetchCase' => Expect::int(\PDO::CASE_LOWER),
-				'persistent' => Expect::bool(true),
-				'types' => Expect::array(),
-				'typesMapping' => Expect::array(),
-				'wrapperClass' => Expect::string()->nullable(),
-			])->castTo('array')->required(),
-			'configuration' => Expect::structure([
-				'sqlLogger' => Expect::string()->nullable(),
-				'resultCacheImpl' => Expect::string()->nullable(),
-				'filterSchemaAssetsExpression' => Expect::string()->nullable(),
-				'autoCommit' => Expect::bool()->default(true),
-			])->castTo('array'),
-			'cache' => Expect::string(),
-			'types' => Expect::arrayOf(Expect::string())->default([]),
-			'customNumericFunctions' => Expect::arrayOf(Expect::string()),
-			'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string())->default([]),
-		])->castTo('array')->otherItems(Expect::mixed());
+		return Expect::structure(
+			[
+				'connection' => Expect::structure(
+					[
+						'host' => Expect::string()->required(),
+						'dbname' => Expect::string()->required(),
+						'user' => Expect::string()->required(),
+						'password' => Expect::string()->nullable(),
+						'url' => Expect::string()->nullable(),
+						'pdo' => Expect::string()->nullable(),
+						'memory' => Expect::string()->nullable(),
+						'driver' => Expect::string('pdo_mysql'),
+						'driverClass' => Expect::string()->nullable(),
+						'driverOptions' => Expect::array(),
+						'unix_socket' => Expect::string()->nullable(),
+						'port' => Expect::int()->nullable(),
+						'servicename' => Expect::string()->nullable(),
+						'charset' => Expect::string('UTF8'),
+						'portability' => Expect::int(PortabilityConnection::PORTABILITY_ALL),
+						'fetchCase' => Expect::int(\PDO::CASE_LOWER),
+						'persistent' => Expect::bool(true),
+						'types' => Expect::array(),
+						'typesMapping' => Expect::array(),
+						'wrapperClass' => Expect::string()->nullable(),
+					]
+				)->castTo('array')->required(),
+				'configuration' => Expect::structure(
+					[
+						'sqlLogger' => Expect::string()->nullable(),
+						'resultCacheImpl' => Expect::string()->nullable(),
+						'filterSchemaAssetsExpression' => Expect::string()->nullable(),
+						'autoCommit' => Expect::bool()->default(true),
+					]
+				)->castTo('array'),
+				'cache' => Expect::string(),
+				'types' => Expect::arrayOf(Expect::string())->default([]),
+				'customNumericFunctions' => Expect::arrayOf(Expect::string()),
+				'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string())->default([]),
+			]
+		)->castTo('array')->otherItems(Expect::mixed());
 	}
 
 
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		OrmAnnotationsExtension::addAnnotationPathToManager($builder, 'Baraja\Doctrine\Entity', __DIR__ . '/Entity');
+		OrmAnnotationsExtension::addAnnotationPathToManager(
+			$builder,
+			'Baraja\Doctrine\Entity',
+			__DIR__ . '/Entity',
+		);
 
 		$this->loadDoctrineConfiguration();
 		$this->loadConnectionConfiguration();
@@ -143,16 +153,25 @@ final class DatabaseExtension extends CompilerExtension
 		$eventManager = $builder->getDefinition($this->prefix('eventManager'));
 		foreach (array_keys($builder->findByTag(self::TAG_DOCTRINE_SUBSCRIBER)) as $serviceName) {
 			$class = $builder->getDefinition($serviceName)->getType();
-
 			if ($class === null || !is_subclass_of($class, EventSubscriber::class)) {
-				throw new \RuntimeException('Subscriber "' . $serviceName . '" does not implement "' . EventSubscriber::class . '".');
+				throw new \RuntimeException(
+					'Subscriber "' . $serviceName . '" does not implement "' . EventSubscriber::class . '".'
+				);
 			}
 			try {
-				$eventManager->addSetup('?->addEventListener(?, ?)', [
-					'@self',
-					call_user_func([(new \ReflectionClass($class))->newInstanceWithoutConstructor(), 'getSubscribedEvents']),
-					$serviceName, // Intentionally without @ for laziness.
-				]);
+				$eventManager->addSetup(
+					'?->addEventListener(?, ?)',
+					[
+						'@self',
+						call_user_func(
+							[
+								(new \ReflectionClass($class))->newInstanceWithoutConstructor(),
+								'getSubscribedEvents',
+							]
+						),
+						$serviceName, // Intentionally without @ for laziness.
+					]
+				);
 			} catch (\ReflectionException $e) {
 				throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
 			}
@@ -161,18 +180,29 @@ final class DatabaseExtension extends CompilerExtension
 		$types = [];
 		foreach (array_merge(self::$customTypes, $config['types'] ?? []) as $type => $typeClass) {
 			if (\class_exists($typeClass) === false) {
-				throw new ConfiguratorException('Doctrine type "' . $type . '" does not exist, because class "' . $typeClass . '" is not defined.');
+				throw new ConfiguratorException(
+					'Doctrine type "' . $type . '" does not exist, because class "' . $typeClass . '" is not defined.',
+				);
 			}
 			$types[$type] = $typeClass;
 		}
 
 		$functionsCode = '';
-		foreach (array_merge(self::$customNumericFunctions, $config['customNumericFunctions'] ?? []) as $functionName => $functionType) {
+		foreach (
+			array_merge(
+				self::$customNumericFunctions,
+				$config['customNumericFunctions'] ?? [],
+			) as $functionName => $functionType
+		) {
 			if (\class_exists($functionType) === false) {
-				throw new ConfiguratorException('Doctrine function definition "' . $functionName . '" does not exist, because class "' . $functionType . '" is not defined.');
+				throw new ConfiguratorException(
+					'Doctrine function definition "' . $functionName . '" does not exist, '
+					. 'because class "' . $functionType . '" is not defined.',
+				);
 			}
 			$functionsCode .= ($functionsCode ? "\n\t" : '')
-				. '$entityManager->getConfiguration()->addCustomNumericFunction(\'' . strtoupper($functionName) . '\', ' . $functionType . '::class);';
+				. '$entityManager->getConfiguration()->addCustomNumericFunction(\'' . strtoupper($functionName) . '\', '
+				. $functionType . '::class);';
 		}
 
 		if (interface_exists(ProjectEntityRepository::class)) {
@@ -203,11 +233,14 @@ final class DatabaseExtension extends CompilerExtension
 			[
 				'@self',
 				$types,
-				array_merge([
-					'sample',
-					'endpointName',
-					'editable',
-				], $config['propertyIgnoreAnnotations'] ?? []),
+				array_merge(
+					[
+						'sample',
+						'endpointName',
+						'editable',
+					],
+					$config['propertyIgnoreAnnotations'] ?? [],
+				),
 			],
 		);
 	}
@@ -298,7 +331,10 @@ final class DatabaseExtension extends CompilerExtension
 			$configuration->addSetup('setResultCacheImpl', [$config['configuration']['resultCacheImpl']]);
 		}
 		if ($config['configuration']['filterSchemaAssetsExpression'] !== null) { // FilterSchemaAssetsExpression
-			$configuration->addSetup('setFilterSchemaAssetsExpression', [$config['configuration']['filterSchemaAssetsExpression']]);
+			$configuration->addSetup(
+				'setFilterSchemaAssetsExpression',
+				[$config['configuration']['filterSchemaAssetsExpression']]
+			);
 		}
 
 		// AutoCommit
@@ -320,8 +356,10 @@ final class DatabaseExtension extends CompilerExtension
 			) {
 				throw new \RuntimeException(
 					'Connection port (suffix included in host string) and given port are different.' . "\n"
-					. 'Given host "' . $config['connection']['host'] . '" contains port "' . $hostParser[2] . '", but given port is "' . $config['connection']['port'] . '".' . "\n"
-					. 'To solve this issue: Change "host" string to "' . $hostParser[1] . '" (without ":' . $hostParser[2] . '") or change port to "' . $config['connection']['port'] . '".',
+					. 'Given host "' . $config['connection']['host'] . '" contains port "' . $hostParser[2] . '", '
+					. 'but given port is "' . $config['connection']['port'] . '".' . "\n"
+					. 'To solve this issue: Change "host" string to "' . $hostParser[1] . '" '
+					. '(without ":' . $hostParser[2] . '") or change port to "' . $config['connection']['port'] . '".',
 				);
 			}
 			$config['connection']['host'] = $hostParser[1];
@@ -332,8 +370,9 @@ final class DatabaseExtension extends CompilerExtension
 			&& preg_match('/^.+?\.ondigitalocean\.com$/', $config['connection']['host'])
 		) { // DigitalOcean managed database support
 			throw new \RuntimeException(
-				'In case of DigitalOcean (host is "' . $config['connection']['host'] . '") you must define port (as integer) in your NEON configuration, but NULL given.' . "\n"
-				. 'Hint: Check if your current IP "' . Utils::userIp() . '" is allowed for connection.',
+				'In case of DigitalOcean (host is "' . $config['connection']['host'] . '") '
+				. 'you must define port (as integer) in your NEON configuration, but NULL given.'
+				. "\n" . 'Hint: Check if your current IP "' . Utils::userIp() . '" is allowed for connection.',
 			);
 		}
 
@@ -348,15 +387,21 @@ final class DatabaseExtension extends CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix('connectionFactory'))
-			->setFactory(ConnectionFactory::class, [$config['connection']['types'], $config['connection']['typesMapping']]);
+			->setFactory(
+				ConnectionFactory::class,
+				[$config['connection']['types'], $config['connection']['typesMapping']]
+			);
 
 		$builder->addDefinition($this->prefix('connection'))
 			->setFactory(Connection::class)
-			->setFactory('@' . $this->prefix('connectionFactory') . '::createConnection', [
-				$config['connection'],
-				'@' . $this->prefix('configuration'),
-				$builder->getDefinitionByType(EventManager::class),
-			]);
+			->setFactory(
+				'@' . $this->prefix('connectionFactory') . '::createConnection',
+				[
+					$config['connection'],
+					'@' . $this->prefix('configuration'),
+					$builder->getDefinitionByType(EventManager::class),
+				]
+			);
 	}
 
 

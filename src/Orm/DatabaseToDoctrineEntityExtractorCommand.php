@@ -103,7 +103,10 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		/** @var Statement $showTablesStatement */
 		$showTablesStatement = $connection->executeQuery('SHOW TABLES');
 
-		$tables = array_map(static fn(array $item): ?string => array_values($item)[0] ?? null, $showTablesStatement->fetchAllAssociative());
+		$tables = array_map(
+			static fn(array $item): ?string => array_values($item)[0] ?? null,
+			$showTablesStatement->fetchAllAssociative(),
+		);
 
 		$output->writeln('"<comment>' . implode('</comment>", "<comment>', $tables) . '</comment>".');
 		$output->writeln('<info>Count tables:</info> ' . \count($tables));
