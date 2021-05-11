@@ -124,11 +124,12 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 	public function getTab(): string
 	{
 		$totalTimeColor = self::getPanelDurationColor($totalTime = $this->getTimer());
+		$count = $this->getCounter();
 
-		return '<span title="dbal">'
+		return '<span title="Doctrine: ' . $count . ' queries">'
 			. '<span class="tracy-label">'
-			. (($count = $this->getCounter()) > 0 ? self::ICON_QUERY : self::ICON_NO_QUERY)
-			. '&nbsp;' . $count . ' queries'
+			. ($count > 0 ? self::ICON_QUERY : self::ICON_NO_QUERY)
+			. '&nbsp;' . $count
 			. ($totalTime ? ' / <span' . ($totalTimeColor ? ' style="' . $totalTimeColor . ';padding:0 3px"' : '') . '>'
 				. number_format($totalTime, 1, '.', ' ') . ' ms</span>'
 				: '')
