@@ -8,7 +8,6 @@ namespace Baraja\Doctrine\Entity;
 use Baraja\Doctrine\UUID\UuidIdentifier;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
-use Nette\SmartObject;
 use Nette\Utils\DateTime;
 
 /**
