@@ -12,10 +12,7 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 
 /**
- * Sources:
- *
- * https://gist.github.com/ZeBigDuck/1234419/edaa13a851b1ea1e9926ec9c003ad762876ffe1d
- * http://stackoverflow.com/questions/17534796/match-against-script-is-not-working-with-symfony2
+ * @see http://stackoverflow.com/questions/17534796/match-against-script-is-not-working-with-symfony2
  * "MATCH_AGAINST" "(" {StateFieldPathExpression ","}* Literal ")"
  */
 class MatchAgainstFunction extends FunctionNode
@@ -48,8 +45,9 @@ class MatchAgainstFunction extends FunctionNode
 		}
 
 		$parser->match(Lexer::T_CLOSE_PARENTHESIS);
+		$lookHeadValue = strtolower($lexer->lookahead['value'] ?? '');
 
-		if (strtolower($lexer->lookahead['value'] ?? '') !== 'against') {
+		if (in_array($lookHeadValue, ['against', 'boolean', 'expand'], true) === false) {
 			$parser->syntaxError('against');
 		}
 
@@ -57,11 +55,11 @@ class MatchAgainstFunction extends FunctionNode
 		$parser->match(Lexer::T_OPEN_PARENTHESIS);
 		$this->against = (string) $parser->StringPrimary();
 
-		if (strtolower($lexer->lookahead['value'] ?? '') === 'boolean') {
+		if ($lookHeadValue === 'boolean') {
 			$parser->match(Lexer::T_IDENTIFIER);
 			$this->booleanMode = true;
 		}
-		if (strtolower($lexer->lookahead['value'] ?? '') === 'expand') {
+		if ($lookHeadValue === 'expand') {
 			$parser->match(Lexer::T_IDENTIFIER);
 			$this->queryExpansion = true;
 		}
