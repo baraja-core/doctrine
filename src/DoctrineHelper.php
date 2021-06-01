@@ -10,6 +10,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Tracy\Debugger;
+use Tracy\ILogger;
 
 class DoctrineHelper
 {
@@ -162,17 +163,21 @@ class DoctrineHelper
 		}
 
 		$fromTable = ($fromMetaData = $this->entityManager->getClassMetadata($from::class))->getTableName();
+		$toTable = $this->entityManager->getClassMetadata($toType)->getTableName();
 		$discriminatorColumn = $fromMetaData->discriminatorColumn['fieldName'];
 
-		if ($fromTable !== ($toTable = $this->entityManager->getClassMetadata($toType)->getTableName())) {
-			DatabaseException::remapDifferentTypes($fromTable, $toTable);
+		if ($fromTable !== $toTable) {
+			throw new DatabaseException(
+				'Entities for remap must be same table type, '
+				. '"' . $fromTable . '" and "' . $to . '" given.',
+			);
 		}
 
 		try {
 			$this->entityManager->clear($this->getRootEntityName($from::class));
 		} catch (MappingException $e) {
-			Debugger::log($e);
-			DatabaseException::e($e);
+			Debugger::log($e, ILogger::CRITICAL);
+			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
 
 		if (method_exists($from, 'getId')) {
@@ -230,7 +235,7 @@ class DoctrineHelper
 					->getQuery()
 					->getSingleResult();
 			} catch (NoResultException | NonUniqueResultException $e) {
-				DatabaseException::e($e);
+				throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 			}
 
 			$itemEntity->setParent($parent);

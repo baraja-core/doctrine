@@ -8,6 +8,7 @@ namespace Baraja\Doctrine;
 class DatabaseException extends \RuntimeException
 {
 	/**
+	 * @deprecated since 2021-06-01 method will be removed in next master version.
 	 * @throws DatabaseException
 	 */
 	public static function e(\Throwable $e): void
@@ -17,6 +18,7 @@ class DatabaseException extends \RuntimeException
 
 
 	/**
+	 * @deprecated since 2021-06-01 method will be removed in next master version.
 	 * @throws DatabaseException
 	 */
 	public static function canNotSetIdentifier(?string $id): void
@@ -26,6 +28,7 @@ class DatabaseException extends \RuntimeException
 
 
 	/**
+	 * @deprecated since 2021-06-01 method will be removed in next master version.
 	 * @throws DatabaseException
 	 */
 	public static function remapDifferentTypes(string $fromTable, string $to): void

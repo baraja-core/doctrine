@@ -155,7 +155,8 @@ final class TracyBlueScreenDebugger
 				}
 
 				$panel .= '</table>';
-			} catch (DBALException $e) {
+			} catch (DBALException) {
+				// Silence is golden.
 			}
 		}
 
@@ -198,7 +199,8 @@ final class TracyBlueScreenDebugger
 	private static function renderMapping(MappingException $e): string
 	{
 		if (preg_match('/Class "([^"]+)"/', $e->getMessage(), $parser)) {
-			if (class_exists($className = $parser[1]) === true) {
+			$className = $parser[1];
+			if (class_exists($className) === true) {
 				$fileName = null;
 				$fileContent = null;
 				$docComment = '';
@@ -215,7 +217,7 @@ final class TracyBlueScreenDebugger
 				if ($fileName !== null && $fileContent !== null) {
 					return '<p>File: <b>' . Helpers::editorLink($fileName, $startLine) . '</b> (class <b>' . htmlspecialchars($className) . '</b>)</p>'
 						. '<p>A valid Doctrine entity must contain at least the "@Entity" annotation. See the <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/2.7/reference/basic-mapping.html" target="_blank">documentation for more information</a>.</p>'
-						. BlueScreen::highlightPhp(htmlspecialchars($fileContent, ENT_IGNORE, 'UTF-8'), $startLine)
+						. BlueScreen::highlightPhp(htmlspecialchars($fileContent, ENT_IGNORE), $startLine)
 						. '<p>Doc comment:</p>'
 						. ($docComment === '' ? '<i>Doc comment is empty.</i>' : '<pre>' . htmlspecialchars($docComment) . '</pre>');
 				}

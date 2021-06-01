@@ -134,7 +134,7 @@ final class Utils
 		try {
 			if (($em->getConnection()->getParams()['driver'] ?? '') === 'pdo_mysql') { // fast native query for MySql
 				$hashExist = $em->getConnection()
-					->executeQuery('SELECT 1 FROM `core__database_slow_query` WHERE hash = \'' . $hash . '\'')
+					->executeQuery('SELECT 1 FROM `core__database_slow_query` WHERE `hash` = \'' . $hash . '\'')
 					->fetch();
 			} else {
 				try {
@@ -146,7 +146,7 @@ final class Utils
 						->getQuery()
 						->getSingleResult();
 					$hashExist = true;
-				} catch (NoResultException | NonUniqueResultException $e) {
+				} catch (NoResultException | NonUniqueResultException) {
 					$hashExist = false;
 				}
 			}

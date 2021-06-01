@@ -25,7 +25,8 @@ final class OrmSchemaUpdateTask extends BaseTask
 
 				return true;
 			}
-		} catch (\Exception $e) {
+		} catch (\Throwable) {
+			// Silence is golden.
 		}
 
 		echo 'Using PHP version: ' . PHP_VERSION . "\n\n";

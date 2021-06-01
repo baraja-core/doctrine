@@ -1,7 +1,7 @@
 <?php
 
-
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
+use Tracy\Helpers;
 
 $qs = '';
 $qExpress = '';
@@ -68,7 +68,7 @@ foreach ($queries ?? [] as $query) {
 			: '')
 		. QueryUtils::highlight($query->sql)
 		. ($query->location !== null
-			? '<hr>' . \Tracy\Helpers::editorLink($query->location['file'], $query->location['line'])
+			? '<hr>' . Helpers::editorLink($query->location['file'], $query->location['line'])
 			: ''
 		) . '</td></tr>';
 	$timeBlocks[] = '<td style="text-align:center;padding:0;' . ($durationColor !== null ? '' . $durationColor . '' : 'width:15px') . '">'

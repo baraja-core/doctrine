@@ -8,7 +8,6 @@ namespace Baraja\Doctrine\Entity;
 use Baraja\Doctrine\UUID\UuidIdentifier;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
-use Nette\Utils\DateTime;
 
 /**
  * @ORM\Entity()
@@ -34,15 +33,15 @@ class SlowQuery
 	private string $hash;
 
 	/** @ORM\Column(type="datetime") */
-	private \DateTime $insertedDate;
+	private \DateTimeInterface $insertedDate;
 
 
 	public function __construct(string $sql, string $hash, float $duration)
 	{
-		$this->query = $sql;
+		$this->query = trim($sql);
 		$this->duration = $duration;
 		$this->hash = $hash;
-		$this->insertedDate = DateTime::from('now');
+		$this->insertedDate = new \DateTime('now');
 	}
 
 
@@ -64,7 +63,7 @@ class SlowQuery
 	}
 
 
-	public function getInsertedDate(): \DateTime
+	public function getInsertedDate(): \DateTimeInterface
 	{
 		return $this->insertedDate;
 	}

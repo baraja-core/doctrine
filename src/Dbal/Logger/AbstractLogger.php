@@ -6,10 +6,10 @@ namespace Baraja\Doctrine\DBAL\Logger;
 
 
 use Baraja\Doctrine\Entity\SlowQuery;
-use Baraja\Doctrine\EntityManager;
 use Baraja\Doctrine\EntityManagerException;
 use Baraja\Doctrine\Utils;
 use Doctrine\DBAL\Logging\SQLLogger;
+use Doctrine\ORM\EntityManagerInterface;
 use stdClass;
 use Tracy\Debugger;
 use Tracy\ILogger;
@@ -31,7 +31,7 @@ abstract class AbstractLogger implements SQLLogger
 
 
 	public function __construct(
-		private ?EntityManager $entityManager,
+		private ?EntityManagerInterface $entityManager,
 	) {
 	}
 
@@ -85,7 +85,7 @@ abstract class AbstractLogger implements SQLLogger
 					try {
 						$slowQuery = new SlowQuery($this->queries[$key]->sql, $hash, $durationMs);
 						$this->entityManager->persist($slowQuery);
-						$this->entityManager->flush($slowQuery);
+						$this->entityManager->getUnitOfWork()->commit($slowQuery);
 					} catch (EntityManagerException $e) {
 						Debugger::log($e, ILogger::DEBUG);
 					}
@@ -127,9 +127,9 @@ abstract class AbstractLogger implements SQLLogger
 
 
 	/**
-	 * Finds the location where dump was called. Returns [file, line, code]
+	 * Finds the location where dump was called.
 	 *
-	 * @return string[]|null
+	 * @return array{file: string, line: int, code: int}|null
 	 */
 	private function findLocation(): ?array
 	{

@@ -63,7 +63,7 @@ final class DatabaseExtension extends CompilerExtension
 
 	public static function addCustomType(string $type, string $typeClass): void
 	{
-		if (isset(self::$customTypes[$type]) === true && self::$customTypes[$type] !== $typeClass) {
+		if ((self::$customTypes[$type] ?? '') !== $typeClass) {
 			throw new \InvalidArgumentException('Database type "' . $type . '" already exist.');
 		}
 		self::$customTypes[$type] = $typeClass;

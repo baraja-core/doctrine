@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 // --package-registrator-task--
 
-if (PHP_SAPI !== 'cli' || class_exists(\Baraja\PackageManager\Composer\TaskManager::class) === false) {
+use Baraja\Doctrine\OrmSchemaUpdateTask;
+use Baraja\PackageManager\Composer\TaskManager;
+use Baraja\PackageManager\PackageRegistrator;
+
+if (PHP_SAPI !== 'cli' || class_exists(TaskManager::class) === false) {
 	return;
 }
 
-\Baraja\PackageManager\Composer\TaskManager::get()->addTask(
-	new \Baraja\Doctrine\OrmSchemaUpdateTask(\Baraja\PackageManager\PackageRegistrator::get()),
+TaskManager::get()->addTask(
+	new OrmSchemaUpdateTask(PackageRegistrator::get()),
 );
