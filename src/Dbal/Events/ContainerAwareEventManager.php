@@ -16,7 +16,7 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	/** @var array<string, bool> */
 	protected array $initialized = [];
 
-	/** @var array<string, array<int, EventSubscriber>> */
+	/** @var array<string, array<string, EventSubscriber|string>> */
 	protected array $listeners = [];
 
 
@@ -50,7 +50,7 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 
 	/**
 	 * @param string|null $event
-	 * @return object[]
+	 * @return array<string, array<string, EventSubscriber|string>|EventSubscriber|string>
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
 	public function getListeners($event = null): array

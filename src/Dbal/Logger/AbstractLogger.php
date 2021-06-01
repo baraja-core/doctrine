@@ -129,7 +129,7 @@ abstract class AbstractLogger implements SQLLogger
 	/**
 	 * Finds the location where dump was called.
 	 *
-	 * @return array{file: string, line: int, code: int}|null
+	 * @return array{file: string, line: int, snippet: stríng}|null
 	 */
 	private function findLocation(): ?array
 	{
@@ -165,8 +165,8 @@ abstract class AbstractLogger implements SQLLogger
 			$locationLine = file($location['file'] ?? '')[(int) ($location['line'] ?? 0) - 1] ?? 1;
 
 			return [
-				'file' => $location['file'] ?? '',
-				'line' => $location['line'] ?? '',
+				'file' => (string) ($location['file'] ?? ''),
+				'line' => (int) ($location['line'] ?? 0),
 				'snippet' => trim(
 					(string) preg_match(
 						'#\w*dump(er::\w+)?\(.*\)#i',
