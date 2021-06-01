@@ -129,7 +129,7 @@ abstract class AbstractLogger implements SQLLogger
 	/**
 	 * Finds the location where dump was called.
 	 *
-	 * @return array{file: string, line: int, snippet: stríng}|null
+	 * @return array{file: string, line: int, snippet: string}|null
 	 */
 	private function findLocation(): ?array
 	{
