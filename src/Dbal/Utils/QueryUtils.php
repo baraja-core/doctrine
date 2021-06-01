@@ -15,8 +15,11 @@ final class QueryUtils
 
 	public static function highlight(string $sql): string
 	{
-		static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
-		static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE|WITH|INSTANCE\s+OF';
+		static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?'
+			. '|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET'
+			. '|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
+		static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE'
+			. '|REGEXP|TRUE|FALSE|WITH|INSTANCE\s+OF';
 
 		// insert new lines
 		$sql = ' ' . $sql . ' ';
@@ -32,7 +35,7 @@ final class QueryUtils
 		self::getCounter(true);
 		$sql = (string) preg_replace_callback(
 			"#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is",
-			static function (array $matches) {
+			static function (array $matches): string {
 				if (!empty($matches[1])) { // comment
 					return '<em style="color:#424242" style="font-family:monospace">' . $matches[1] . '</em>';
 				}

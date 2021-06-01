@@ -47,6 +47,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 
 	/**
+	 * @deprecated since 2021-06-01 method will be moved to service.
 	 * @param callable $callback with value (self $entityManager): void
 	 * @internal reserved for DIC
 	 */
@@ -71,6 +72,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 
 	/**
+	 * @deprecated since 2021-06-01 method will be moved to service.
 	 * @internal
 	 */
 	public function getDbDirPath(): string
@@ -88,6 +90,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 
 	/**
+	 * @deprecated since 2021-06-01 method will be moved to service.
 	 * @internal
 	 */
 	public function fixDbDirPathPermission(): void
@@ -107,7 +110,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		try {
 			parent::persist($entity);
 		} catch (ORMException $e) {
-			EntityManagerException::e($e);
+			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
 
 		return $this;
@@ -130,7 +133,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		try {
 			parent::flush($entity);
 		} catch (ORMException | OptimisticLockException $e) {
-			EntityManagerException::e($e);
+			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
 
 		return $this;
@@ -168,7 +171,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		try {
 			parent::remove($object);
 		} catch (ORMException $e) {
-			EntityManagerException::e($e);
+			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
 
 		return $this;
@@ -311,6 +314,10 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	}
 
 
+	/**
+	 * @deprecated since 2021-06-01 method will be moved to service.
+	 * @internal
+	 */
 	public function setCache(?CacheProvider $cache = null): void
 	{
 		QueryPanel::setCache($cache);
@@ -331,6 +338,10 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	}
 
 
+	/**
+	 * @deprecated since 2021-06-01 method will be moved to service.
+	 * @internal
+	 */
 	public function buildCache(bool $saveMode = false, bool $invalidCache = false): void
 	{
 		QueryPanel::setInvalidCache($invalidCache);

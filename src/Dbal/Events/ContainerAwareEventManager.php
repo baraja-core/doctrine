@@ -13,10 +13,10 @@ use RuntimeException;
 
 final class ContainerAwareEventManager extends DoctrineEventManager
 {
-	/** @var bool[] */
+	/** @var array<string, bool> */
 	protected array $initialized = [];
 
-	/** @var EventSubscriber[][]|mixed[][] */
+	/** @var array<string, array<int, EventSubscriber>> */
 	protected array $listeners = [];
 
 
