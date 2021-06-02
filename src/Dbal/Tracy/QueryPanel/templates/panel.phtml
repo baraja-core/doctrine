@@ -66,6 +66,7 @@ foreach ($queries ?? [] as $query) {
 			. '</span>'
 			: '<span style="color:white;background:#bf0014;padding:2px 6px;border-radius:4px">Error</span>'
 		)
+		. '<br><i title="Request runtime delay time">' . number_format($query->delayTime, 2, '.', '') . '</i>'
 		. '<br><a href="' . $trackingUrl->getAbsoluteUrl() . '">Track</a>'
 		. ($isTransaction ? '<br><span style="color:#bf0014">•</span>' : '')
 		. '</td>'

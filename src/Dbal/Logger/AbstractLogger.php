@@ -29,10 +29,17 @@ abstract class AbstractLogger implements SQLLogger
 	/** Log an error if this time has been exceeded. */
 	private int $maxQueryTime = 150;
 
+	private float $startTime;
+
 
 	public function __construct(
 		private ?EntityManagerInterface $entityManager,
 	) {
+		if (class_exists(Debugger::class)) {
+			$this->startTime = (float) Debugger::$time;
+		} else {
+			$this->startTime = (float) ($_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true));
+		}
 	}
 
 
@@ -72,6 +79,7 @@ abstract class AbstractLogger implements SQLLogger
 			'hash' => $hash,
 			'params' => $params,
 			'types' => $types,
+			'delayTime' => (microtime(true) - $this->startTime) * 1000,
 			'location' => $this->findLocation(),
 		];
 	}
