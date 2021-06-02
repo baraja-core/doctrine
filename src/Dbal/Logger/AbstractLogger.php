@@ -51,8 +51,25 @@ abstract class AbstractLogger implements SQLLogger
 			return;
 		}
 
+		$hash = Utils::createSqlHash($sql);
+		if (
+			isset($_GET['trackingSqlEnabled'])
+			&& ($_GET['trackingSqlHash'] ?? '') === $hash
+			&& Debugger::$productionMode === false
+		) {
+			Debugger::log(
+				new \RuntimeException(
+					'Debug tracking point for query "' . $hash . '".'
+					. "\n" . 'SQL: ' . $sql
+					. "\n" . 'Params: ' . json_encode($params),
+				),
+				ILogger::DEBUG,
+			);
+		}
+
 		$this->queries[] = (object) [
 			'sql' => $sql,
+			'hash' => $hash,
 			'params' => $params,
 			'types' => $types,
 			'location' => $this->findLocation(),

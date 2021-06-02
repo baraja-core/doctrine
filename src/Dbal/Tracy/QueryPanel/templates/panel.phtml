@@ -1,6 +1,7 @@
 <?php
 
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
+use Baraja\Url\Url;
 use Tracy\Helpers;
 
 $qs = '';
@@ -52,6 +53,10 @@ foreach ($queries ?? [] as $query) {
 		}
 	}
 
+	$trackingUrl = Url::get()->getNetteUrl();
+	$trackingUrl->setQueryParameter('trackingSqlEnabled', true);
+	$trackingUrl->setQueryParameter('trackingSqlHash', $query->hash);
+
 	$durationColor = Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel::getPanelDurationColor($durationMs);
 	$renderedQuery = '<tr id="doctrineQuery_' . $queryId . '">'
 		. '<td' . ($durationColor !== null ? ' style="' . $durationColor . '"' : '') . '>'
@@ -60,7 +65,9 @@ foreach ($queries ?? [] as $query) {
 			. number_format($durationMs, 2, '.', ' ')
 			. '</span>'
 			: '<span style="color:white;background:#bf0014;padding:2px 6px;border-radius:4px">Error</span>'
-		) . ($isTransaction ? '<br><span style="color:#bf0014">•</span>' : '')
+		)
+		. '<br><a href="' . $trackingUrl->getAbsoluteUrl() . '">Track</a>'
+		. ($isTransaction ? '<br><span style="color:#bf0014">•</span>' : '')
 		. '</td>'
 		. '<td class="tracy-dbal-sql" ' . ($background ? ' style="background:' . $background . ' !important"' : '') . '>'
 		. (isset($query->duration) === false
