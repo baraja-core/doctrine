@@ -82,9 +82,9 @@ final class DatabaseExtension extends CompilerExtension
 			[
 				'connection' => Expect::structure(
 					[
-						'host' => Expect::string()->required(),
-						'dbname' => Expect::string()->required(),
-						'user' => Expect::string()->required(),
+						'host' => Expect::string()->nullable(),
+						'dbname' => Expect::string()->nullable(),
+						'user' => Expect::string()->nullable(),
 						'password' => Expect::string()->nullable(),
 						'url' => Expect::string()->nullable(),
 						'pdo' => Expect::string()->nullable(),
@@ -349,30 +349,47 @@ final class DatabaseExtension extends CompilerExtension
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
-		if (preg_match('/^([^:]+):(\d+)$/', $config['connection']['host'], $hostParser)) { // parse port from host
+		/** @var array<string, mixed> $connection */
+		$connection = $config['connection'];
+		if (isset($connection['host'], $connection['dbname'], $connection['user'])) {
+			$host = $connection['host'];
+			if (preg_match('/^([^:]+):(\d+)$/', $host, $hostParser)) { // parse port from host
+				if (
+					isset($config['connection']['port']) === true
+					&& $config['connection']['port'] !== (int) $hostParser[2]
+				) {
+					throw new \RuntimeException(
+						'Connection port (suffix included in host string) and given port are different.' . "\n"
+						. 'Given host "' . $config['connection']['host'] . '" contains port "' . $hostParser[2] . '", '
+						. 'but given port is "' . $config['connection']['port'] . '".' . "\n"
+						. 'To solve this issue: Change "host" string to "' . $hostParser[1] . '" '
+						. '(without ":' . $hostParser[2] . '") or change port to "' . $config['connection']['port'] . '".',
+					);
+				}
+				$config['connection']['host'] = $hostParser[1];
+				$config['connection']['port'] = (int) $hostParser[2];
+			}
 			if (
-				isset($config['connection']['port']) === true
-				&& $config['connection']['port'] !== (int) $hostParser[2]
-			) {
+				isset($config['connection']['port']) === false
+				&& preg_match('/^.+?\.ondigitalocean\.com$/', $host)
+			) { // DigitalOcean managed database support
 				throw new \RuntimeException(
-					'Connection port (suffix included in host string) and given port are different.' . "\n"
-					. 'Given host "' . $config['connection']['host'] . '" contains port "' . $hostParser[2] . '", '
-					. 'but given port is "' . $config['connection']['port'] . '".' . "\n"
-					. 'To solve this issue: Change "host" string to "' . $hostParser[1] . '" '
-					. '(without ":' . $hostParser[2] . '") or change port to "' . $config['connection']['port'] . '".',
+					'In case of DigitalOcean (host is "' . $host . '") '
+					. 'you must define port (as integer) in your NEON configuration, but NULL given.'
+					. "\n" . 'Hint: Check if your current IP "' . Utils::userIp() . '" is allowed for connection.',
 				);
 			}
-			$config['connection']['host'] = $hostParser[1];
-			$config['connection']['port'] = (int) $hostParser[2];
-		}
-		if (
-			isset($config['connection']['port']) === false
-			&& preg_match('/^.+?\.ondigitalocean\.com$/', $config['connection']['host'])
-		) { // DigitalOcean managed database support
+		} elseif ($connection['url']) {
+			if (!preg_match('/^[a-z-]+:\/{2,}/', (string) $connection['url'])) {
+				throw new \RuntimeException(
+					'Connection URL is invalid. '
+					. 'Please read configuration notes: https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html',
+				);
+			}
+		} else {
 			throw new \RuntimeException(
-				'In case of DigitalOcean (host is "' . $config['connection']['host'] . '") '
-				. 'you must define port (as integer) in your NEON configuration, but NULL given.'
-				. "\n" . 'Hint: Check if your current IP "' . Utils::userIp() . '" is allowed for connection.',
+				'Connection configuration is invalid. '
+				. 'The mandatory items ("host", "dbname", "username") or "url" is missing.',
 			);
 		}
 
