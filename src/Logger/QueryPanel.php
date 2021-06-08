@@ -123,7 +123,8 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 
 	public function getTab(): string
 	{
-		$totalTimeColor = self::getPanelDurationColor($totalTime = $this->getTimer());
+		$totalTime = $this->getTimer();
+		$totalTimeColor = self::getPanelDurationColor($totalTime);
 		$count = $this->getCounter();
 
 		return '<span title="Doctrine: ' . $count . ' queries">'
@@ -149,7 +150,7 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 			'connected' => $this->connection->isConnected(),
 			'queriesCount' => $this->getCounter(),
 			'totalTime' => $this->getTimer(),
-			'queries' => $this->queries,
+			'events' => $this->getEvents(),
 		];
 
 		/** @phpstan-ignore-next-line */
