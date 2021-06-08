@@ -65,8 +65,8 @@ abstract class AbstractLogger implements SQLLogger
 		$this->events[] = new Event(
 			sql: $sql,
 			hash: $hash,
-			params: $params,
-			types: $types,
+			params: $params ?? [],
+			types: $types ?? [],
 			delayTime: (microtime(true) - $this->startTime) * 1000,
 			location: $this->findLocation(),
 		);
