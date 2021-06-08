@@ -7,24 +7,17 @@ namespace Baraja\Doctrine\DBAL\Logger;
 
 use Baraja\Doctrine\Entity\SlowQuery;
 use Baraja\Doctrine\EntityManagerException;
+use Baraja\Doctrine\Logger\Event;
 use Baraja\Doctrine\Utils;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\EntityManagerInterface;
-use stdClass;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
 abstract class AbstractLogger implements SQLLogger
 {
-	/** @var mixed[] */
-	protected array $queries = [];
-
-	protected float $totalTime = 0;
-
-	/** @var float[][] */
-	private array $queriesTimer = [];
-
-	private int $counter = 0;
+	/** @var Event[] */
+	private array $events = [];
 
 	/** Log an error if this time has been exceeded. */
 	private int $maxQueryTime = 150;
@@ -49,12 +42,7 @@ abstract class AbstractLogger implements SQLLogger
 	 */
 	public function startQuery($sql, ?array $params = null, ?array $types = null): void
 	{
-		$this->counter++;
-		$this->queriesTimer[] = [
-			'start' => microtime(true),
-		];
-
-		if ($this->counter > 300) {
+		if (count($this->events) > 300) {
 			return;
 		}
 
@@ -74,64 +62,75 @@ abstract class AbstractLogger implements SQLLogger
 			);
 		}
 
-		$this->queries[] = (object) [
-			'sql' => $sql,
-			'hash' => $hash,
-			'params' => $params,
-			'types' => $types,
-			'delayTime' => (microtime(true) - $this->startTime) * 1000,
-			'location' => $this->findLocation(),
-		];
+		$this->events[] = new Event(
+			sql: $sql,
+			hash: $hash,
+			params: $params,
+			types: $types,
+			delayTime: (microtime(true) - $this->startTime) * 1000,
+			location: $this->findLocation(),
+		);
 	}
 
 
-	public function stopQuery(): ?stdClass
+	public function stopQuery(): ?Event
 	{
 		static $locked = false;
-		$keys = array_keys($this->queriesTimer);
-		$this->queriesTimer[$key = end($keys)]['end'] = microtime(true);
-		$this->queriesTimer[$key]['duration'] = $this->queriesTimer[$key]['end'] - $this->queriesTimer[$key]['start'];
-		$this->queriesTimer[$key]['ms'] = $this->queriesTimer[$key]['duration'] * 1_000;
-		$this->totalTime += $this->queriesTimer[$key]['duration'] * 1_000;
+		$keys = array_keys($this->events);
+		$key = end($keys);
 
-		if (isset($this->queries[$key]) === true) {
-			$this->queries[$key]->end = $this->queriesTimer[$key]['end'];
-			$this->queries[$key]->duration = ($duration = (float) $this->queriesTimer[$key]['duration']);
-			$this->queries[$key]->ms = $this->queriesTimer[$key]['ms'];
-
-			if (
-				$locked === false
-				&& $this->entityManager !== null
-				&& ($durationMs = $duration * 1_000) > $this->maxQueryTime
-			) {
-				$locked = true;
-				$hash = Utils::createSqlHash($this->queries[$key]->sql);
-				if (Utils::queryExistsByHash($hash, $this->entityManager) === false) {
-					try {
-						$slowQuery = new SlowQuery($this->queries[$key]->sql, $hash, $durationMs);
-						$this->entityManager->persist($slowQuery);
-						$this->entityManager->getUnitOfWork()->commit($slowQuery);
-					} catch (EntityManagerException $e) {
-						Debugger::log($e, ILogger::DEBUG);
-					}
-				}
-				$locked = false;
-			}
+		if (isset($this->events[$key]) === false) {
+			return null;
 		}
 
-		return $this->queries[$key] ?? null;
+		$event = $this->events[$key];
+
+		if (
+			$locked === false
+			&& $this->entityManager !== null
+			&& ($event->getDurationMs() ?? 0) > $this->maxQueryTime
+		) {
+			$locked = true;
+			$hash = Utils::createSqlHash($event->getSql());
+			if (Utils::queryExistsByHash($hash, $this->entityManager) === false) {
+				try {
+					$slowQuery = new SlowQuery($event);
+					$this->entityManager->persist($slowQuery);
+					$this->entityManager->getUnitOfWork()->commit($slowQuery);
+				} catch (EntityManagerException $e) {
+					Debugger::log($e, ILogger::DEBUG);
+				}
+			}
+			$locked = false;
+		}
+
+		return $event;
+	}
+
+
+	/**
+	 * @return Event[]
+	 */
+	public function getEvents(): array
+	{
+		return $this->events;
 	}
 
 
 	public function getCounter(): int
 	{
-		return $this->counter;
+		return count($this->events);
 	}
 
 
 	public function getTimer(): float
 	{
-		return (float) $this->totalTime;
+		$sum = 0;
+		foreach ($this->events as $query) {
+			$sum += $query->getDuration() ?? 0;
+		}
+
+		return (float) $sum;
 	}
 
 

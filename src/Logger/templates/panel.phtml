@@ -1,6 +1,7 @@
 <?php
 
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
+use Baraja\Doctrine\Logger\Event;
 use Baraja\Url\Url;
 use Tracy\Helpers;
 
@@ -15,14 +16,18 @@ $other = 0;
 $queryId = 1;
 $timeBlocks = [];
 
-foreach ($queries ?? [] as $query) {
+/**
+ * @var Event[] $events
+ */
+
+foreach ($events ?? [] as $event) {
 	$background = null;
 
-	if ($query->sql === '"START TRANSACTION"') {
+	if ($event->getSql() === '"START TRANSACTION"') {
 		$isTransaction = true;
 		$background = 'rgb(204,255,204)';
 	}
-	if ($query->sql === '"COMMIT"' || $query->sql === '"ROLLBACK"') {
+	if ($event->getSql() === '"COMMIT"' || $event->getSql() === '"ROLLBACK"') {
 		$isTransaction = false;
 		$background = 'rgb(253,169,157)';
 	}
@@ -30,8 +35,8 @@ foreach ($queries ?? [] as $query) {
 		$background = 'rgb(255,244,204)';
 	}
 
-	$queryParser = explode(' ', strtoupper(trim($query->sql)), 2);
-	$durationMs = isset($query->duration) ? $query->duration * 1000 : null;
+	$queryParser = explode(' ', strtoupper(trim($event->getSql())), 2);
+	$durationMs = $event->getDuration() !== null ? $event->getDuration() * 1000 : null;
 
 	if (isset($queryParser[1])) {
 		switch ($queryParser[0]) {
@@ -55,7 +60,7 @@ foreach ($queries ?? [] as $query) {
 
 	$trackingUrl = Url::get()->getNetteUrl();
 	$trackingUrl->setQueryParameter('trackingSqlEnabled', true);
-	$trackingUrl->setQueryParameter('trackingSqlHash', $query->hash);
+	$trackingUrl->setQueryParameter('trackingSqlHash', $event->getHash());
 
 	$durationColor = Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel::getPanelDurationColor($durationMs);
 	$renderedQuery = '<tr id="doctrineQuery_' . $queryId . '">'
@@ -66,24 +71,24 @@ foreach ($queries ?? [] as $query) {
 			. '</span>'
 			: '<span style="color:white;background:#bf0014;padding:2px 6px;border-radius:4px">Error</span>'
 		)
-		. '<br><i title="Request runtime delay time">' . number_format($query->delayTime, 2, '.', '') . '</i>'
+		. '<br><i title="Request runtime delay time">' . number_format($event->getDelayTime(), 2, '.', '') . '</i>'
 		. '<br><a href="' . $trackingUrl->getAbsoluteUrl() . '">Track</a>'
 		. ($isTransaction ? '<br><span style="color:#bf0014">•</span>' : '')
 		. '</td>'
 		. '<td class="tracy-dbal-sql" ' . ($background ? ' style="background:' . $background . ' !important"' : '') . '>'
-		. (isset($query->duration) === false
+		. ($event->getDuration() === null
 			? '<div style="color:white;background:#bf0014;text-align:center;padding:2px 6px;margin:8px 0;border-radius:4px">Error with processing this query!</div>'
 			: '')
-		. QueryUtils::highlight($query->sql)
-		. ($query->location !== null
-			? '<hr>' . Helpers::editorLink($query->location['file'], $query->location['line'])
+		. QueryUtils::highlight($event->getSql())
+		. ($event->getLocation() !== null
+			? '<hr>' . Helpers::editorLink($event->getLocation()['file'], $event->getLocation()['line'])
 			: ''
 		) . '</td></tr>';
 	$timeBlocks[] = '<td style="text-align:center;padding:0;' . ($durationColor !== null ? '' . $durationColor . '' : 'width:15px') . '">'
 		. '<a href="#doctrineQuery_' . $queryId . '">' . ((int) round($durationMs)) . '</a>'
 		. '</td>';
 
-	if (isset($query->duration)) {
+	if ($event->getDuration() !== null) {
 		$qs .= $renderedQuery;
 	} else {
 		$qExpress .= $renderedQuery;
@@ -110,7 +115,7 @@ foreach ($queries ?? [] as $query) {
 
 <?php
 
-if (\count($this->queries) === 0) {
+if ($events === []) {
 	echo '<h1>No queries</h1>';
 } else {
 	?>
@@ -166,10 +171,10 @@ if (\count($this->queries) === 0) {
 
 	if (($connected ?? false) === false) {
 		echo '<div style="text-align:center;padding:1em 0;color:#888">Database is disconnected.</div>';
-	} elseif (\count($this->queries) === 0) {
+	} elseif ($events === []) {
 		echo '<div style="text-align:center;padding:1em 0;color:#888">No queries.</div>';
 	}
-	if (\count($queries ?? []) < ($queriesCount ?? 0)) {
+	if (count($events) < ($queriesCount ?? 0)) {
 		echo '<div style="text-align:center;padding:48px">'
 			. 'And more...'
 			. '</div>';
