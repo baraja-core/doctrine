@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\Entity;
 
 
+use Baraja\Doctrine\Logger\Event;
+use Baraja\Doctrine\Utils;
 use Baraja\Doctrine\UUID\UuidIdentifier;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
@@ -12,11 +14,11 @@ use Doctrine\ORM\Mapping\Index;
 /**
  * @ORM\Entity()
  * @ORM\Table(
- *    name="core__database_slow_query",
- *    indexes={
- *       @Index(name="database_slow_query__hash", columns={"hash"}),
- *       @Index(name="database_slow_query__id_hash", columns={"id", "hash"})
- *    }
+ *     name="core__database_slow_query",
+ *     indexes={
+ *         @Index(name="database_slow_query__hash", columns={"hash"}),
+ *         @Index(name="database_slow_query__id_hash", columns={"id", "hash"})
+ *     }
  * )
  */
 class SlowQuery
@@ -36,11 +38,11 @@ class SlowQuery
 	private \DateTimeInterface $insertedDate;
 
 
-	public function __construct(string $sql, string $hash, float $duration)
+	public function __construct(Event $event)
 	{
-		$this->query = trim($sql);
-		$this->duration = $duration;
-		$this->hash = $hash;
+		$this->query = trim($event->getSql());
+		$this->duration = $event->getDurationMs() ?? 0;
+		$this->hash = Utils::createSqlHash($event->getSql());
 		$this->insertedDate = new \DateTime('now');
 	}
 
