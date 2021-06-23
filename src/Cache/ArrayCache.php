@@ -35,12 +35,12 @@ final class ArrayCache extends CacheProvider
 	protected function doFetch($id)
 	{
 		if (!$this->doContains($id)) {
-			$this->missesCount += 1;
+			++$this->missesCount;
 
 			return false;
 		}
 
-		$this->hitsCount += 1;
+		++$this->hitsCount;
 
 		return $this->data[$id][0];
 	}

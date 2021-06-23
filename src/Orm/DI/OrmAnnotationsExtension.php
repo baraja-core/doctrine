@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
-use Baraja\Doctrine\Cache\ApcuCache;
-use Baraja\Doctrine\Cache\ArrayCache;
-use Baraja\Doctrine\Cache\FilesystemCache;
 use Baraja\Doctrine\ORM\Exception\Logical\InvalidStateException;
 use Baraja\Doctrine\ORM\Mapping\AnnotationDriver;
 use Baraja\Doctrine\ORM\Mapping\EntityAnnotationManager;

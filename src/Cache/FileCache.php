@@ -26,19 +26,14 @@ abstract class FileCache extends CacheProvider
 	/**
 	 * @param string $directory The cache directory.
 	 * @param string $extension The cache file extension.
-	 * @param int $umask
-	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function __construct($directory, $extension = '', $umask = 0002)
+	public function __construct(string $directory, string $extension = '', int $umask = 0002)
 	{
 		// YES, this needs to be *before* createPathIfNeeded()
 		if (!is_int($umask)) {
 			throw new \InvalidArgumentException(
-				sprintf(
-					'The umask parameter is required to be integer, was: %s',
-					gettype($umask)
-				)
+				'The umask parameter is required to be integer, was: ' . get_debug_type($umask),
 			);
 		}
 
@@ -46,24 +41,16 @@ abstract class FileCache extends CacheProvider
 
 		if (!$this->createPathIfNeeded($directory)) {
 			throw new \InvalidArgumentException(
-				sprintf(
-					'The directory "%s" does not exist and could not be created.',
-					$directory
-				)
+				'The directory "' . $directory . '" does not exist and could not be created.',
 			);
 		}
 		if (!is_writable($directory)) {
-			throw new \InvalidArgumentException(
-				sprintf(
-					'The directory "%s" is not writable.',
-					$directory
-				)
-			);
+			throw new \InvalidArgumentException('The directory "' . $directory . '" is not writable.');
 		}
 
 		// YES, this needs to be *after* createPathIfNeeded()
-		$this->directory = realpath($directory);
-		$this->extension = (string) $extension;
+		$this->directory = (string) realpath($directory);
+		$this->extension = $extension;
 
 		$this->directoryStringLength = strlen($this->directory);
 		$this->extensionStringLength = strlen($this->extension);
@@ -73,10 +60,8 @@ abstract class FileCache extends CacheProvider
 
 	/**
 	 * Gets the cache directory.
-	 *
-	 * @return string
 	 */
-	public function getDirectory()
+	public function getDirectory(): string
 	{
 		return $this->directory;
 	}
@@ -84,20 +69,14 @@ abstract class FileCache extends CacheProvider
 
 	/**
 	 * Gets the cache file extension.
-	 *
-	 * @return string
 	 */
-	public function getExtension()
+	public function getExtension(): string
 	{
 		return $this->extension;
 	}
 
 
-	/**
-	 * @param string $id
-	 * @return string
-	 */
-	protected function getFilename($id)
+	protected function getFilename(string $id): string
 	{
 		$hash = hash('sha256', $id);
 
@@ -132,7 +111,7 @@ abstract class FileCache extends CacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function doDelete($id)
+	protected function doDelete($id): bool
 	{
 		$filename = $this->getFilename($id);
 
@@ -143,7 +122,7 @@ abstract class FileCache extends CacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function doFlush()
+	protected function doFlush(): bool
 	{
 		foreach ($this->getIterator() as $name => $file) {
 			if ($file->isDir()) {
@@ -165,7 +144,7 @@ abstract class FileCache extends CacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function doGetStats()
+	protected function doGetStats(): ?array
 	{
 		$usage = 0;
 		foreach ($this->getIterator() as $name => $file) {
@@ -207,6 +186,7 @@ abstract class FileCache extends CacheProvider
 		}
 
 		$tmpFile = tempnam($filepath, 'swap');
+		assert($tmpFile !== false);
 		@chmod($tmpFile, 0666 & (~$this->umask));
 
 		if (file_put_contents($tmpFile, $content) !== false) {

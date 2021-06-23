@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\Cache;
 
 
-use Doctrine\Common\Cache\CacheProvider;
 use function array_search;
+use Doctrine\Common\Cache\CacheProvider;
 use function implode;
 use function serialize;
 use function sprintf;
@@ -98,12 +98,13 @@ final class SQLite3Cache extends CacheProvider
 				implode(',', $this->getFields())
 			)
 		);
+		assert($statement !== false);
 
 		$statement->bindValue(':id', $id);
 		$statement->bindValue(':data', serialize($data), SQLITE3_BLOB);
 		$statement->bindValue(':expire', $lifeTime > 0 ? time() + $lifeTime : null);
 
-		return $statement->execute() instanceof SQLite3Result;
+		return $statement->execute() instanceof \SQLite3Result;
 	}
 
 
@@ -121,10 +122,11 @@ final class SQLite3Cache extends CacheProvider
 				$idField
 			)
 		);
+		assert($statement !== false);
 
 		$statement->bindValue(':id', $id);
 
-		return $statement->execute() instanceof SQLite3Result;
+		return $statement->execute() instanceof \SQLite3Result;
 	}
 
 
@@ -140,9 +142,9 @@ final class SQLite3Cache extends CacheProvider
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function doGetStats()
+	protected function doGetStats(): ?array
 	{
-		// no-op.
+		return null;
 	}
 
 
@@ -170,7 +172,7 @@ final class SQLite3Cache extends CacheProvider
 		[$idField] = $fields = $this->getFields();
 
 		if (!$includeData) {
-			$key = array_search(static::DATA_FIELD, $fields);
+			$key = array_search(static::DATA_FIELD, $fields, true);
 			unset($fields[$key]);
 		}
 
@@ -182,11 +184,12 @@ final class SQLite3Cache extends CacheProvider
 				$idField
 			)
 		);
+		assert($statement !== false);
 
 		$statement->bindValue(':id', $id, SQLITE3_TEXT);
 
-		$item = $statement->execute()
-			->fetchArray(SQLITE3_ASSOC);
+		$result = $statement->execute();
+		$item = $result === false ? false : $result->fetchArray(SQLITE3_ASSOC);
 
 		if ($item === false) {
 			return null;
