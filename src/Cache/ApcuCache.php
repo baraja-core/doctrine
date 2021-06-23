@@ -33,7 +33,7 @@ class ApcuCache extends CacheProvider
 	 */
 	protected function doSave($id, $data, $lifeTime = 0)
 	{
-		return apcu_store($id, $data, $lifeTime);
+		return apcu_store($id, $data, (int) $lifeTime);
 	}
 
 
@@ -81,7 +81,7 @@ class ApcuCache extends CacheProvider
 	 */
 	protected function doSaveMultiple(array $keysAndValues, $lifetime = 0)
 	{
-		$result = apcu_store($keysAndValues, null, $lifetime);
+		$result = apcu_store($keysAndValues, null, (int) $lifetime);
 
 		return empty($result);
 	}
