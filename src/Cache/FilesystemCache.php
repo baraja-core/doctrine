@@ -33,6 +33,7 @@ final class FilesystemCache extends FileCache
 		}
 
 		$resource = fopen($filename, 'rb');
+		assert($resource !== false);
 		$line = fgets($resource);
 
 		if ($line !== false) {
@@ -67,6 +68,7 @@ final class FilesystemCache extends FileCache
 		}
 
 		$resource = fopen($filename, 'rb');
+		assert($resource !== false);
 		$line = fgets($resource);
 
 		if ($line !== false) {
