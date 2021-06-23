@@ -10,15 +10,11 @@
 	],
 	"require": {
 		"php": "^8.0",
-		"ext-json": "*",
 		"ext-pdo": "*",
-		"ext-tokenizer": "*",
 		"baraja-core/nette-symfony-console": "^1.0",
 		"baraja-core/url": "^1.1",
 		"nette/di": "^3.0",
-		"nette/utils": "^3.2",
 		"doctrine/orm": "^2.9",
-		"doctrine/dbal": "^3.1",
 		"ramsey/uuid": "^4.1"
 	},
 	"require-dev": {

@@ -6,8 +6,6 @@ namespace Baraja\Doctrine;
 
 
 use Doctrine\DBAL\DBALException;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Tracy\Debugger;
 use Tracy\ILogger;
