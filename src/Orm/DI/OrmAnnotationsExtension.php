@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
+use Baraja\Doctrine\Cache\ApcuCache;
+use Baraja\Doctrine\Cache\ArrayCache;
+use Baraja\Doctrine\Cache\FilesystemCache;
 use Baraja\Doctrine\ORM\Exception\Logical\InvalidStateException;
 use Baraja\Doctrine\ORM\Mapping\AnnotationDriver;
 use Baraja\Doctrine\ORM\Mapping\EntityAnnotationManager;
@@ -12,15 +15,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\ApcuCache;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\FilesystemCache;
-use Doctrine\Common\Cache\MemcacheCache;
-use Doctrine\Common\Cache\MemcachedCache;
-use Doctrine\Common\Cache\RedisCache;
-use Doctrine\Common\Cache\VoidCache;
-use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\ORM\Configuration;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
@@ -34,18 +28,6 @@ use Nette\Utils\Validators;
 
 final class OrmAnnotationsExtension extends CompilerExtension
 {
-	public const DRIVERS = [
-		'apc' => ApcCache::class,
-		'apcu' => ApcuCache::class,
-		'array' => ArrayCache::class,
-		'filesystem' => FilesystemCache::class,
-		'memcache' => MemcacheCache::class,
-		'memcached' => MemcachedCache::class,
-		'redis' => RedisCache::class,
-		'void' => VoidCache::class,
-		'xcache' => XcacheCache::class,
-	];
-
 	/** @var string[] */
 	private static array $annotationPaths = [];
 
@@ -183,12 +165,12 @@ final class OrmAnnotationsExtension extends CompilerExtension
 		$config = $this->config;
 		$builder = $this->getContainerBuilder();
 
-		if (!isset(self::DRIVERS[$config['defaultCache']])) {
+		if (!isset(OrmCacheExtension::DRIVERS[$config['defaultCache']])) {
 			throw new InvalidStateException(sprintf('Unsupported default cache driver "%s"', $config['defaultCache']));
 		}
 
 		$driverCache = $builder->addDefinition($this->prefix('annotationsCache'))
-			->setFactory(self::DRIVERS[$config['defaultCache']])
+			->setFactory(OrmCacheExtension::DRIVERS[$config['defaultCache']])
 			->setAutowired(false);
 
 		if ($config['defaultCache'] === 'filesystem') {

@@ -6,6 +6,7 @@ namespace Baraja\Doctrine;
 
 
 use Baraja\Doctrine\Bridge\DoctrineEntityRepository;
+use Baraja\Doctrine\Cache\ApcuCache;
 use Baraja\Doctrine\Cache\SQLite3Cache;
 use Baraja\Doctrine\DBAL\ConnectionFactory;
 use Baraja\Doctrine\DBAL\Events\ContainerAwareEventManager;
@@ -17,7 +18,6 @@ use Baraja\Doctrine\UUID\UuidBinaryType;
 use Baraja\Doctrine\UUID\UuidType;
 use Baraja\ServiceMethodInvoker\ProjectEntityRepository;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Configuration;
