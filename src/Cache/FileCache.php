@@ -119,9 +119,6 @@ abstract class FileCache extends CacheProvider
 	}
 
 
-	/**
-	 * {@inheritdoc}
-	 */
 	protected function doFlush(): bool
 	{
 		foreach ($this->getIterator() as $name => $file) {

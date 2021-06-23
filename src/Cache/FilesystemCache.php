@@ -10,10 +10,7 @@ final class FilesystemCache extends FileCache
 	public const EXTENSION = '.doctrinecache.data';
 
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($directory, $extension = self::EXTENSION, $umask = 0002)
+	public function __construct(string $directory, string $extension = self::EXTENSION, int $umask = 0002)
 	{
 		parent::__construct($directory, $extension, $umask);
 	}
