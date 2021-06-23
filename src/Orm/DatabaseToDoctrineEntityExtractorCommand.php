@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
-use Doctrine\Common\Cache\ArrayCache;
+use Baraja\Doctrine\Cache\ArrayCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\DBAL\Driver\PDO\Statement;
 use Doctrine\ORM\Configuration;

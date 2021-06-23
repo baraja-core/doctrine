@@ -5,15 +5,9 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\ApcuCache;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\FilesystemCache;
-use Doctrine\Common\Cache\MemcacheCache;
-use Doctrine\Common\Cache\MemcachedCache;
-use Doctrine\Common\Cache\RedisCache;
-use Doctrine\Common\Cache\VoidCache;
-use Doctrine\Common\Cache\XcacheCache;
+use Baraja\Doctrine\Cache\ApcuCache;
+use Baraja\Doctrine\Cache\ArrayCache;
+use Baraja\Doctrine\Cache\FilesystemCache;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\RegionsConfiguration;
@@ -25,15 +19,9 @@ use Nette\InvalidStateException;
 final class OrmCacheExtension extends CompilerExtension
 {
 	public const DRIVERS = [
-		'apc' => ApcCache::class,
 		'apcu' => ApcuCache::class,
 		'array' => ArrayCache::class,
 		'filesystem' => FilesystemCache::class,
-		'memcache' => MemcacheCache::class,
-		'memcached' => MemcachedCache::class,
-		'redis' => RedisCache::class,
-		'void' => VoidCache::class,
-		'xcache' => XcacheCache::class,
 	];
 
 	/** @var mixed[] */
