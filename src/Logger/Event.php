@@ -33,6 +33,9 @@ final class Event
 
 	public function end(): void
 	{
+		if ($this->end !== null) {
+			return;
+		}
 		$end = (float) microtime(true);
 		$this->end = $end;
 		$this->duration = $end - $this->start;
@@ -92,18 +95,24 @@ final class Event
 
 	public function getEnd(): ?float
 	{
+		$this->end();
+
 		return $this->end;
 	}
 
 
 	public function getDuration(): ?float
 	{
+		$this->end();
+
 		return $this->duration;
 	}
 
 
 	public function getDurationMs(): ?float
 	{
+		$this->end();
+
 		return $this->duration
 			? $this->duration * 1_000
 			: null;
