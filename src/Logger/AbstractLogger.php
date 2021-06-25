@@ -84,6 +84,7 @@ abstract class AbstractLogger implements SQLLogger
 		}
 
 		$event = $this->events[$key];
+		$event->end();
 
 		if (
 			$locked === false
