@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\Cache;
 
 
+use Tracy\Debugger;
+use Tracy\ILogger;
 use function array_search;
 use Doctrine\Common\Cache\CacheProvider;
 use function implode;
@@ -48,7 +50,16 @@ final class SQLite3Cache extends CacheProvider
 				$cache->exec('PRAGMA journal_mode = wal;');
 				break;
 			} catch (\Throwable $e) {
-				if ($ttl > 0 && str_contains($e->getMessage(), 'database is locked')) {
+				$message = $e->getMessage();
+				if (!str_contains($message, 'database is locked') && !str_contains($message, 'disk I/O error')) {
+					if (class_exists(Debugger::class)) {
+						Debugger::log($e, ILogger::CRITICAL);
+						$ttl = 0;
+					} else {
+						throw $e;
+					}
+				}
+				if ($ttl > 0) {
 					usleep(100_000); // 100 ms
 					$ttl--;
 				} else {
