@@ -62,6 +62,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	 *
 	 * @param string|string[] $events The event(s) to listen on.
 	 * @param object $listener The listener object.
+	 * @phpstan-return void
 	 */
 	public function addEventListener($events, $listener): self
 	{
@@ -104,6 +105,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 	/**
 	 * @param object $entity
+	 * @phpstan-return void
 	 */
 	public function persist($entity): self
 	{
@@ -119,6 +121,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 	/**
 	 * @param object|mixed[]|null $entity
+	 * @phpstan-return void
 	 */
 	public function flush($entity = null): self
 	{
@@ -163,6 +166,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 	/**
 	 * @param object $object The object instance to remove.
+	 * @phpstan-return void
 	 */
 	public function remove($object): self
 	{
