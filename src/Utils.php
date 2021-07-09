@@ -151,7 +151,10 @@ final class Utils
 				}
 			}
 		} catch (DBALException $e) {
-			throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+			$hashExist = false;
+			if (class_exists(Debugger::class)) {
+				Debugger::log($e);
+			}
 		}
 		if ($hashExist !== false) {
 			$cache[$hash] = true;
