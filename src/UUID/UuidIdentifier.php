@@ -5,15 +5,23 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\UUID;
 
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+
 trait UuidIdentifier
 {
-
 	/**
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid", unique=true)
 	 * @ORM\GeneratedValue(strategy="CUSTOM")
 	 * @ORM\CustomIdGenerator(class="\Baraja\Doctrine\UUID\UuidGenerator")
 	 */
+	#[Id]
+	#[Column(type: 'uuid', unique: true)]
+	#[GeneratedValue(strategy: 'CUSTOM')]
+	#[CustomIdGenerator(class: UuidGenerator::class)]
 	protected ?string $id;
 
 

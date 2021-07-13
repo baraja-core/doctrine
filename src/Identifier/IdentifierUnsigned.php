@@ -9,12 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait IdentifierUnsigned
 {
-
 	/**
 	 * @ORM\Id
 	 * @ORM\Column(type="integer", unique=true, options={"unsigned"=true})
 	 * @ORM\GeneratedValue
 	 */
+	#[ORM\Id]
+	#[ORM\Column(type: 'integer', unique: true, options: ['unsigned' => true])]
+	#[ORM\GeneratedValue]
 	protected ?int $id;
 
 

@@ -9,12 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 trait Identifier
 {
-
 	/**
 	 * @ORM\Id
 	 * @ORM\Column(type="integer", unique=true)
 	 * @ORM\GeneratedValue
 	 */
+	#[ORM\Id]
+	#[ORM\Column(type: 'integer', unique: true)]
+	#[ORM\GeneratedValue]
 	protected ?int $id;
 
 
