@@ -35,6 +35,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 		$paths ??= $annotationManager->getPaths();
 		parent::__construct($annotationReader, $paths);
 		$this->defaultDriver = new AttributeDriver($paths);
+		/** @phpstan-ignore-next-line */
 		$this->defaultDriver->reader = $attributeReader;
 		$this->drivers = [
 			$this->defaultDriver,
