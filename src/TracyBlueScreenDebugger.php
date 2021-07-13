@@ -206,17 +206,19 @@ final class TracyBlueScreenDebugger
 				$docComment = '';
 				$startLine = 1;
 				try {
-					$fileName = (string) ($ref = new \ReflectionClass($className))->getFileName();
+					$ref = new \ReflectionClass($className);
+					$fileName = (string) $ref->getFileName();
 					$fileContent = \is_file($fileName)
 						? (string) file_get_contents($fileName)
 						: null;
 					$startLine = (int) $ref->getStartLine();
 					$docComment = trim((string) $ref->getDocComment());
-				} catch (\ReflectionException $e) {
+				} catch (\ReflectionException) {
+					// Silence is golden.
 				}
 				if ($fileName !== null && $fileContent !== null) {
 					return '<p>File: <b>' . Helpers::editorLink($fileName, $startLine) . '</b> (class <b>' . htmlspecialchars($className) . '</b>)</p>'
-						. '<p>A valid Doctrine entity must contain at least the "@Entity" annotation. See the <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/2.7/reference/basic-mapping.html" target="_blank">documentation for more information</a>.</p>'
+						. '<p>A valid Doctrine entity must contain at least the #[Entity] attribute or "@Entity" annotation. See the <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/2.7/reference/basic-mapping.html" target="_blank">documentation for more information</a>.</p>'
 						. BlueScreen::highlightPhp(htmlspecialchars($fileContent, ENT_IGNORE), $startLine)
 						. '<p>Doc comment:</p>'
 						. ($docComment === '' ? '<i>Doc comment is empty.</i>' : '<pre>' . htmlspecialchars($docComment) . '</pre>');
