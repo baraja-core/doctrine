@@ -28,7 +28,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 	/**
 	 * @param string[]|null $paths
 	 */
-	public function __construct(EntityAnnotationManager $annotationManager, ?array $paths, ?Storage $storage)
+	public function __construct(EntityAnnotationManager $annotationManager, ?array $paths = null, ?Storage $storage = null)
 	{
 		$attributeReader = new AttributeReader;
 		$annotationReader = new AnnotationReader;
@@ -40,11 +40,15 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 			$this->defaultDriver,
 			new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($annotationReader, $paths),
 		];
-		$cache = new Cache($storage, 'doctrine-annotation-driver');
-		$classList = $cache->load('entityToDriver');
-		if ($classList === null) {
+		if ($storage !== null) {
+			$cache = new Cache($storage, 'doctrine-annotation-driver');
+			$classList = $cache->load('entityToDriver');
+			if ($classList === null) {
+				$classList = $this->computeClassList();
+				$cache->save('entityToDriver', $classList, [Cache::EXPIRATION => '10 minutes']);
+			}
+		} else {
 			$classList = $this->computeClassList();
-			$cache->save('entityToDriver', $classList, [Cache::EXPIRATION => '10 minutes']);
 		}
 		$this->entityToDriver = $classList;
 	}
