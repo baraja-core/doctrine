@@ -129,7 +129,7 @@ final class OrmAnnotationsExtension extends CompilerExtension
 		self::createEntityAnnotationManager($builder);
 
 		$annotationDriver = $builder->addDefinition($this->prefix('annotationDriver'))
-			->setFactory(AnnotationDriver::class, [$this->prefix('@reader')]);
+			->setFactory(AnnotationDriver::class);
 
 		foreach (self::$annotationPaths as $extensionAnnotationPathNamespace => $extensionAnnotationPathPath) {
 			self::addAnnotationPathToManager($builder, $extensionAnnotationPathNamespace, $extensionAnnotationPathPath);
