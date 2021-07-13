@@ -28,8 +28,11 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 	/**
 	 * @param string[]|null $paths
 	 */
-	public function __construct(EntityAnnotationManager $annotationManager, ?array $paths = null, ?Storage $storage = null)
-	{
+	public function __construct(
+		EntityAnnotationManager $annotationManager,
+		?array $paths = null,
+		?Storage $storage = null,
+	) {
 		$attributeReader = new AttributeReader;
 		$annotationReader = new AnnotationReader;
 		$paths ??= $annotationManager->getPaths();
