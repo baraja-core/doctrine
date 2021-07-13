@@ -9,6 +9,7 @@ use Baraja\Doctrine\DBAL\Utils\QueryUtils;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
@@ -205,6 +206,7 @@ final class TracyBlueScreenDebugger
 				$fileContent = null;
 				$docComment = '';
 				$startLine = 1;
+				$entityAttributes = [];
 				try {
 					$ref = new \ReflectionClass($className);
 					$fileName = (string) $ref->getFileName();
@@ -213,6 +215,7 @@ final class TracyBlueScreenDebugger
 						: null;
 					$startLine = (int) $ref->getStartLine();
 					$docComment = trim((string) $ref->getDocComment());
+					$entityAttributes = $ref->getAttributes(Entity::class);
 				} catch (\ReflectionException) {
 					// Silence is golden.
 				}
@@ -220,8 +223,8 @@ final class TracyBlueScreenDebugger
 					return '<p>File: <b>' . Helpers::editorLink($fileName, $startLine) . '</b> (class <b>' . htmlspecialchars($className) . '</b>)</p>'
 						. '<p>A valid Doctrine entity must contain at least the #[Entity] attribute or "@Entity" annotation. See the <a href="https://www.doctrine-project.org/projects/doctrine-orm/en/2.7/reference/basic-mapping.html" target="_blank">documentation for more information</a>.</p>'
 						. BlueScreen::highlightPhp(htmlspecialchars($fileContent, ENT_IGNORE), $startLine)
-						. '<p>Doc comment:</p>'
-						. ($docComment === '' ? '<i>Doc comment is empty.</i>' : '<pre>' . htmlspecialchars($docComment) . '</pre>');
+						. ($docComment !== '' ? '<p>Doc comment:</p><pre>' . htmlspecialchars($docComment) . '</pre>' : '')
+						. ($entityAttributes !== [] ? '<p>Attributes:</p>' . Dumper::toHtml($entityAttributes) : '');
 				}
 			}
 
