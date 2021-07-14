@@ -400,6 +400,23 @@ final class DatabaseExtension extends CompilerExtension
 			if (!preg_match('~^[a-z]+://~', $connectionString)) { // fix missing driver
 				$connectionString = 'mysql://' . $connectionString;
 			}
+			$dbName = getenv('DB_NAME');
+			if ($dbName) {
+				$config['connection']['dbname'] = $dbName;
+			}
+			if (
+				preg_match(
+					'/^([a-z]+):\/\/(?<user>[^:]+):(?<password>[^:@]+)@(?<host>[^:]+):(?<port>\d+)\/(?<dbname>[a-z]+)$/',
+					$connectionString,
+					$connectionStringParser,
+				)
+			) {
+				$config['connection']['user'] = $connectionStringParser['user'];
+				$config['connection']['password'] = $connectionStringParser['password'];
+				$config['connection']['host'] = $connectionStringParser['host'];
+				$config['connection']['port'] = (int) $connectionStringParser['port'];
+				$config['connection']['dbname'] = $connectionStringParser['dbname'];
+			}
 			$config['connection']['url'] = $connectionString;
 		} else {
 			throw new \RuntimeException(
