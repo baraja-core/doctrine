@@ -390,14 +390,14 @@ final class DatabaseExtension extends CompilerExtension
 				);
 			}
 		} elseif (is_string(getenv('DB_URI'))) { // try use environment variable
-			$connectionString = getenv('DB_URI') ?: null;
-			if (is_string($connectionString) === false || $connectionString === '') {
+			$connectionString = trim(getenv('DB_URI') ?: '');
+			if ($connectionString === '') {
 				throw new \RuntimeException(
 					'Connection configuration is invalid. '
 					. 'Connection string (key "DB_URI") is not valid string.',
 				);
 			}
-			$config['connection']['url'] = trim($connectionString);
+			$config['connection']['url'] = $connectionString;
 		} else {
 			throw new \RuntimeException(
 				'Connection configuration is invalid. '
