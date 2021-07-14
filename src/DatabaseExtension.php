@@ -389,6 +389,15 @@ final class DatabaseExtension extends CompilerExtension
 					. 'Please read configuration notes: https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html',
 				);
 			}
+		} elseif (isset($_ENV['DB_URI'])) { // try use environment variable
+			$connectionString = $_ENV['DB_URI'] ?? null;
+			if (is_string($connectionString) === false || $connectionString === '') {
+				throw new \RuntimeException(
+					'Connection configuration is invalid. '
+					. 'Connection string (key "DB_URI") is not valid string.',
+				);
+			}
+			$connection['url'] = trim($connectionString);
 		} else {
 			throw new \RuntimeException(
 				'Connection configuration is invalid. '
