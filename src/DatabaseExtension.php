@@ -397,7 +397,7 @@ final class DatabaseExtension extends CompilerExtension
 					. 'Connection string (key "DB_URI") is not valid string.',
 				);
 			}
-			if (str_contains($connectionString, '//') === false) { // fix missing driver
+			if (!preg_match('~^[a-z]+://~', $connectionString)) { // fix missing driver
 				$connectionString = 'mysql://' . $connectionString;
 			}
 			$config['connection']['url'] = $connectionString;
