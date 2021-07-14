@@ -397,7 +397,7 @@ final class DatabaseExtension extends CompilerExtension
 					. 'Connection string (key "DB_URI") is not valid string.',
 				);
 			}
-			$connection['url'] = trim($connectionString);
+			$config['connection']['url'] = trim($connectionString);
 		} else {
 			throw new \RuntimeException(
 				'Connection configuration is invalid. '
