@@ -11,30 +11,23 @@ use Baraja\Doctrine\UUID\UuidIdentifier;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(
- *     name="core__database_slow_query",
- *     indexes={
- *         @Index(name="database_slow_query__hash", columns={"hash"}),
- *         @Index(name="database_slow_query__id_hash", columns={"id", "hash"})
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'core__database_slow_query')]
+#[Index(columns: ['id', 'hash'], name: 'database_slow_query__id_hash')]
 class SlowQuery
 {
 	use UuidIdentifier;
 
-	/** @ORM\Column(type="text") */
+	#[ORM\Column(type: 'text')]
 	private string $query;
 
-	/** @ORM\Column(type="float") */
+	#[ORM\Column(type: 'float')]
 	private float $duration;
 
-	/** @ORM\Column(type="string", length=32, unique=true) */
+	#[ORM\Column(type: 'string', length: 32, unique: true)]
 	private string $hash;
 
-	/** @ORM\Column(type="datetime") */
+	#[ORM\Column(type: 'datetime')]
 	private \DateTimeInterface $insertedDate;
 
 
