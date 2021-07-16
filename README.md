@@ -132,16 +132,14 @@ namespace Baraja\Doctrine\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
-use Nette\SmartObject;
-use Baraja\Doctrine\UUID\UuidBinaryIdentifier;
+use Baraja\Doctrine\Identifier\IdentifierUnsigned;
 
-/**
- * @ORM\Entity()
- */
+#[ORM\Entity]
 class DatabaseEntity
 {
-   use UuidBinaryIdentifier; // <--- UUID trait for entity identifier.
-   use SmartObject;          // <--- Strict class for better experience.
+   use IdentifierUnsigned; // ID trait for entity identifier.
+   // or use uuid:
+   // use UuidIdentifier; // UUID identifier trait
 ```
 
 UUID will be generated automatically in PHP.
