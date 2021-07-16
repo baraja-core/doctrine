@@ -128,7 +128,7 @@ abstract class AbstractLogger implements SQLLogger
 	{
 		$sum = 0;
 		foreach ($this->events as $query) {
-			$sum += $query->getDuration() ?? 0;
+			$sum += $query->getDurationMs() ?? 0;
 		}
 
 		return (float) $sum;
