@@ -42,7 +42,7 @@ class UuidBinaryType extends Type
 		}
 		try {
 			return Uuid::fromBytes($value);
-		} catch (\InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException) {
 			throw ConversionException::conversionFailed($value, static::NAME);
 		}
 	}
@@ -61,10 +61,13 @@ class UuidBinaryType extends Type
 			return $value->getBytes();
 		}
 		try {
-			if (is_string($value) || method_exists($value, '__toString')) {
-				return Uuid::fromString((string) $value)->getBytes();
+			$string = is_string($value) || method_exists($value, '__toString')
+				? (string) $value
+				: '';
+			if ($string !== '') {
+				return Uuid::fromString($string)->getBytes();
 			}
-		} catch (\InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException) {
 			// Ignore the exception and pass through.
 		}
 
