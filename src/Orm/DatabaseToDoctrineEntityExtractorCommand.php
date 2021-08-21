@@ -100,7 +100,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$output->writeln('<info>Available tables</info> (database "<comment>' . $connection->getDatabase() . '</comment>"):');
 
-		/** @var Statement $showTablesStatement @phpstan-ignore-next-line */
+		/** @var Statement $showTablesStatement */
 		$showTablesStatement = $connection->executeQuery('SHOW TABLES');
 
 		$tables = array_map(
