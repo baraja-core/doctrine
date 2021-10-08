@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\ORM\DI;
 
 
+use Baraja\Doctrine\Cache\FilesystemCache;
 use Baraja\Doctrine\ORM\Exception\Logical\InvalidStateException;
 use Baraja\Doctrine\ORM\Mapping\AnnotationDriver;
 use Baraja\Doctrine\ORM\Mapping\EntityAnnotationManager;
@@ -21,6 +22,7 @@ use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpLiteral;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
+use Nette\Utils\FileSystem;
 use Nette\Utils\Validators;
 
 final class OrmAnnotationsExtension extends CompilerExtension
@@ -141,9 +143,16 @@ final class OrmAnnotationsExtension extends CompilerExtension
 			$annotationDriver->addSetup('addExcludePaths', [Helpers::expand($config['excludePaths'], $builder->parameters)]);
 		}
 
+		$tempDir = ($builder->parameters['tempDir'] ?? sys_get_temp_dir() . '/temp/doctrine') . '/result-cache';
+		FileSystem::createDir($tempDir);
+
 		/** @var ServiceDefinition $configurationDefinition */
 		$configurationDefinition = $builder->getDefinitionByType(Configuration::class);
 		$configurationDefinition->addSetup('setMetadataDriverImpl', [$this->prefix('@annotationDriver')]);
+		$configurationDefinition->addSetup('?->setResultCacheImpl(new ' . FilesystemCache::class . '(?))', [
+			'@self',
+			FileSystem::normalizePath($tempDir),
+		]);
 	}
 
 
