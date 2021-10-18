@@ -7,10 +7,9 @@ namespace Baraja\Doctrine\DBAL\Tracy\QueryPanel;
 
 use Baraja\Doctrine\DBAL\Logger\AbstractLogger;
 use Baraja\Doctrine\EntityManager;
+use Baraja\Doctrine\Logger\SqlParserUtils;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\SQLParserUtils;
-use Doctrine\DBAL\SQLParserUtilsException;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 use Tracy\ILogger;
@@ -37,12 +36,12 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 		5 => 'background:#fbccb7 !important;color:black',
 	];
 
+	private Connection $connection;
 
-	public function __construct(
-		private Connection $connection,
-		EntityManager $entityManager,
-	) {
-		parent::__construct($entityManager);
+
+	public function setConnection(Connection $connection): void
+	{
+		$this->connection = $connection;
 	}
 
 
@@ -90,8 +89,8 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 	{
 		if ($params !== null && $params !== []) {
 			try {
-				[$sql, $params, $types] = SQLParserUtils::expandListParameters($sql, $params ?? [], $types ?? []);
-			} catch (SQLParserUtilsException) {
+				[$sql, $params, $types] = SqlParserUtils::expandListParameters($sql, $params ?? [], $types ?? []);
+			} catch (\Throwable) {
 				// Silence is golden.
 			}
 

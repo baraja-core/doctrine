@@ -6,6 +6,7 @@ namespace Baraja\Doctrine\ORM\DI;
 
 
 use Baraja\Doctrine\DatabaseToDoctrineEntityExtractorCommand;
+use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Baraja\Doctrine\EntityManager;
 use Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand;
 use Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand;
@@ -55,12 +56,15 @@ final class OrmConsoleExtension extends CompilerExtension
 				sprintf('You should register %s before %s.', self::class, static::class),
 			);
 		}
-
 		if (!class_exists(Application::class)) {
 			throw new ServiceCreationException(sprintf('Missing %s service', Application::class));
 		}
 
 		$builder = $this->getContainerBuilder();
+		if (($builder->parameters['debugMode'] ?? false) === true) {
+			$builder->addDefinition('doctrine.queryPanel')
+				->setFactory(QueryPanel::class);
+		}
 		$builder->addDefinition($this->prefix('entityManager'))
 			->setType(EntityManager::class)
 			->setAutowired(true);

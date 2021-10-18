@@ -31,12 +31,14 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		EventManager $eventManager,
 		?QueryPanel $panel = null
 	) {
+		if ($panel !== null) {
+			$panel->setEntityManager($this);
+			$panel->setConnection($connection);
+			Debugger::getBar()->addPanel($panel);
+		}
 		if (\class_exists(Debugger::class) === true) {
 			Debugger::getBlueScreen()->addPanel([TracyBlueScreenDebugger::class, 'render']);
 			TracyBlueScreenDebugger::setEntityManager($this);
-			if ($panel !== null) {
-				Debugger::getBar()->addPanel($panel);
-			}
 		}
 		parent::__construct(
 			$connection,

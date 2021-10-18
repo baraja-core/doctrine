@@ -24,6 +24,7 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\LoggerChain;
 use Doctrine\DBAL\Portability\Connection as PortabilityConnection;
+use Doctrine\ORM\EntityManagerInterface;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\ServiceDefinition;
@@ -136,12 +137,6 @@ final class DatabaseExtension extends CompilerExtension
 		$this->loadDoctrineConfiguration();
 		$this->loadConnectionConfiguration();
 		$this->registerInternalServices();
-
-		if (($builder->parameters['debugMode'] ?? false) === true) {
-			$builder->addDefinition($this->prefix('queryPanel'))
-				->setFactory(QueryPanel::class)
-				->setAutowired(false);
-		}
 	}
 
 
@@ -258,11 +253,7 @@ final class DatabaseExtension extends CompilerExtension
 			$initialize = $class->getMethod('initialize');
 			$initialize->addBody(
 				'$this->getService(?)->addPanel($this->getService(?));',
-				['tracy.bar', $this->prefix('queryPanel')],
-			);
-			$initialize->addBody(
-				'$this->getService(?)->getConfiguration()->getSqlLogger()->addLogger($this->getService(?));',
-				[$this->prefix('connection'), $this->prefix('queryPanel')],
+				['tracy.bar', 'doctrine.queryPanel'],
 			);
 			$initialize->addBody(
 				'$this->getService(?)->addPanel(new ?);',
@@ -327,9 +318,13 @@ final class DatabaseExtension extends CompilerExtension
 			->setAutowired(false)
 			->addSetup('setSQLLogger', [$this->prefix('@logger')]);
 
+		$loggers = [];
 		if ($config['configuration']['sqlLogger'] !== null) { // SqlLogger (append to chain)
-			$logger->addSetup('addLogger', [$config['configuration']['sqlLogger']]);
+			$loggers[] = '@' . $config['configuration']['sqlLogger'];
 		}
+		$loggers[] = $builder->getDefinition('doctrine.queryPanel');
+		$logger->setArgument('loggers', $loggers);
+
 		if ($config['configuration']['resultCacheImpl'] !== null) { // ResultCacheImpl
 			$configuration->addSetup('setResultCacheImpl', [$config['configuration']['resultCacheImpl']]);
 		}

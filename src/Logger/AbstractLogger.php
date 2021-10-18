@@ -24,15 +24,21 @@ abstract class AbstractLogger implements SQLLogger
 
 	private float $startTime;
 
+	private ?EntityManagerInterface $entityManager = null;
 
-	public function __construct(
-		private ?EntityManagerInterface $entityManager,
-	) {
+
+	public function __construct() {
 		if (class_exists(Debugger::class)) {
 			$this->startTime = (float) Debugger::$time;
 		} else {
 			$this->startTime = (float) ($_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true));
 		}
+	}
+
+
+	public function setEntityManager(EntityManagerInterface $entityManager): void
+	{
+		$this->entityManager = $entityManager;
 	}
 
 
@@ -89,7 +95,7 @@ abstract class AbstractLogger implements SQLLogger
 		if (
 			$locked === false
 			&& $this->entityManager !== null
-			&& ($event->getDurationMs() ?? 0) > $this->maxQueryTime
+			&& ($event->getDurationMs() ?? 0.0) > $this->maxQueryTime
 		) {
 			$locked = true;
 			$hash = Utils::createSqlHash($event->getSql());
