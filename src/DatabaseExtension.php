@@ -16,6 +16,7 @@ use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension;
 use Baraja\Doctrine\UUID\UuidBinaryType;
 use Baraja\Doctrine\UUID\UuidType;
+use Baraja\Network\Ip;
 use Baraja\ServiceMethodInvoker\ProjectEntityRepository;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\EventManager;
@@ -24,7 +25,6 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\LoggerChain;
 use Doctrine\DBAL\Portability\Connection as PortabilityConnection;
-use Doctrine\ORM\EntityManagerInterface;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\ServiceDefinition;
@@ -374,7 +374,7 @@ final class DatabaseExtension extends CompilerExtension
 				throw new \RuntimeException(
 					'In case of DigitalOcean (host is "' . $host . '") '
 					. 'you must define port (as integer) in your NEON configuration, but NULL given.'
-					. "\n" . 'Hint: Check if your current IP "' . Utils::userIp() . '" is allowed for connection.',
+					. "\n" . 'Hint: Check if your current IP "' . Ip::get() . '" is allowed for connection.',
 				);
 			}
 		} elseif ($connection['url']) {

@@ -6,10 +6,10 @@ namespace Baraja\Doctrine;
 
 
 use Baraja\Doctrine\Entity\SlowQuery;
-use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Tracy\Debugger;
 
 final class Utils
 {
@@ -89,38 +89,6 @@ final class Utils
 	}
 
 
-	public static function userIp(): string
-	{
-		static $ip = null;
-
-		if ($ip === null) {
-			if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) { // Cloudflare support
-				$ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
-			} elseif (isset($_SERVER['REMOTE_ADDR']) === true) {
-				$ip = $_SERVER['REMOTE_ADDR'];
-				if (preg_match('/^(?:127|10)\.0\.0\.[12]?\d{1,2}$/', $ip)) {
-					if (isset($_SERVER['HTTP_X_REAL_IP'])) {
-						$ip = $_SERVER['HTTP_X_REAL_IP'];
-					} elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-						$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-					}
-				}
-			} else {
-				$ip = '127.0.0.1';
-			}
-			if (in_array($ip, ['::1', '0.0.0.0', 'localhost'], true)) {
-				$ip = '127.0.0.1';
-			}
-			$filter = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
-			if ($filter === false) {
-				$ip = '127.0.0.1';
-			}
-		}
-
-		return $ip;
-	}
-
-
 	/**
 	 * Fast check of record existence.
 	 */
@@ -150,7 +118,7 @@ final class Utils
 					$hashExist = false;
 				}
 			}
-		} catch (DBALException $e) {
+		} catch (\Throwable $e) {
 			$hashExist = false;
 			if (class_exists(Debugger::class)) {
 				Debugger::log($e);

@@ -6,7 +6,6 @@ namespace Baraja\Doctrine\DBAL\Tracy\QueryPanel;
 
 
 use Baraja\Doctrine\DBAL\Logger\AbstractLogger;
-use Baraja\Doctrine\EntityManager;
 use Baraja\Doctrine\Logger\SqlParserUtils;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\DBAL\Connection;

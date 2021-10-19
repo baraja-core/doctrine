@@ -13,6 +13,7 @@
 		"ext-pdo": "*",
 		"baraja-core/nette-symfony-console": "^1.0",
 		"baraja-core/url": "^1.1",
+		"baraja-core/network": "^1.0",
 		"nette/di": "^3.0",
 		"doctrine/orm": "^2.9",
 		"ramsey/uuid": "^4.1"

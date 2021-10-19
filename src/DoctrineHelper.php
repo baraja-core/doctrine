@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Tracy\Debugger;
 use Tracy\ILogger;
@@ -175,7 +174,7 @@ class DoctrineHelper
 			$this->entityManager->clear($this->getRootEntityName($from::class));
 		} catch (MappingException $e) {
 			Debugger::log($e, ILogger::CRITICAL);
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
+			throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
 		}
 
 		if (method_exists($from, 'getId')) {
@@ -194,8 +193,8 @@ class DoctrineHelper
 					. 'WHERE `id` = \'{id}\'',
 				),
 			);
-		} catch (DBALException $e) {
-			Debugger::log($e);
+		} catch (\Throwable $e) {
+			Debugger::log($e, ILogger::CRITICAL);
 			trigger_error($e->getMessage());
 		}
 

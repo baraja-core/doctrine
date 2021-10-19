@@ -6,12 +6,11 @@ namespace Baraja\Doctrine;
 
 
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Tracy\BlueScreen;
 use Tracy\Dumper;
@@ -36,7 +35,7 @@ final class TracyBlueScreenDebugger
 
 
 	/**
-	 * @return string[]|null
+	 * @return array{tab: string, panel: string}|null
 	 */
 	public static function render(?\Throwable $e): ?array
 	{
@@ -64,7 +63,7 @@ final class TracyBlueScreenDebugger
 
 
 	/**
-	 * @return string[]
+	 * @return array{tab: string, panel: string}
 	 */
 	private static function renderCommon(ORMException $e): array
 	{
@@ -76,7 +75,7 @@ final class TracyBlueScreenDebugger
 
 
 	/**
-	 * @return string[]
+	 * @return array{tab: string, panel: string}
 	 */
 	private static function renderDriver(DriverException $e): array
 	{
@@ -97,7 +96,7 @@ final class TracyBlueScreenDebugger
 		if (preg_match('/while executing \'(.+)\' with params (.+):(?:\n\s)+(.+)/', $e->getMessage(), $parser)) {
 			$tab = 'Driver error | ' . $parser[3];
 			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>'
-				. '<p>With params:</p>' . Dumper::toHtml(json_decode($parser[2]));
+				. '<p>With params:</p>' . Dumper::toHtml(json_decode($parser[2], true, 512, JSON_THROW_ON_ERROR));
 		} elseif (preg_match('/while executing \'(.+)\'/', $e->getMessage(), $parser)) {
 			$tab = 'Driver error';
 			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>';
@@ -156,7 +155,7 @@ final class TracyBlueScreenDebugger
 				}
 
 				$panel .= '</table>';
-			} catch (DBALException) {
+			} catch (\Throwable) {
 				// Silence is golden.
 			}
 		}

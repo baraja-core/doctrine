@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\Logger;
 
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Types\Type;
 use function array_fill;
 use function array_fill_keys;
 use function array_key_exists;
@@ -16,16 +13,19 @@ use function array_merge;
 use function array_slice;
 use function array_values;
 use function count;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\Type;
 use function implode;
 use function is_int;
 use function key;
 use function ksort;
 use function preg_match_all;
+use const PREG_OFFSET_CAPTURE;
 use function sprintf;
 use function strlen;
 use function strpos;
 use function substr;
-use const PREG_OFFSET_CAPTURE;
 
 final class SqlParserUtils
 {
@@ -156,8 +156,7 @@ final class SqlParserUtils
 			$statement,
 			'?',
 			self::POSITIONAL_TOKEN,
-			static function (string $_, int $placeholderPosition, int $fragmentPosition, array &$carry): void
-			{
+			static function (string $_, int $placeholderPosition, int $fragmentPosition, array &$carry): void {
 				$carry[] = $placeholderPosition + $fragmentPosition;
 			}
 		);

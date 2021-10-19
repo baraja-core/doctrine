@@ -8,7 +8,6 @@ namespace Baraja\Doctrine\DBAL;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -37,7 +36,6 @@ class ConnectionFactory
 	 * Create a connection by name.
 	 *
 	 * @param mixed[] $params
-	 * @throws DBALException
 	 */
 	public function createConnection(
 		array $params,
@@ -73,33 +71,28 @@ class ConnectionFactory
 	 * This could fail if types should be registered to an predefined/unused connection
 	 * and the platform version is unknown.
 	 * For details have a look at DoctrineBundle issue #673.
-	 *
-	 * @throws DBALException
 	 */
 	private function getDatabasePlatform(Connection $connection): AbstractPlatform
 	{
 		try {
 			return $connection->getDatabasePlatform();
-		} catch (DBALException $driverException) {
-			if ($driverException instanceof DriverException) {
+		} catch (\Throwable $e) {
+			if ($e instanceof DriverException) {
 				throw new \RuntimeException(
 					'An exception occurred while establishing a connection to figure out your platform version.' . PHP_EOL .
 					'You can circumvent this by setting a \'server_version\' configuration value' . PHP_EOL . PHP_EOL .
 					'For further information have a look at:' . PHP_EOL .
 					'https://github.com/doctrine/DoctrineBundle/issues/673',
 					0,
-					$driverException,
+					$e,
 				);
 			}
 
-			throw $driverException;
+			throw $e;
 		}
 	}
 
 
-	/**
-	 * @throws DBALException
-	 */
 	private function initializeTypes(): void
 	{
 		foreach ($this->typesConfig as $type => $typeConfig) {

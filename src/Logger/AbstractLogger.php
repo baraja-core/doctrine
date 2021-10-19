@@ -27,7 +27,8 @@ abstract class AbstractLogger implements SQLLogger
 	private ?EntityManagerInterface $entityManager = null;
 
 
-	public function __construct() {
+	public function __construct()
+	{
 		if (class_exists(Debugger::class)) {
 			$this->startTime = (float) Debugger::$time;
 		} else {

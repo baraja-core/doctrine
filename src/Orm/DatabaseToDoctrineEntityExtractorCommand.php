@@ -7,7 +7,6 @@ namespace Baraja\Doctrine;
 
 use Baraja\Doctrine\Cache\ArrayCache;
 use Doctrine\Common\ClassLoader;
-use Doctrine\DBAL\Driver\PDO\Statement;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
@@ -100,7 +99,6 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$output->writeln('<info>Available tables</info> (database "<comment>' . $connection->getDatabase() . '</comment>"):');
 
-		/** @var Statement $showTablesStatement */
 		$showTablesStatement = $connection->executeQuery('SHOW TABLES');
 
 		$tables = array_map(

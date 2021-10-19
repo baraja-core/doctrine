@@ -58,7 +58,7 @@ In your `common.neon` simple type:
 ```yaml
 baraja.database:
    connection:
-      driverClass: Baraja\Doctrine\Driver\Postgres\PDOPgSqlDriver
+      driverClass: Doctrine\DBAL\Driver\PDO\PgSQL\Driver
 ```
 
 🗺️ Entity mapping
