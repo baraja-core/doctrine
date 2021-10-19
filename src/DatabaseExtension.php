@@ -25,6 +25,7 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\LoggerChain;
 use Doctrine\DBAL\Portability\Connection as PortabilityConnection;
+use Doctrine\DBAL\Tools\Console\ConnectionProvider\SingleConnectionProvider;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\ServiceDefinition;
@@ -322,7 +323,9 @@ final class DatabaseExtension extends CompilerExtension
 		if ($config['configuration']['sqlLogger'] !== null) { // SqlLogger (append to chain)
 			$loggers[] = '@' . $config['configuration']['sqlLogger'];
 		}
-		$loggers[] = $builder->getDefinition('doctrine.queryPanel');
+		if ($builder->hasDefinition('doctrine.queryPanel')) {
+			$loggers[] = $builder->getDefinition('doctrine.queryPanel');
+		}
 		$logger->setArgument('loggers', $loggers);
 
 		if ($config['configuration']['resultCacheImpl'] !== null) { // ResultCacheImpl
@@ -446,6 +449,9 @@ final class DatabaseExtension extends CompilerExtension
 					$builder->getDefinitionByType(EventManager::class),
 				]
 			);
+
+		$builder->addDefinition($this->prefix('singleConnectionProvider'))
+			->setFactory(SingleConnectionProvider::class);
 	}
 
 
