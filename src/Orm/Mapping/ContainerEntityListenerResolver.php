@@ -62,6 +62,7 @@ final class ContainerEntityListenerResolver implements EntityListenerResolver
 	public function resolve($className)
 	{
 		$className = trim($className, '\\');
+		assert(class_exists($className));
 		if (isset($this->instances[$className])) {
 			return $this->instances[$className];
 		}
