@@ -72,7 +72,7 @@ foreach ($events ?? [] as $event) {
 			: '<span style="color:white;background:#bf0014;padding:2px 6px;border-radius:4px">Error</span>'
 		)
 		. '<br><i title="Request runtime delay time">' . number_format($event->getDelayTime(), 2, '.', '') . '</i>'
-		. '<br><a href="' . $trackingUrl->getAbsoluteUrl() . '">Track</a>'
+		. '<br><a href="' . $trackingUrl->getAbsoluteUrl() . '" target="_blank">Track</a>'
 		. ($isTransaction ? '<br><span style="color:#bf0014">•</span>' : '')
 		. '</td>'
 		. '<td class="tracy-dbal-sql" ' . ($background ? ' style="background:' . $background . ' !important"' : '') . '>'
