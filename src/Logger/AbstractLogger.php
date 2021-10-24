@@ -59,14 +59,10 @@ abstract class AbstractLogger implements SQLLogger
 			&& ($_GET['trackingSqlHash'] ?? '') === $hash
 			&& Debugger::$productionMode === false
 		) {
-			Debugger::log(
-				new \RuntimeException(
-					'Debug tracking point for query "' . $hash . '".'
-					. "\n" . 'SQL: ' . $sql
-					. "\n" . 'Params: ' . json_encode($params),
-				),
-				ILogger::DEBUG,
-			);
+			ob_start();
+			require __DIR__ . '/templates/trackQuery.phtml';
+			echo (string) ob_get_clean();
+			die;
 		}
 
 		$this->events[] = new Event(
