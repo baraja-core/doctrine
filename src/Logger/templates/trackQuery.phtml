@@ -1,0 +1,126 @@
+<?php
+
+declare(strict_types=1);
+
+
+use Baraja\Doctrine\DBAL\Utils\QueryUtils;
+use Tracy\BlueScreen;
+use Tracy\Dumper;
+use Tracy\Helpers;
+
+/**
+ * @var string $sql
+ * @var string $hash
+ * @var array<string, mixed> $params
+ */
+?>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>SQL Profiler</title>
+</head>
+<body>
+<div style="background:white;border:1px solid black;padding:0 !important">
+	<div style="background:black;color:white;padding:8px">
+		<h1>Baraja Doctrine SQL Profiler</h1>
+	</div>
+	<div style="padding:16px">
+		<p>Query:</p>
+		<div style="font-family:monospace">
+			<?php
+			echo QueryUtils::highlight($sql);
+			?>
+		</div>
+		<p>Params</p>
+	  <?php
+	  if ($params === []) {
+		  echo '<p><i style="color:#555">No parameters here.</i></p>';
+	  } else {
+		  echo '<table>';
+		  echo Dumper::toHtml($params);
+		  echo '</table>';
+	  }
+	  ?>
+		<p>Call stack</p>
+		<div style="background:#eee;padding:16px 0">
+			<ol>
+		  <?php
+		  foreach (debug_backtrace() as $key => $row) {
+			  echo '<li><p>';
+			  if (isset($row['file']) && is_file($row['file'])) {
+				  echo Helpers::editorLink($row['file'], $row['line']);
+			  } else {
+				  echo '<i>inner-code</i>';
+				  if (isset($row['line'])) {
+					  echo ':', $row['line'];
+				  }
+			  }
+			  if (isset($row['file']) && is_file($row['file'])) {
+				  echo '<a data-tracy-ref="^p + .file" class="tracy-toggle tracy-collapsed" style="margin-left:8px">source</a>&nbsp;';
+			  }
+			  if (isset($row['class'])) {
+				  echo '<b>' . Helpers::escapeHtml($row['class'] . $row['type']) . '</b>';
+			  }
+			  echo '<b>' . Helpers::escapeHtml($row['function']) . '</b> (';
+			  if (!empty($row['args'])) {
+				  echo '<a data-tracy-ref="^p + .args" class="tracy-toggle tracy-collapsed">arguments</a>';
+			  }
+			  echo ')</p>';
+
+			  if (isset($row['file']) && is_file($row['file'])) {
+				  echo '<div class="tracy-collapsed file" style="border:1px solid black;background:white;padding:0 !important">'
+					  . BlueScreen::highlightFile($row['file'], $row['line'])
+					  . '</div>';
+			  }
+			  if (!empty($row['args'])) {
+				  echo '<div class="tracy-collapsed outer args"><table style="width:100%">';
+				  try {
+					  $r = isset($row['class'])
+						  ? new \ReflectionMethod($row['class'], $row['function'])
+						  : new \ReflectionFunction($row['function']);
+					  $params = $r->getParameters();
+				  } catch (\Exception $e) {
+					  $params = [];
+				  }
+				  foreach ($row['args'] as $k => $v) {
+					  $argName = isset($params[$k]) && !$params[$k]->isVariadic() ? $params[$k]->name : $k;
+					  echo '<tr><th style="font-family:Arial;width:200px !important;text-align:right">'
+						  . Helpers::escapeHtml((is_string($argName) ? '$' : '#') . $argName)
+						  . '</th><td>';
+					  echo Dumper::toHtml($v, [], (string) $argName);
+					  echo "</td></tr>\n";
+				  }
+				  echo '</table></div>';
+			  }
+			  echo '</li>';
+		  }
+		  ?>
+			</ol>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+<style>
+	h1, p {
+		font-family: Arial;
+	}
+
+	h1 {
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+
+	.tracy-dump {
+		margin: 0 !important;
+	}
+
+	.highlight {
+		background: red !important;
+		color: white !important;
+	}
+
+	a {
+		color: #283593;
+	}
+</style>
