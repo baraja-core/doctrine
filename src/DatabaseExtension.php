@@ -253,14 +253,9 @@ final class DatabaseExtension extends CompilerExtension
 		if (($this->getContainerBuilder()->parameters['debugMode'] ?? false) === true) {
 			$initialize = $class->getMethod('initialize');
 			$initialize->addBody(
-				'$this->getService(?)->addPanel($this->getService(?));',
-				['tracy.bar', 'doctrine.queryPanel'],
-			);
-			$initialize->addBody(
 				'$this->getService(?)->addPanel(new ?);',
 				['tracy.blueScreen', ContainerBuilder::literal(DbalBlueScreen::class)],
 			);
-
 			if (\class_exists(Debugger::class) === true) {
 				/** @var ServiceDefinition $entityManager */
 				$entityManager = $this->getContainerBuilder()->getDefinitionByType(EntityManager::class);
