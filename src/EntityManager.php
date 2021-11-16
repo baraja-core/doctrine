@@ -229,11 +229,18 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 
 	/**
-	 * @param string $className
+	 * @param class-string $className
 	 */
 	public function getRepository($className): EntityRepository
 	{
-		$metadata = parent::getClassMetadata($className);
+		try {
+			$metadata = parent::getClassMetadata($className);
+		} catch (\Doctrine\ORM\Mapping\MappingException $e) {
+			if (is_subclass_of($className, EntityRepository::class)) {
+				throw new \InvalidArgumentException(sprintf('Get repository for "%s" is not allowed, please use entity name.', $className), 500, $e);
+			}
+			throw $e;
+		}
 		$repository = $metadata->customRepositoryClassName ?? Repository::class;
 
 		return new $repository($this, $metadata);
