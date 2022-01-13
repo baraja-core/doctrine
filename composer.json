@@ -16,6 +16,7 @@
 		"baraja-core/network": "^1.0",
 		"nette/di": "^3.0",
 		"doctrine/orm": "^2.9",
+		"doctrine/annotations": "^1.13",
 		"ramsey/uuid": "^4.1"
 	},
 	"require-dev": {
