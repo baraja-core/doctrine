@@ -22,11 +22,14 @@
 	"require-dev": {
 		"baraja-core/package-manager": "^3.2",
 		"baraja-core/service-method-invoker": "^2.2",
-		"phpstan/phpstan": "^0.12.90",
 		"tracy/tracy": "^2.8",
 		"nette/caching": "^3.0",
-		"phpstan/phpstan-nette": "^0.12.14",
-		"spaze/phpstan-disallowed-calls": "^1.1",
+		"phpstan/phpstan": "^1.0",
+		"phpstan/extension-installer": "^1.1",
+		"phpstan/phpstan-nette": "^1.0",
+		"phpstan/phpstan-deprecation-rules": "^1.0",
+		"phpstan/phpstan-strict-rules": "^1.0",
+		"spaze/phpstan-disallowed-calls": "^2.0",
 		"roave/security-advisories": "dev-master"
 	},
 	"autoload": {
