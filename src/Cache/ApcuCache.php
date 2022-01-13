@@ -83,6 +83,7 @@ class ApcuCache extends CacheProvider
 	{
 		$result = apcu_store($keysAndValues, null, (int) $lifetime);
 
+		/** @phpstan-ignore-next-line */
 		return empty($result);
 	}
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Baraja\Doctrine\DBAL\Utils;
 
+
 final class QueryUtils
 {
 	/** @throws \Error */
@@ -36,17 +37,17 @@ final class QueryUtils
 		$sql = (string) preg_replace_callback(
 			"#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is",
 			static function (array $matches): string {
-				if (!empty($matches[1])) { // comment
+				if (($matches[1] ?? '') !== '') { // comment
 					return '<em style="color:#424242" style="font-family:monospace">' . $matches[1] . '</em>';
 				}
-				if (!empty($matches[2])) { // error
+				if (($matches[2] ?? '') !== '') { // error
 					return '<strong style="color:#c62828" style="font-family:monospace">' . $matches[2] . '</strong>';
 				}
-				if (!empty($matches[3])) { // most important keywords
+				if (($matches[3] ?? '') !== '') { // most important keywords
 					return (self::getCounter() > 1 ? '<br>' : '')
 						. '<strong style="color:#283593" style="font-family:monospace">' . $matches[3] . '</strong>';
 				}
-				if (!empty($matches[4])) { // other keywords
+				if (($matches[4] ?? '') !== '') { // other keywords
 					return '<strong style="color:#2e7d32" style="font-family:monospace">' . $matches[4] . '</strong>';
 				}
 
@@ -71,6 +72,6 @@ final class QueryUtils
 			$counter++;
 		}
 
-		return (int) $counter;
+		return $counter;
 	}
 }

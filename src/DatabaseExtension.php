@@ -349,7 +349,7 @@ final class DatabaseExtension extends CompilerExtension
 		$connection = $config['connection'];
 		if (isset($connection['host'], $connection['dbname'], $connection['user'])) {
 			$host = $connection['host'];
-			if (preg_match('/^([^:]+):(\d+)$/', $host, $hostParser)) { // parse port from host
+			if (preg_match('/^([^:]+):(\d+)$/', $host, $hostParser) === 1) { // parse port from host
 				if (
 					isset($config['connection']['port']) === true
 					&& $config['connection']['port'] !== (int) $hostParser[2]
@@ -367,7 +367,7 @@ final class DatabaseExtension extends CompilerExtension
 			}
 			if (
 				isset($config['connection']['port']) === false
-				&& preg_match('/^.+?\.ondigitalocean\.com$/', $host)
+				&& preg_match('/^.+?\.ondigitalocean\.com$/', $host) === 1
 			) { // DigitalOcean managed database support
 				throw new \RuntimeException(
 					'In case of DigitalOcean (host is "' . $host . '") '
@@ -376,7 +376,7 @@ final class DatabaseExtension extends CompilerExtension
 				);
 			}
 		} elseif ($connection['url']) {
-			if (!preg_match('/^[a-z-]+:\/{2,}/', (string) $connection['url'])) {
+			if (preg_match('/^[a-z-]+:\/{2,}/', (string) $connection['url']) !== 1) {
 				throw new \RuntimeException(
 					'Connection URL is invalid. '
 					. 'Please read configuration notes: https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html',
@@ -390,7 +390,7 @@ final class DatabaseExtension extends CompilerExtension
 					. 'Connection string (key "DB_URI") is not valid string.',
 				);
 			}
-			if (!preg_match('~^[a-z]+://~', $connectionString)) { // fix missing driver
+			if (preg_match('~^[a-z]+://~', $connectionString) !== 1) { // fix missing driver
 				$connectionString = 'mysql://' . $connectionString;
 			}
 			$dbName = getenv('DB_NAME');
@@ -402,7 +402,7 @@ final class DatabaseExtension extends CompilerExtension
 					'/^([a-z]+):\/\/(?<user>[^:]+):(?<password>[^:@]+)@(?<host>[^:]+):(?<port>\d+)\/(?<dbname>[a-z]+)$/',
 					$connectionString,
 					$connectionStringParser,
-				)
+				) === 1
 			) {
 				$config['connection']['user'] = $connectionStringParser['user'];
 				$config['connection']['password'] = $connectionStringParser['password'];

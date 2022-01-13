@@ -10,6 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\AbstractManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use Nette\DI\Container;
 
 final class ManagerRegistry extends AbstractManagerRegistry
@@ -54,13 +55,16 @@ final class ManagerRegistry extends AbstractManagerRegistry
 
 	/**
 	 * @param string $name
-	 * @return object
+	 * @return ObjectManager
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
 	 */
 	protected function getService($name)
 	{
-		return $this->container->getService($name);
+		$service = $this->container->getService($name);
+		assert($service instanceof ObjectManager);
+
+		return $service;
 	}
 
 

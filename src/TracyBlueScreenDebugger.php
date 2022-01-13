@@ -93,11 +93,11 @@ final class TracyBlueScreenDebugger
 				. '<p>Your PHP version is: <b>' . htmlspecialchars(PHP_VERSION) . '</b>.</p>'
 				. '<a href="https://www.digitalocean.com/community/questions/how-to-change-caching_sha2_password-to-mysql_native_password-on-a-digitalocean-s-managed-mysql-database" target="_blank">More information</a>';
 		}
-		if (preg_match('/while executing \'(.+)\' with params (.+):(?:\n\s)+(.+)/', $e->getMessage(), $parser)) {
+		if (preg_match('/while executing \'(.+)\' with params (.+):(?:\n\s)+(.+)/', $e->getMessage(), $parser) === 1) {
 			$tab = 'Driver error | ' . $parser[3];
 			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>'
 				. '<p>With params:</p>' . Dumper::toHtml(json_decode($parser[2], true, 512, JSON_THROW_ON_ERROR));
-		} elseif (preg_match('/while executing \'(.+)\'/', $e->getMessage(), $parser)) {
+		} elseif (preg_match('/while executing \'(.+)\'/', $e->getMessage(), $parser) === 1) {
 			$tab = 'Driver error';
 			$panel = '<p>SQL:</p><pre class="code"><div>' . str_replace("\n", '', QueryUtils::highlight($parser[1])) . '</div></pre>';
 		} elseif (str_contains($e->getMessage(), 'Connection refused')) {
@@ -106,7 +106,7 @@ final class TracyBlueScreenDebugger
 				. 'Verify that your database is running and that you are using functional data for the connection '
 				. '(there is often a problem of confusing host <b>localhost</b> vs. <b>127.0.0.1</b> '
 				. 'or other host depending on your configuration).</p>'
-				. (self::$entityManager
+				. (self::$entityManager !== null
 					? '<p><b>Please check your local connection configuration</b> '
 					. '(<i>You can change this configuration in the <b>local.neon</b> file</i>):</p>'
 					. (static function (array $params): string {
@@ -124,19 +124,21 @@ final class TracyBlueScreenDebugger
 
 		if (
 			self::$entityManager !== null
-			&& preg_match('/Table\s\\\'([^\\\']+)\\\'\sdoesn\\\'t\sexist/', $e->getMessage(), $parser)
+			&& preg_match('/Table\s\\\'([^\\\']+)\\\'\sdoesn\\\'t\sexist/', $e->getMessage(), $parser) === 1
 		) {
 			try {
-				$tableList = array_map(static fn(array $item): string => (string) (array_values($item)[0] ?? ''), self::$entityManager->getConnection()->executeQuery('show tables')->fetchAll());
+				$tableList = array_map(
+					static fn(array $item): string => (string) (array_values($item)[0] ?? ''),
+					self::$entityManager->getConnection()->executeQuery('show tables')->fetchAllAssociative(),
+				);
 
 				$panelMeta = [];
 				foreach (self::$entityManager->getMetadataFactory()->getAllMetadata() as $metaData) {
-					if ($metaData instanceof ClassMetadata) {
-						$panelMeta[$metaData->getTableName()] = [
-							'tableName' => $metaData->getTableName(),
-							'className' => $metaData->getName(),
-						];
-					}
+					$metaTableName = $metaData->getTableName();
+					$panelMeta[$metaTableName] = [
+						'tableName' => $metaTableName,
+						'className' => $metaData->getName(),
+					];
 				}
 
 				$panel .= '<p>Table list:</p>';
@@ -171,13 +173,13 @@ final class TracyBlueScreenDebugger
 	{
 		if (
 			self::$entityManager !== null
-			&& preg_match('/Class\s(?<class>\S+)\shas no field or association named/', $e->getMessage(), $mapping)
+			&& preg_match('/Class\s(?<class>\S+)\shas no field or association named/', $e->getMessage(), $mapping) === 1
 		) {
 			$return = '';
 			foreach (self::$entityManager->getClassMetadata($mapping['class'])->fieldMappings as $field) {
 				$return .= '<tr>'
 					. '<td>' . htmlspecialchars($field['fieldName']) . '</td>'
-					. '<td>' . htmlspecialchars($field['columnName'] ?? '') . '</td>'
+					. '<td>' . htmlspecialchars($field['columnName']) . '</td>'
 					. '<td>' . htmlspecialchars($field['type']) . '</td>'
 					. '</tr>';
 			}
@@ -198,7 +200,7 @@ final class TracyBlueScreenDebugger
 
 	private static function renderMapping(MappingException $e): string
 	{
-		if (preg_match('/Class "([^"]+)"/', $e->getMessage(), $parser)) {
+		if (preg_match('/Class "([^"]+)"/', $e->getMessage(), $parser) === 1) {
 			$className = $parser[1];
 			if (class_exists($className) === true) {
 				$fileName = null;

@@ -88,7 +88,7 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 	{
 		if ($params !== null && $params !== []) {
 			try {
-				[$sql, $params, $types] = SqlParserUtils::expandListParameters($sql, $params ?? [], $types ?? []);
+				[$sql, $params, $types] = SqlParserUtils::expandListParameters($sql, $params, $types ?? []);
 			} catch (\Throwable) {
 				// Silence is golden.
 			}
@@ -129,7 +129,7 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 			. '<span class="tracy-label">'
 			. ($count > 0 ? self::ICON_QUERY : self::ICON_NO_QUERY)
 			. '&nbsp;' . $count
-			. ($totalTime ? ' / <span' . ($totalTimeColor ? ' style="' . $totalTimeColor . ';padding:0 3px"' : '') . '>'
+			. ($totalTime > 0 ? ' / <span' . ($totalTimeColor !== null ? ' style="' . $totalTimeColor . ';padding:0 3px"' : '') . '>'
 				. number_format($totalTime, 1, '.', ' ') . ' ms</span>'
 				: '')
 			. '</span>'

@@ -62,7 +62,7 @@ use Tracy\Helpers;
 				  echo '<b>' . Helpers::escapeHtml($row['class'] . $row['type']) . '</b>';
 			  }
 			  echo '<b>' . Helpers::escapeHtml($row['function']) . '</b> (';
-			  if (!empty($row['args'])) {
+			  if (isset($row['args']) && $row['args'] !== []) {
 				  echo '<a data-tracy-ref="^p + .args" class="tracy-toggle tracy-collapsed">arguments</a>';
 			  }
 			  echo ')</p>';
@@ -72,7 +72,7 @@ use Tracy\Helpers;
 					  . BlueScreen::highlightFile($row['file'], $row['line'])
 					  . '</div>';
 			  }
-			  if (!empty($row['args'])) {
+			  if (isset($row['args']) && $row['args'] !== []) {
 				  echo '<div class="tracy-collapsed outer args"><table style="width:100%">';
 				  try {
 					  $r = isset($row['class'])

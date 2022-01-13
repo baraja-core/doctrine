@@ -25,13 +25,13 @@ trait UuidIdentifier
 	protected ?string $id;
 
 
-	public function getId(): ?string
+	public function getId(): string
 	{
-		if ($this->id === null) {
+		if (isset($this->id) === false) {
 			throw new \RuntimeException('Entity ID does not exist yet. Did you call ->persist() method first?');
 		}
 
-		return (string) $this->id;
+		return $this->id;
 	}
 
 

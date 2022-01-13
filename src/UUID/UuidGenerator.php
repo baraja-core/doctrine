@@ -7,13 +7,12 @@ namespace Baraja\Doctrine\UUID;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Id\AbstractIdGenerator;
-use Doctrine\ORM\Mapping\Entity;
 use Ramsey\Uuid\Uuid;
 
 class UuidGenerator extends AbstractIdGenerator
 {
 	/**
-	 * @param Entity|null $entity
+	 * @param object|null $entity
 	 */
 	public function generate(EntityManager $em, $entity): string
 	{

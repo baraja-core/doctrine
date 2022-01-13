@@ -30,14 +30,14 @@ final class DbalBlueScreen
 		$prev = $e->getPrevious();
 		if ($e instanceof DriverException) {
 			$itemDriver = Helpers::findTrace($e->getTrace(), $e::class . '::driverExceptionDuringQuery');
-			if ($prev && $itemDriver) {
+			if ($prev !== null && $itemDriver !== null) {
 				return [
 					'tab' => 'SQL',
 					'panel' => QueryUtils::highlight($itemDriver['args'][2]),
 				];
 			}
 		} elseif ($e instanceof QueryException) {
-			if ($prev && preg_match('~^(SELECT|INSERT|UPDATE|DELETE)\s+~i', $prev->getMessage())) {
+			if ($prev !== null && preg_match('~^(SELECT|INSERT|UPDATE|DELETE)\s+~i', $prev->getMessage()) === 1) {
 				return [
 					'tab' => 'DQL',
 					'panel' => QueryUtils::highlight($prev->getMessage()),
@@ -49,15 +49,15 @@ final class DbalBlueScreen
 					return $e->queryString;
 				}
 				$itemExecute = Helpers::findTrace($e->getTrace(), Connection::class . '::executeQuery');
-				if ($itemExecute) {
+				if ($itemExecute !== null) {
 					return $itemExecute['args'][0];
 				}
 				$itemQuery = Helpers::findTrace($e->getTrace(), PDO::class . '::query');
-				if ($itemQuery) {
+				if ($itemQuery !== null) {
 					return $itemQuery['args'][0];
 				}
 				$itemPrepare = Helpers::findTrace($e->getTrace(), PDO::class . '::prepare');
-				if ($itemPrepare) {
+				if ($itemPrepare !== null) {
 					return $itemPrepare['args'][0];
 				}
 

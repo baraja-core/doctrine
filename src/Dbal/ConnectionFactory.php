@@ -47,14 +47,13 @@ class ConnectionFactory
 		}
 
 		$connection = DriverManager::getConnection($params, $config, $eventManager);
-		if (!empty($this->typesMapping)) {
+		if ($this->typesMapping !== []) {
 			$platform = $this->getDatabasePlatform($connection);
 			foreach ($this->typesMapping as $dbType => $doctrineType) {
 				$platform->registerDoctrineTypeMapping((string) $dbType, $doctrineType);
 			}
 		}
-
-		if (!empty($this->commentedTypes)) {
+		if ($this->commentedTypes !== []) {
 			$platform = $this->getDatabasePlatform($connection);
 			foreach ($this->commentedTypes as $type) {
 				$platform->markDoctrineTypeCommented(Type::getType($type));

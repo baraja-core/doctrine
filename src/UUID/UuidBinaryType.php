@@ -29,22 +29,25 @@ class UuidBinaryType extends Type
 
 
 	/**
-	 * @param string|UuidInterface|null $value
 	 * @throws ConversionException
 	 */
-	public function convertToPHPValue($value, AbstractPlatform $platform): ?UuidInterface
+	public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?UuidInterface
 	{
-		if (empty($value)) {
+		if ($value === null || $value === '') {
 			return null;
 		}
 		if ($value instanceof UuidInterface) {
 			return $value;
 		}
-		try {
-			return Uuid::fromBytes($value);
-		} catch (\InvalidArgumentException) {
-			throw ConversionException::conversionFailed($value, static::NAME);
+		if (is_string($value)) {
+			try {
+				return Uuid::fromBytes($value);
+			} catch (\InvalidArgumentException) {
+				throw ConversionException::conversionFailed($value, static::NAME);
+			}
 		}
+
+		return null;
 	}
 
 

@@ -27,7 +27,7 @@ final class Event
 		private float $delayTime,
 		private ?array $location,
 	) {
-		$this->start = (float) microtime(true);
+		$this->start = microtime(true);
 	}
 
 
@@ -36,7 +36,7 @@ final class Event
 		if ($this->end !== null) {
 			return;
 		}
-		$end = (float) microtime(true);
+		$end = microtime(true);
 		$this->end = $end;
 		$this->duration = $end - $this->start;
 	}
@@ -113,7 +113,7 @@ final class Event
 	{
 		$this->end();
 
-		return $this->duration
+		return $this->duration !== null && $this->duration > 0
 			? $this->duration * 1_000
 			: null;
 	}

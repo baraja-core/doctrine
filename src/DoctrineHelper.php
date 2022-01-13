@@ -161,7 +161,7 @@ class DoctrineHelper
 
 		$fromTable = ($fromMetaData = $this->entityManager->getClassMetadata($from::class))->getTableName();
 		$toTable = $this->entityManager->getClassMetadata($toType)->getTableName();
-		$discriminatorColumn = $fromMetaData->discriminatorColumn['fieldName'];
+		$discriminatorColumn = $fromMetaData->discriminatorColumn['fieldName'] ?? '?';
 
 		if ($fromTable !== $toTable) {
 			throw new DatabaseException(
@@ -184,7 +184,7 @@ class DoctrineHelper
 		}
 
 		try {
-			$this->entityManager->getConnection()->executeUpdate(
+			$this->entityManager->getConnection()->executeStatement(
 				str_replace(
 					['{table}', '{discriminatorColumn}', '{discriminator}', '{id}'],
 					[$fromTable, $discriminatorColumn, $toDiscriminator, $id],

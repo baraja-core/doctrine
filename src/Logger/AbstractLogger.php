@@ -30,7 +30,7 @@ abstract class AbstractLogger implements SQLLogger
 	public function __construct()
 	{
 		if (class_exists(Debugger::class)) {
-			$this->startTime = (float) Debugger::$time;
+			$this->startTime = Debugger::$time;
 		} else {
 			$this->startTime = (float) ($_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true));
 		}
@@ -175,7 +175,7 @@ abstract class AbstractLogger implements SQLLogger
 						$item['file'] ?? ''
 					),
 					$parser
-				)
+				) === 1
 				&& (
 					$parser[1] === 'baraja-core/doctrine'
 					|| strncmp($parser[1], 'doctrine/', 9) === 0
@@ -191,17 +191,18 @@ abstract class AbstractLogger implements SQLLogger
 		if (isset($location['file'], $location['line']) && is_file($location['file'] ?? '')) {
 			/** @phpstan-ignore-next-line */
 			$locationLine = file($location['file'] ?? '')[(int) ($location['line'] ?? 0) - 1] ?? 1;
+			$locationLineString = (string) $locationLine;
+
+			if (preg_match('#\w*dump(er::\w+)?\(.*\)#i', $locationLineString, $m) === 1) {
+				$snippet = (string) ($m[0] ?? '');
+			} else {
+				$snippet = $locationLineString;
+			}
 
 			return [
 				'file' => (string) ($location['file'] ?? ''),
 				'line' => (int) ($location['line'] ?? 0),
-				'snippet' => trim(
-					(string) preg_match(
-						'#\w*dump(er::\w+)?\(.*\)#i',
-						(string) $locationLine,
-						$m
-					) ? $m[0] ?? '' : (string) $locationLine
-				),
+				'snippet' => trim($snippet),
 			];
 		}
 

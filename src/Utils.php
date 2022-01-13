@@ -30,7 +30,7 @@ final class Utils
 	 */
 	public static function reflectionClassDocComment(string $class, string $key): ?string
 	{
-		if (preg_match_all(self::DOC_PATTERN, (string) self::getReflectionClass($class)->getDocComment(), $matches)) {
+		if (preg_match_all(self::DOC_PATTERN, (string) self::getReflectionClass($class)->getDocComment(), $matches) > 0) {
 			foreach ($matches['name'] ?? [] as $matchKey => $match) {
 				if (strtolower($match) === strtolower($key)) {
 					return trim($matches['value'][$matchKey]);
@@ -68,8 +68,11 @@ final class Utils
 	{
 		static $disabled;
 		if (\function_exists($functionName) === true) {
-			if ($disabled === null && \is_string($disableFunctions = ini_get('disable_functions'))) {
-				$disabled = explode(',', (string) $disableFunctions);
+			if ($disabled === null) {
+				$disableFunctions = ini_get('disable_functions');
+				if (is_string($disableFunctions)) {
+					$disabled = explode(',', $disableFunctions);
+				}
 			}
 
 			return \in_array($functionName, $disabled ?? [], true) === false;
@@ -103,7 +106,7 @@ final class Utils
 			if (($em->getConnection()->getParams()['driver'] ?? '') === 'pdo_mysql') { // fast native query for MySql
 				$hashExist = $em->getConnection()
 					->executeQuery('SELECT 1 FROM `core__database_slow_query` WHERE `hash` = \'' . $hash . '\'')
-					->fetch();
+					->fetchAssociative();
 			} else {
 				try {
 					(new Repository($em, $em->getClassMetadata(SlowQuery::class)))

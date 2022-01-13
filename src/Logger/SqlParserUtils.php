@@ -71,7 +71,7 @@ final class SqlParserUtils
 			}
 			$arrayPositions[$name] = false;
 		}
-		if ((!$arrayPositions && $isPositional)) {
+		if ($arrayPositions === [] && $isPositional) {
 			return [$query, $params, $types];
 		}
 		if ($isPositional) {
@@ -96,7 +96,7 @@ final class SqlParserUtils
 
 				$types = array_merge(
 					array_slice($types, 0, $needle),
-					$count
+					$count > 0
 						// array needles are at {@link \Doctrine\DBAL\ParameterType} constants
 						// + {@link \Doctrine\DBAL\Connection::ARRAY_PARAM_OFFSET}
 						? array_fill(0, $count, $types[$needle] - Connection::ARRAY_PARAM_OFFSET)
@@ -104,7 +104,7 @@ final class SqlParserUtils
 					array_slice($types, $needle + 1)
 				);
 
-				$expandStr = $count ? implode(', ', array_fill(0, $count, '?')) : 'NULL';
+				$expandStr = $count > 0 ? implode(', ', array_fill(0, $count, '?')) : 'NULL';
 				$query = substr($query, 0, $needlePos) . $expandStr . substr($query, $needlePos + 1);
 				$paramOffset += $count - 1; // Grows larger by number of parameters minus the replaced needle.
 				$queryOffset += strlen($expandStr) - 1;

@@ -8,6 +8,7 @@ namespace Baraja\Doctrine;
 use Baraja\Doctrine\Cache\ArrayCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
@@ -20,14 +21,18 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
+/**
+ * @deprecated because internal Doctrine class EntityGenerator is being removed from the ORM and won't have any replacement
+ */
 final class DatabaseToDoctrineEntityExtractorCommand extends Command
 {
 	public function __construct(
 		private string $rootDir,
-		private EntityManager $entityManager
+		private EntityManagerInterface $entityManager
 	) {
 		parent::__construct();
-		$this->rootDir = realpath($rootDir) ?: $rootDir;
+		$realPath = realpath($rootDir);
+		$this->rootDir = $realPath === false ? $rootDir : $realPath;
 	}
 
 
@@ -42,6 +47,11 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 	public function execute(InputInterface $input, OutputInterface $output): int
 	{
+		echo '-------------------------' . "\n";
+		echo 'CRITICAL WARNING' . "\n\n";
+		echo 'This tool is deprecated, because internal Doctrine class EntityGenerator is being removed from the ORM and won\'t have any replacement.';
+		echo "\n\n";
+
 		if (($namespace = $input->getOption('namespace')) === null) {
 			throw new InvalidArgumentException('Option "namespace" is required.');
 		}
@@ -145,7 +155,8 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$output->writeln('Done. Formatting...');
 
-		foreach (glob($realPath . '/*.php') ?: [] as $entityFilePath) {
+		$entityFilePaths = glob($realPath . '/*.php');
+		foreach (is_array($entityFilePaths) ? $entityFilePaths : [] as $entityFilePath) {
 			$this->formatCodingStandard($entityFilePath, $entityNamespace);
 		}
 

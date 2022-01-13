@@ -65,6 +65,7 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	 */
 	public function hasListeners($event): bool
 	{
+		/** @phpstan-ignore-next-line */
 		return !empty($this->listeners[$event]);
 	}
 

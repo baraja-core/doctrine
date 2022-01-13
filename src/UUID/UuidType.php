@@ -38,7 +38,7 @@ final class UuidType extends Type
 			return $value->toString();
 		}
 		try {
-			return (string) Uuid::fromString($value)->toString();
+			return Uuid::fromString($value)->toString();
 		} catch (\InvalidArgumentException) {
 			throw ConversionException::conversionFailed($value, static::NAME);
 		}

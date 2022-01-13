@@ -118,7 +118,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 		foreach ($this->getAllClassNames() as $className) {
 			try {
 				$ref = new \ReflectionClass($className);
-				$return[$className] = $ref->getAttributes(Entity::class) ? 0 : 1;
+				$return[$className] = $ref->getAttributes(Entity::class) !== [] ? 0 : 1;
 			} catch (\Throwable $e) {
 				throw new \RuntimeException('Entity "' . $className . '" is broken: ' . $e->getMessage(), 500, $e);
 			}

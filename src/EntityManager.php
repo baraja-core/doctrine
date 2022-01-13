@@ -358,11 +358,12 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		QueryPanel::setInvalidCache($invalidCache);
 		if ($invalidCache === true) {
 			$metadata = $this->getMetadataFactory()->getAllMetadata();
+			/** @phpstan-ignore-next-line */
 			if (empty($metadata)) {
 				return;
 			}
 			$schemaTool = new SchemaTool($this);
-			if (empty($schemaTool->getUpdateSchemaSql($metadata, $saveMode))) {
+			if ($schemaTool->getUpdateSchemaSql($metadata, $saveMode) === []) {
 				return;
 			}
 

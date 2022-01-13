@@ -42,7 +42,7 @@ final class OrmSchemaUpdateTask extends BaseTask
 			if (\class_exists(Debugger::class) === true) {
 				Debugger::log($e, 'critical');
 			}
-			if (preg_match('/The annotation "([^"]+)" in class (\S+) was never imported/', $e->getMessage(), $annotation)) {
+			if (preg_match('/The annotation "([^"]+)" in class (\S+) was never imported/', $e->getMessage(), $annotation) === 1) {
 				$this->unknownAnnotationInfo($annotation[1], $annotation[2]);
 			} else {
 				Helpers::terminalRenderError($e->getMessage());
