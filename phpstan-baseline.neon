@@ -1,0 +1,190 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Casting to int something that's already int\\.$#"
+			count: 2
+			path: src/Cache/ApcuCache.php
+
+		-
+			message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
+			count: 1
+			path: src/Cache/ApcuCache.php
+
+		-
+			message: "#^Strict comparison using \\!\\=\\= between array\\<int, string\\> and false will always evaluate to true\\.$#"
+			count: 1
+			path: src/Cache/ApcuCache.php
+
+		-
+			message: "#^Only booleans are allowed in &&, bool\\|int given on the left side\\.$#"
+			count: 1
+			path: src/Cache/ArrayCache.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, int given\\.$#"
+			count: 1
+			path: src/Cache/ArrayCache.php
+
+		-
+			message: "#^Call to function is_int\\(\\) with int will always evaluate to true\\.$#"
+			count: 1
+			path: src/Cache/FileCache.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, array\\|null given\\.$#"
+			count: 1
+			path: src/Cache/SQLite3Cache.php
+
+		-
+			message: "#^Strict comparison using \\!\\=\\= between mixed and null will always evaluate to true\\.$#"
+			count: 1
+			path: src/Cache/SQLite3Cache.php
+
+		-
+			message: "#^Fetching class constant class of deprecated class Doctrine\\\\DBAL\\\\Logging\\\\LoggerChain\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, string given\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Only booleans are allowed in an elseif condition, mixed given\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, string\\|false given\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, mixed given\\.$#"
+			count: 1
+			path: src/Dbal/ConnectionFactory.php
+
+		-
+			message: "#^Only booleans are allowed in a ternary operator condition, string\\|null given\\.$#"
+			count: 1
+			path: src/Dbal/Events/ContainerAwareEventManager.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, array\\<string, bool\\> given\\.$#"
+			count: 1
+			path: src/Dbal/Events/ContainerAwareEventManager.php
+
+		-
+			message: "#^Return type \\(array\\<string, array\\<string, Doctrine\\\\Common\\\\EventSubscriber\\|string\\>\\|Doctrine\\\\Common\\\\EventSubscriber\\|string\\>\\) of method Baraja\\\\Doctrine\\\\DBAL\\\\Events\\\\ContainerAwareEventManager\\:\\:getListeners\\(\\) should be covariant with return type \\(array\\<array\\<object\\>\\|object\\>\\) of method Doctrine\\\\Common\\\\EventManager\\:\\:getListeners\\(\\)$#"
+			count: 1
+			path: src/Dbal/Events/ContainerAwareEventManager.php
+
+		-
+			message: "#^Variable method call on mixed\\.$#"
+			count: 1
+			path: src/Dbal/Events/ContainerAwareEventManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$hydrationMode of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getHydrator\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|string, int\\|string given\\.$#"
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$hydrationMode of method Doctrine\\\\ORM\\\\EntityManager\\:\\:newHydrator\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|string, int\\|string given\\.$#"
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: "#^Parameter \\#3 \\$lockMode of method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) expects 0\\|1\\|2\\|4\\|null, int\\|null given\\.$#"
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: """
+				#^Class Baraja\\\\Doctrine\\\\DBAL\\\\Logger\\\\AbstractLogger implements deprecated interface Doctrine\\\\DBAL\\\\Logging\\\\SQLLogger\\:
+				Use \\{@see \\\\Doctrine\\\\DBAL\\\\Logging\\\\Middleware\\} or implement
+				           \\{@see \\\\Doctrine\\\\DBAL\\\\Driver\\\\Middleware\\} instead\\.$#
+			"""
+			count: 1
+			path: src/Logger/AbstractLogger.php
+
+		-
+			message: """
+				#^Call to deprecated method registerUniqueLoader\\(\\) of class Doctrine\\\\Common\\\\Annotations\\\\AnnotationRegistry\\:
+				This method is deprecated and will be removed in
+				            doctrine/annotations 2\\.0\\. Annotations will be autoloaded in 2\\.0\\.$#
+			"""
+			count: 1
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
+			message: """
+				#^Fetching class constant class of deprecated class Doctrine\\\\Common\\\\Annotations\\\\CachedReader\\:
+				the CachedReader is deprecated and will be removed
+				            in version 2\\.0\\.0 of doctrine/annotations\\. Please use the
+				            \\{@see \\\\Doctrine\\\\Common\\\\Annotations\\\\PsrCachedReader\\} instead\\.$#
+			"""
+			count: 1
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
+			message: """
+				#^Call to deprecated method validateConfig\\(\\) of class Nette\\\\DI\\\\CompilerExtension\\:
+				use getConfigSchema\\(\\)$#
+			"""
+			count: 1
+			path: src/Orm/DI/OrmCacheExtension.php
+
+		-
+			message: """
+				#^Fetching class constant class of deprecated class Baraja\\\\Doctrine\\\\DatabaseToDoctrineEntityExtractorCommand\\:
+				because internal Doctrine class EntityGenerator is being removed from the ORM and won't have any replacement$#
+			"""
+			count: 1
+			path: src/Orm/DI/OrmConsoleExtension.php
+
+		-
+			message: """
+				#^Fetching class constant class of deprecated class Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\ConvertMappingCommand\\:
+				2\\.7 This class is being removed from the ORM and won't have any replacement$#
+			"""
+			count: 1
+			path: src/Orm/DI/OrmConsoleExtension.php
+
+		-
+			message: "#^Fetching class constant class of deprecated class Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\EnsureProductionSettingsCommand\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmConsoleExtension.php
+
+		-
+			message: """
+				#^Fetching class constant class of deprecated class Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\GenerateEntitiesCommand\\:
+				2\\.7 This class is being removed from the ORM and won't have any replacement$#
+			"""
+			count: 1
+			path: src/Orm/DI/OrmConsoleExtension.php
+
+		-
+			message: """
+				#^Fetching class constant class of deprecated class Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\GenerateRepositoriesCommand\\:
+				2\\.7 This class is being removed from the ORM and won't have any replacement$#
+			"""
+			count: 1
+			path: src/Orm/DI/OrmConsoleExtension.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, mixed given\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Return type \\(Doctrine\\\\Persistence\\\\ObjectRepository\\<T\\>\\) of method Baraja\\\\Doctrine\\\\ORM\\\\EntityManagerDecorator\\:\\:getRepository\\(\\) should be covariant with return type \\(Doctrine\\\\ORM\\\\EntityRepository\\<mixed\\>\\) of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getRepository\\(\\)$#"
+			count: 1
+			path: src/Orm/EntityManagerDecorator.php
+
