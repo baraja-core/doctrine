@@ -106,8 +106,8 @@ final class SQLite3Cache extends CacheProvider
 			sprintf(
 				'INSERT OR REPLACE INTO %s (%s) VALUES (:id, :data, :expire)',
 				$this->table,
-				implode(',', $this->getFields())
-			)
+				implode(',', $this->getFields()),
+			),
 		);
 		assert($statement !== false);
 
@@ -130,8 +130,8 @@ final class SQLite3Cache extends CacheProvider
 			sprintf(
 				'DELETE FROM %s WHERE %s = :id',
 				$this->table,
-				$idField
-			)
+				$idField,
+			),
 		);
 		assert($statement !== false);
 
@@ -167,8 +167,8 @@ final class SQLite3Cache extends CacheProvider
 				$this->table,
 				static::ID_FIELD,
 				static::DATA_FIELD,
-				static::EXPIRATION_FIELD
-			)
+				static::EXPIRATION_FIELD,
+			),
 		);
 	}
 
@@ -192,8 +192,8 @@ final class SQLite3Cache extends CacheProvider
 				'SELECT %s FROM %s WHERE %s = :id LIMIT 1',
 				implode(',', $fields),
 				$this->table,
-				$idField
-			)
+				$idField,
+			),
 		);
 		assert($statement !== false);
 

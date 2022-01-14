@@ -40,7 +40,7 @@ class ConnectionFactory
 	public function createConnection(
 		array $params,
 		?Configuration $config = null,
-		?EventManager $eventManager = null
+		?EventManager $eventManager = null,
 	): Connection {
 		if (!$this->initialized) {
 			$this->initializeTypes();

@@ -28,7 +28,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 {
 	public function __construct(
 		private string $rootDir,
-		private EntityManagerInterface $entityManager
+		private EntityManagerInterface $entityManager,
 	) {
 		parent::__construct();
 		$realPath = realpath($rootDir);

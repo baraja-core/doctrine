@@ -29,7 +29,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		Connection $connection,
 		private Configuration $configuration,
 		EventManager $eventManager,
-		?QueryPanel $panel = null
+		?QueryPanel $panel = null,
 	) {
 		if ($panel !== null) {
 			$panel->setEntityManager($this);
@@ -130,7 +130,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		if ($entity !== null) {
 			throw new \LogicException(
 				'Calling flush() with any arguments to flush specific entities has been removed. '
-				. 'Did you mean ->getUnitOfWork()->commit($entity)?'
+				. 'Did you mean ->getUnitOfWork()->commit($entity)?',
 			);
 		}
 		try {

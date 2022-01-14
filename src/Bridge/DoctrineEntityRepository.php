@@ -11,7 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 final class DoctrineEntityRepository implements ProjectEntityRepository
 {
 	public function __construct(
-		private EntityManagerInterface $entityManager
+		private EntityManagerInterface $entityManager,
 	) {
 	}
 

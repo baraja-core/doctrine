@@ -107,7 +107,7 @@ final class DatabaseExtension extends CompilerExtension
 						'types' => Expect::array(),
 						'typesMapping' => Expect::array(),
 						'wrapperClass' => Expect::string()->nullable(),
-					]
+					],
 				)->castTo('array')->required(),
 				'configuration' => Expect::structure(
 					[
@@ -115,13 +115,13 @@ final class DatabaseExtension extends CompilerExtension
 						'resultCacheImpl' => Expect::string()->nullable(),
 						'filterSchemaAssetsExpression' => Expect::string()->nullable(),
 						'autoCommit' => Expect::bool()->default(true),
-					]
+					],
 				)->castTo('array'),
 				'cache' => Expect::string(),
 				'types' => Expect::arrayOf(Expect::string())->default([]),
 				'customNumericFunctions' => Expect::arrayOf(Expect::string()),
 				'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string())->default([]),
-			]
+			],
 		)->castTo('array')->otherItems(Expect::mixed());
 	}
 
@@ -154,7 +154,7 @@ final class DatabaseExtension extends CompilerExtension
 			$class = $builder->getDefinition($serviceName)->getType();
 			if ($class === null || !is_subclass_of($class, EventSubscriber::class)) {
 				throw new \RuntimeException(
-					'Subscriber "' . $serviceName . '" does not implement "' . EventSubscriber::class . '".'
+					'Subscriber "' . $serviceName . '" does not implement "' . EventSubscriber::class . '".',
 				);
 			}
 			try {
@@ -166,10 +166,10 @@ final class DatabaseExtension extends CompilerExtension
 							[
 								(new \ReflectionClass($class))->newInstanceWithoutConstructor(),
 								'getSubscribedEvents',
-							]
+							],
 						),
 						$serviceName, // Intentionally without @ for laziness.
-					]
+					],
 				);
 			} catch (\ReflectionException $e) {
 				throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
@@ -329,7 +329,7 @@ final class DatabaseExtension extends CompilerExtension
 		if ($config['configuration']['filterSchemaAssetsExpression'] !== null) { // FilterSchemaAssetsExpression
 			$configuration->addSetup(
 				'setFilterSchemaAssetsExpression',
-				[$config['configuration']['filterSchemaAssetsExpression']]
+				[$config['configuration']['filterSchemaAssetsExpression']],
 			);
 		}
 
@@ -431,7 +431,7 @@ final class DatabaseExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('connectionFactory'))
 			->setFactory(
 				ConnectionFactory::class,
-				[$config['connection']['types'], $config['connection']['typesMapping']]
+				[$config['connection']['types'], $config['connection']['typesMapping']],
 			);
 
 		$builder->addDefinition($this->prefix('connection'))
@@ -442,7 +442,7 @@ final class DatabaseExtension extends CompilerExtension
 					$config['connection'],
 					'@' . $this->prefix('configuration'),
 					$builder->getDefinitionByType(EventManager::class),
-				]
+				],
 			);
 
 		$builder->addDefinition($this->prefix('singleConnectionProvider'))

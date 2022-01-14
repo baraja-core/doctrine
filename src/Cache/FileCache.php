@@ -215,7 +215,7 @@ abstract class FileCache extends CacheProvider
 	{
 		return new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator($this->directory, \FilesystemIterator::SKIP_DOTS),
-			\RecursiveIteratorIterator::CHILD_FIRST
+			\RecursiveIteratorIterator::CHILD_FIRST,
 		);
 	}
 

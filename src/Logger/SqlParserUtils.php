@@ -91,7 +91,7 @@ final class SqlParserUtils
 				$params = array_merge(
 					array_slice($params, 0, $needle),
 					$params[$needle],
-					array_slice($params, $needle + 1)
+					array_slice($params, $needle + 1),
 				);
 
 				$types = array_merge(
@@ -101,7 +101,7 @@ final class SqlParserUtils
 						// + {@link \Doctrine\DBAL\Connection::ARRAY_PARAM_OFFSET}
 						? array_fill(0, $count, $types[$needle] - Connection::ARRAY_PARAM_OFFSET)
 						: [],
-					array_slice($types, $needle + 1)
+					array_slice($types, $needle + 1),
 				);
 
 				$expandStr = $count > 0 ? implode(', ', array_fill(0, $count, '?')) : 'NULL';
@@ -158,7 +158,7 @@ final class SqlParserUtils
 			self::POSITIONAL_TOKEN,
 			static function (string $_, int $placeholderPosition, int $fragmentPosition, array &$carry): void {
 				$carry[] = $placeholderPosition + $fragmentPosition;
-			}
+			},
 		);
 	}
 
@@ -178,10 +178,10 @@ final class SqlParserUtils
 				string $placeholder,
 				int $placeholderPosition,
 				int $fragmentPosition,
-				array &$carry
+				array &$carry,
 			): void {
 				$carry[$placeholderPosition + $fragmentPosition] = substr($placeholder, 1);
-			}
+			},
 		);
 	}
 
@@ -193,7 +193,7 @@ final class SqlParserUtils
 		string $statement,
 		string $match,
 		string $token,
-		callable $collector
+		callable $collector,
 	): array {
 		if (strpos($statement, $match) === false) {
 			return [];
@@ -258,12 +258,12 @@ final class SqlParserUtils
 		}
 		if ($isParam) {
 			throw new \InvalidArgumentException(
-				sprintf('Value for :%1$s not found in params array. Params array key should be "%1$s"', $paramName)
+				sprintf('Value for :%1$s not found in params array. Params array key should be "%1$s"', $paramName),
 			);
 		}
 
 		throw new \InvalidArgumentException(
-			sprintf('Value for :%1$s not found in params array. Params array key should be "%1$s"', $paramName)
+			sprintf('Value for :%1$s not found in params array. Params array key should be "%1$s"', $paramName),
 		);
 	}
 }

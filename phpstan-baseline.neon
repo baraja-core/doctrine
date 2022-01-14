@@ -108,8 +108,7 @@ parameters:
 		-
 			message: """
 				#^Class Baraja\\\\Doctrine\\\\DBAL\\\\Logger\\\\AbstractLogger implements deprecated interface Doctrine\\\\DBAL\\\\Logging\\\\SQLLogger\\:
-				Use \\{@see \\\\Doctrine\\\\DBAL\\\\Logging\\\\Middleware\\} or implement
-				           \\{@see \\\\Doctrine\\\\DBAL\\\\Driver\\\\Middleware\\} instead\\.$#
+				Use \\{@see \\\\Doctrine\\\\DBAL\\\\Logging\\\\Middleware\\} or implement\n          \\{@see \\\\Doctrine\\\\DBAL\\\\Driver\\\\Middleware\\} instead\\.$#
 			"""
 			count: 1
 			path: src/Logger/AbstractLogger.php
@@ -117,8 +116,7 @@ parameters:
 		-
 			message: """
 				#^Call to deprecated method registerUniqueLoader\\(\\) of class Doctrine\\\\Common\\\\Annotations\\\\AnnotationRegistry\\:
-				This method is deprecated and will be removed in
-				            doctrine/annotations 2\\.0\\. Annotations will be autoloaded in 2\\.0\\.$#
+				This method is deprecated and will be removed in\n           doctrine/annotations 2\\.0\\. Annotations will be autoloaded in 2\\.0\\.$#
 			"""
 			count: 1
 			path: src/Orm/DI/OrmAnnotationsExtension.php
@@ -126,9 +124,7 @@ parameters:
 		-
 			message: """
 				#^Fetching class constant class of deprecated class Doctrine\\\\Common\\\\Annotations\\\\CachedReader\\:
-				the CachedReader is deprecated and will be removed
-				            in version 2\\.0\\.0 of doctrine/annotations\\. Please use the
-				            \\{@see \\\\Doctrine\\\\Common\\\\Annotations\\\\PsrCachedReader\\} instead\\.$#
+				the CachedReader is deprecated and will be removed\n           in version 2\\.0\\.0 of doctrine/annotations\\. Please use the\n           \\{@see \\\\Doctrine\\\\Common\\\\Annotations\\\\PsrCachedReader\\} instead\\.$#
 			"""
 			count: 1
 			path: src/Orm/DI/OrmAnnotationsExtension.php
@@ -187,4 +183,3 @@ parameters:
 			message: "#^Return type \\(Doctrine\\\\Persistence\\\\ObjectRepository\\<T\\>\\) of method Baraja\\\\Doctrine\\\\ORM\\\\EntityManagerDecorator\\:\\:getRepository\\(\\) should be covariant with return type \\(Doctrine\\\\ORM\\\\EntityRepository\\<mixed\\>\\) of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getRepository\\(\\)$#"
 			count: 1
 			path: src/Orm/EntityManagerDecorator.php
-

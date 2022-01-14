@@ -43,7 +43,7 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	public static function addAnnotationPathToManager(
 		ContainerBuilder $builder,
 		string $namespace,
-		string $directoryPath
+		string $directoryPath,
 	): void {
 		self::createEntityAnnotationManager($builder)
 			->addSetup('?->addPath(?, ?)', ['@self', $namespace, $directoryPath]);

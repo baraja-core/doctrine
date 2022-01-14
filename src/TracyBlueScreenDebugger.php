@@ -8,7 +8,6 @@ namespace Baraja\Doctrine;
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\QueryException;

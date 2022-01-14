@@ -172,9 +172,9 @@ abstract class AbstractLogger implements SQLLogger
 					str_replace(
 						DIRECTORY_SEPARATOR,
 						'/',
-						$item['file'] ?? ''
+						$item['file'] ?? '',
 					),
-					$parser
+					$parser,
 				) === 1
 				&& (
 					$parser[1] === 'baraja-core/doctrine'
