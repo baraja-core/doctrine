@@ -9,7 +9,7 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator as DoctrineEntityManagerDecora
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Repository\RepositoryFactory;
 
-final class EntityManagerDecorator extends DoctrineEntityManagerDecorator
+class EntityManagerDecorator extends DoctrineEntityManagerDecorator
 {
 	private RepositoryFactory $repositoryFactory;
 

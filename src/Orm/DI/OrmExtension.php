@@ -63,7 +63,7 @@ final class OrmExtension extends CompilerExtension
 	public function loadDoctrineConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		$config = $this->defaults['configuration'] + $this->config;
+		$config = array_replace($this->defaults['configuration'], $this->config);
 		$config = Helpers::expand($config, $builder->parameters);
 
 		$configurationClass = $config['configurationClass'] ?? Configuration::class;
