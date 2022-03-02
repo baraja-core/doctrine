@@ -31,7 +31,7 @@ final class RoundFunction extends FunctionNode
 		$this->firstExpression = $firstExpression;
 
 		// parse second parameter if available
-		if (Lexer::T_COMMA === $lexer->lookahead['type']) {
+		if (($lexer->lookahead['type'] ?? '') === Lexer::T_COMMA) {
 			$parser->match(Lexer::T_COMMA);
 			$this->secondExpression = $parser->ArithmeticPrimary();
 		}
