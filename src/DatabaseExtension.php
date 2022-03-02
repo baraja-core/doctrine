@@ -93,6 +93,7 @@ final class DatabaseExtension extends CompilerExtension
 				'types' => Expect::array(),
 				'typesMapping' => Expect::array(),
 				'wrapperClass' => Expect::string()->nullable(),
+				'serverVersion' => Expect::string()->nullable(),
 			])->castTo('array')->required(),
 			'configuration' => Expect::structure([
 				'sqlLogger' => Expect::string()->nullable(),
