@@ -20,6 +20,8 @@ $timeBlocks = [];
  * @var Event[] $events
  */
 
+$queryPrefix = mb_substr(md5(Url::get()->getCurrentUrl() . '|' . microtime()), 0, 8);
+
 foreach ($events ?? [] as $event) {
 	$background = null;
 
@@ -63,7 +65,8 @@ foreach ($events ?? [] as $event) {
 	$trackingUrl->setQueryParameter('trackingSqlHash', $event->getHash());
 
 	$durationColor = Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel::getPanelDurationColor($durationMs);
-	$renderedQuery = '<tr id="doctrineQuery_' . $queryId . '">'
+	$queryHtmlId = sprintf('doctrineQuery_%s_%d', $queryPrefix, $queryId);
+	$renderedQuery = '<tr id="' . htmlspecialchars($queryHtmlId) . '">'
 		. '<td' . ($durationColor !== null ? ' style="' . $durationColor . '"' : '') . '>'
 		. ($durationMs !== null
 			? '<span title="' . number_format($durationMs, 8, '.', ' ') . ' ms">'
@@ -85,7 +88,7 @@ foreach ($events ?? [] as $event) {
 			: ''
 		) . '</td></tr>';
 	$timeBlocks[] = '<td style="text-align:center;padding:0;' . ($durationColor !== null ? '' . $durationColor . '' : 'width:15px') . '">'
-		. '<a href="#doctrineQuery_' . $queryId . '">' . ((int) round($durationMs)) . '</a>'
+		. '<a href="#' . htmlspecialchars($queryHtmlId) . '">' . ((int) round($durationMs)) . '</a>'
 		. '</td>';
 
 	if ($event->getDuration() !== null) {
