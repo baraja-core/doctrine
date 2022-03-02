@@ -92,6 +92,7 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 		foreach ((array) $events as $event) {
 			// Overrides listener if a previous one was associated already
 			// Prevents duplicate listeners on same event (same instance only)
+			/** @var EventSubscriber $listener */
 			$this->listeners[$event][$hash] = $listener;
 		}
 	}

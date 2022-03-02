@@ -52,13 +52,15 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		echo 'This tool is deprecated, because internal Doctrine class EntityGenerator is being removed from the ORM and won\'t have any replacement.';
 		echo "\n\n";
 
-		if (($namespace = $input->getOption('namespace')) === null) {
+		$namespace = $input->getOption('namespace');
+		if ($namespace === null) {
 			throw new InvalidArgumentException('Option "namespace" is required.');
 		}
-		if (\is_string($namespace) === false) {
+		if (is_string($namespace) === false) {
 			throw new InvalidArgumentException('Option "namespace" must be string.');
 		}
-		if (($path = $input->getOption('path')) === null) {
+		$path = $input->getOption('path');
+		if ($path === null) {
 			throw new InvalidArgumentException('Option "path" is required.');
 		}
 		if (\is_string($path) === false) {
@@ -67,7 +69,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$entityNamespace = (string) preg_replace_callback(
 			'/(^(?:[a-z])|(?:\\\\[a-z]))/',
-			fn(array $match): string => strtoupper((string) $match[1]),
+			static fn (array $match): string => strtoupper($match[1]),
 			$namespace,
 		);
 
@@ -101,7 +103,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 			return 1;
 		}
-		$realPath .= ($helper->ask($input, $output, $questionEntityDir) ? '/Entity' : '');
+		$realPath .= $helper->ask($input, $output, $questionEntityDir) ? '/Entity' : '';
 
 		FileSystem::createDir($realPath);
 		$output->writeln("\n\n" . '<comment>Scaning your database...</comment>' . "\n\n");

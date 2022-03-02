@@ -42,15 +42,16 @@ final class RoundFunction extends FunctionNode
 
 	public function getSql(SqlWalker $sqlWalker): string
 	{
+		assert($this->firstExpression !== null);
 		// use second parameter if parsed
-		if ($this->secondExpression !== null) {
-			return 'ROUND('
-				. $this->firstExpression->dispatch($sqlWalker)
-				. ', '
-				. $this->secondExpression->dispatch($sqlWalker)
-				. ')';
+		if ($this->secondExpression instanceof Node) {
+			return sprintf(
+				'ROUND(%s, %s)',
+				$this->firstExpression->dispatch($sqlWalker),
+				$this->secondExpression->dispatch($sqlWalker),
+			);
 		}
 
-		return 'ROUND(' . $this->firstExpression->dispatch($sqlWalker) . ')';
+		return sprintf('ROUND(%s)', $this->firstExpression->dispatch($sqlWalker));
 	}
 }

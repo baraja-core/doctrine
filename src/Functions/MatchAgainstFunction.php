@@ -45,7 +45,8 @@ class MatchAgainstFunction extends FunctionNode
 		}
 
 		$parser->match(Lexer::T_CLOSE_PARENTHESIS);
-		$lookHeadValue = strtolower($lexer->lookahead['value'] ?? '');
+		$lookHeadValueRaw = (string) ($lexer->lookahead['value'] ?? '');
+		$lookHeadValue = strtolower($lookHeadValueRaw);
 
 		if (in_array($lookHeadValue, ['against', 'boolean', 'expand'], true) === false) {
 			$parser->syntaxError('against');

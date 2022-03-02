@@ -21,8 +21,9 @@ class DoctrineHelper
 	 * Return list of class names which is variant of given entity.
 	 * By $exclude you can define list of entities which will be skipped.
 	 *
-	 * @param string[]|null $exclude
-	 * @return array<string, string> (variant => type)
+	 * @param class-string $entity
+	 * @param array<int, class-string>|null $exclude
+	 * @return array<class-string, string> (type => name)
 	 */
 	public function getEntityVariants(string $entity, ?array $exclude = null): array
 	{
@@ -54,6 +55,9 @@ class DoctrineHelper
 	/**
 	 * Return most embedded entity.
 	 * In case of `CustomProduct` extends `Product` extends `BaseProduct`, return `CustomProduct`.
+	 *
+	 * @param class-string $entityClassName
+	 * @return class-string
 	 */
 	public function getBestOfType(string $entityClassName): string
 	{
@@ -82,6 +86,8 @@ class DoctrineHelper
 
 	/**
 	 * Return real table name by entity Class name.
+	 *
+	 * @param class-string $entity
 	 */
 	public function getTableNameByEntity(string $entity): string
 	{
@@ -91,6 +97,8 @@ class DoctrineHelper
 
 	/**
 	 * If extends lot's of entities, return root entity class name.
+	 *
+	 * @param class-string $entity
 	 */
 	public function getRootEntityName(string $entity): string
 	{
@@ -102,6 +110,8 @@ class DoctrineHelper
 	 * In case of chain inheritance Doctrine store lot's of entities in one table
 	 * and distinguishes itself by `discriminator` column.
 	 * This method return discriminator column name by given entity Class name.
+	 *
+	 * @param class-string $entity
 	 */
 	public function getDiscriminatorByEntity(string $entity): string
 	{
@@ -148,12 +158,12 @@ class DoctrineHelper
 	 * Best practice is refresh page or break CLI process after this change.
 	 *
 	 * @param object $from instance of specific entity
-	 * @param object|string $to instance of specific entity or class-name
+	 * @param object|class-string $to instance of specific entity or class-name
 	 * @throws DatabaseException
 	 */
 	public function remapEntity(object $from, object|string $to): ?object
 	{
-		$toType = is_string($to) ? $to : $to::class;
+		$toType = is_object($to) ? $to::class : $to;
 		$toDiscriminator = $this->getDiscriminatorByEntity($toType);
 		if ($this->getDiscriminatorByEntity($from::class) === $toDiscriminator) {
 			return $from;
@@ -213,14 +223,15 @@ class DoctrineHelper
 	private function getParentClassLength(\ReflectionClass $reflection, int $bind = 1): int
 	{
 		$length = 0;
+		$parent = $reflection;
 		do {
-			$parent = ($length === 0 ? $reflection : $parent ?? $reflection)->getParentClass();
 			if ($parent === false) {
 				break;
 			}
+			$parent = $parent->getParentClass();
 			$length++;
 		} while (true);
 
-		return $length + ($bind > 0 ? $bind : 0);
+		return $length + max($bind, 0);
 	}
 }

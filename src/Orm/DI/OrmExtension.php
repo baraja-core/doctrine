@@ -18,9 +18,7 @@ use Nette\InvalidArgumentException;
 
 final class OrmExtension extends CompilerExtension
 {
-
-	/** @var mixed[] */
-	private array $defaults = [
+	private const DEFAULT_CONFIGURATION = [
 		'entityManagerDecoratorClass' => EntityManagerDecorator::class,
 		'configurationClass' => Configuration::class,
 		'entityManagerClass' => EntityManager::class,
@@ -63,13 +61,14 @@ final class OrmExtension extends CompilerExtension
 	public function loadDoctrineConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		$config = array_replace($this->defaults['configuration'], $this->config);
+		assert(is_array($this->config));
+		$config = array_replace(self::DEFAULT_CONFIGURATION['configuration'], $this->config);
 		$config = Helpers::expand($config, $builder->parameters);
 
 		$configurationClass = $config['configurationClass'] ?? Configuration::class;
 
 		if (!is_a($configurationClass, Configuration::class, true)) {
-			throw new InvalidArgumentException('Configuration class must be subclass of ' . Configuration::class . ', ' . $configurationClass . ' given.');
+			throw new InvalidArgumentException(sprintf('Configuration class must be subclass of %s, %s given.', Configuration::class, $configurationClass));
 		}
 
 		$configuration = $builder->addDefinition($this->prefix('configuration'))
