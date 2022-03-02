@@ -27,6 +27,7 @@ use Nette\DI\Definitions\ServiceDefinition;
 use Nette\DI\Definitions\Statement;
 use Nette\DI\ServiceCreationException;
 use Nette\InvalidStateException;
+use Nette\Utils\FileSystem;
 use Symfony\Component\Console\Application;
 
 final class OrmConsoleExtension extends CompilerExtension
@@ -65,9 +66,14 @@ final class OrmConsoleExtension extends CompilerExtension
 			$builder->addDefinition('doctrine.queryPanel')
 				->setFactory(QueryPanel::class);
 		}
+
+		$cacheDir = dirname(__DIR__, 6) . '/temp/cache/baraja.doctrine';
+		FileSystem::createDir($cacheDir);
+
 		$builder->addDefinition($this->prefix('entityManager'))
 			->setType(EntityManager::class)
-			->setAutowired(true);
+			->setAutowired(true)
+			->setArgument('cacheDir', $cacheDir);
 
 		if ($this->cliMode === false) {
 			return;

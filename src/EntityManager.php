@@ -26,6 +26,7 @@ use Tracy\Debugger;
 final class EntityManager extends \Doctrine\ORM\EntityManager
 {
 	public function __construct(
+		private string $cacheDir,
 		Connection $connection,
 		private Configuration $configuration,
 		EventManager $eventManager,
@@ -80,15 +81,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	 */
 	public function getDbDirPath(): string
 	{
-		static $cache;
-
-		if ($cache === null) {
-			$dir = \dirname(__DIR__, 4) . '/temp/cache/baraja.doctrine';
-			FileSystem::createDir($dir);
-			$cache = $dir . '/doctrine.db';
-		}
-
-		return $cache;
+		return $this->cacheDir . '/doctrine.db';
 	}
 
 
@@ -98,9 +91,9 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	 */
 	public function fixDbDirPathPermission(): void
 	{
-		$path = $this->getDbDirPath();
-		if (is_file($path) === true && fileperms($path) < 33_204) {
-			chmod($path, 0_664);
+		$cacheFile = $this->cacheDir . '/doctrine.db';
+		if (is_file($cacheFile) === true && fileperms($cacheFile) < 33_204) {
+			chmod($cacheFile, 0_664);
 		}
 	}
 
