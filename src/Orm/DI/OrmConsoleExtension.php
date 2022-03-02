@@ -32,15 +32,6 @@ use Symfony\Component\Console\Application;
 
 final class OrmConsoleExtension extends CompilerExtension
 {
-	private bool $cliMode;
-
-
-	public function __construct(?bool $cliMode = null)
-	{
-		$this->cliMode = $cliMode ?? PHP_SAPI === 'cli';
-	}
-
-
 	/**
 	 * @return string[]
 	 */
@@ -75,7 +66,7 @@ final class OrmConsoleExtension extends CompilerExtension
 			->setAutowired(true)
 			->setArgument('cacheDir', $cacheDir);
 
-		if ($this->cliMode === false) {
+		if (PHP_SAPI !== 'cli') {
 			return;
 		}
 
@@ -150,8 +141,7 @@ final class OrmConsoleExtension extends CompilerExtension
 	 */
 	public function beforeCompile(): void
 	{
-		// Skip if it's not CLI mode
-		if (!$this->cliMode) {
+		if (PHP_SAPI !== 'cli') { // Skip if it's not CLI mode
 			return;
 		}
 
