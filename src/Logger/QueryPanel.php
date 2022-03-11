@@ -101,7 +101,7 @@ final class QueryPanel extends AbstractLogger implements IBarPanel
 						$quotedParams = [];
 						foreach ($params as $typeIndex => $value) {
 							$type = $types[$typeIndex] ?? null;
-							$quotedParams[] = $this->connection->quote($value, $type);
+							$quotedParams[] = $this->connection->quote($value ?? '', $type);
 						}
 
 						return $quotedParams;
