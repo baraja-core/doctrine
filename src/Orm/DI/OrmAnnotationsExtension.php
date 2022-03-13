@@ -159,7 +159,7 @@ final class OrmAnnotationsExtension extends CompilerExtension
 	public function afterCompile(ClassType $classType): void
 	{
 		$initialize = $classType->getMethod('initialize');
-		$original = (string) $initialize->getBody();
+		$original = $initialize->getBody();
 		$initialize->setBody('?::registerUniqueLoader(\'class_exists\');' . "\n", [new PhpLiteral(AnnotationRegistry::class)]);
 		$initialize->addBody($original);
 	}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
+use Doctrine\ORM\Query\AST\ArithmeticTerm;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Lexer;
@@ -13,13 +14,13 @@ use Doctrine\ORM\Query\SqlWalker;
 
 class GeoDistanceFunction extends FunctionNode
 {
-	private SimpleArithmeticExpression $lat1;
+	private SimpleArithmeticExpression|ArithmeticTerm $lat1;
 
-	private SimpleArithmeticExpression $lng1;
+	private SimpleArithmeticExpression|ArithmeticTerm $lng1;
 
-	private SimpleArithmeticExpression $lat2;
+	private SimpleArithmeticExpression|ArithmeticTerm $lat2;
 
-	private SimpleArithmeticExpression $lng2;
+	private SimpleArithmeticExpression|ArithmeticTerm $lng2;
 
 
 	public function getSql(SqlWalker $sqlWalker): string
