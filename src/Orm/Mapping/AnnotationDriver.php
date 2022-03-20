@@ -26,7 +26,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 
 
 	/**
-	 * @param string[]|null $paths
+	 * @param array<string, string>|null $paths
 	 */
 	public function __construct(
 		EntityAnnotationManager $annotationManager,

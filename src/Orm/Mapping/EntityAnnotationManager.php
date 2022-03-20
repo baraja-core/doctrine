@@ -14,12 +14,12 @@ namespace Baraja\Doctrine\ORM\Mapping;
  */
 final class EntityAnnotationManager
 {
-	/** @var string[] */
+	/** @var array<string, string> */
 	private array $paths;
 
 
 	/**
-	 * @return string[]
+	 * @return array<string, string>
 	 */
 	public function getPaths(): array
 	{
@@ -29,11 +29,11 @@ final class EntityAnnotationManager
 
 	public function addPath(string $namespace, string $directoryPath): void
 	{
-		if (\is_dir($directoryPath) === false) {
-			throw new \RuntimeException('Path "' . $directoryPath . '" is not valid directory.');
+		if (is_dir($directoryPath) === false) {
+			throw new \RuntimeException(sprintf('Path "%s" is not valid directory.', $directoryPath));
 		}
 		if (isset($this->paths[$namespace]) === true) {
-			throw new \RuntimeException('Definition for namespace "' . $namespace . '" already exist (entity "' . $this->paths[$namespace] . '").');
+			throw new \RuntimeException(sprintf('Definition for namespace "%s" already exist (entity "%s").', $namespace, $this->paths[$namespace]));
 		}
 
 		$this->paths[$namespace] = $directoryPath;
