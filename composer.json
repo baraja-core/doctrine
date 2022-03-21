@@ -22,7 +22,7 @@
 	"require-dev": {
 		"baraja-core/package-manager": "^3.2",
 		"baraja-core/service-method-invoker": "^2.2",
-		"tracy/tracy": "^2.8",
+		"tracy/tracy": "^2.9",
 		"nette/caching": "^3.0",
 		"phpstan/phpstan": "^1.0",
 		"phpstan/extension-installer": "^1.1",

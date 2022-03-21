@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\Doctrine;
 
 
+use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Baraja\Doctrine\DBAL\Utils\QueryUtils;
 use Doctrine\DBAL\Exception\DriverException;
 use Doctrine\ORM\Exception\ORMException;
@@ -18,6 +19,8 @@ use Tracy\Helpers;
 final class TracyBlueScreenDebugger
 {
 	private static ?EntityManager $entityManager = null;
+
+	private static ?QueryPanel $panel = null;
 
 
 	/** @throws \Error */
@@ -33,48 +36,62 @@ final class TracyBlueScreenDebugger
 	}
 
 
+	public static function setPanel(?QueryPanel $panel): void
+	{
+		self::$panel = $panel;
+	}
+
+
 	/**
 	 * @return array{tab: string, panel: string}|null
 	 */
 	public static function render(?\Throwable $e): ?array
 	{
-		if ($e instanceof DriverException) {
-			return self::renderDriver($e);
-		}
-		if ($e === null || !$e instanceof ORMException) {
+		if (!$e instanceof ORMException) {
 			return null;
 		}
-		if ($e instanceof QueryException) {
-			return [
-				'tab' => 'Query error',
-				'panel' => self::renderQuery($e),
-			];
+		if ($e instanceof DriverException) {
+			[$tab, $content] = self::renderDriver($e);
+		} elseif ($e instanceof QueryException) {
+			$tab = 'Query error';
+			$content = self::renderQuery($e);
+		} elseif ($e instanceof MappingException) {
+			$tab = 'MappingException';
+			$content = self::renderMapping($e);
+		} else {
+			$tab = 'ORM error';
+			$content = '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
 		}
-		if ($e instanceof MappingException) {
-			return [
-				'tab' => 'MappingException',
-				'panel' => self::renderMapping($e),
-			];
-		}
 
-		return self::renderCommon($e);
-	}
-
-
-	/**
-	 * @return array{tab: string, panel: string}
-	 */
-	private static function renderCommon(ORMException $e): array
-	{
 		return [
-			'tab' => 'ORM error',
-			'panel' => '<p>' . htmlspecialchars($e->getMessage()) . '</p>',
+			'tab' => $tab,
+			'panel' => sprintf('
+				<div class="tracy-tabs">
+					<ul class="tracy-tab-bar">
+						<li class="tracy-tab-label tracy-active"><a href="#">%s</a></li>
+						<li class="tracy-tab-label"><a href="#">Queries</a></li>
+						<li class="tracy-tab-label"><a href="#">Table list</a></li>
+						<li class="tracy-tab-label"><a href="#">EntityManager</a></li>
+					</ul>
+					<div>
+						<div class="tracy-tab-panel tracy-active">%s</div>
+						<div class="tracy-tab-panel">%s</div>
+						<div class="tracy-tab-panel">%s</div>
+						<div class="tracy-tab-panel">%s</div>
+					</div>
+				</div>',
+				$tab,
+				$content,
+				self::renderQueries(),
+				self::renderTableList(),
+				self::$entityManager !== null ? Dumper::toHtml(self::$entityManager) : '<i>Not set.</i>'
+			),
 		];
 	}
 
 
 	/**
-	 * @return array{tab: string, panel: string}
+	 * @return array{0: string, 1: string}
 	 */
 	private static function renderDriver(DriverException $e): array
 	{
@@ -125,45 +142,12 @@ final class TracyBlueScreenDebugger
 			self::$entityManager !== null
 			&& preg_match('/Table\s\\\'([^\\\']+)\\\'\sdoesn\\\'t\sexist/', $e->getMessage(), $parser) === 1
 		) {
-			try {
-				$tableList = array_map(
-					static fn(array $item): string => (string) (array_values($item)[0] ?? ''),
-					self::$entityManager->getConnection()->executeQuery('show tables')->fetchAllAssociative(),
-				);
-
-				$panelMeta = [];
-				foreach (self::$entityManager->getMetadataFactory()->getAllMetadata() as $metaData) {
-					$metaTableName = $metaData->getTableName();
-					$panelMeta[$metaTableName] = [
-						'tableName' => $metaTableName,
-						'className' => $metaData->getName(),
-					];
-				}
-
-				$panel .= '<p>Table list:</p>';
-				$panel .= '<table>';
-				$panel .= '<tr><th>Table name</th><th>Entity class name</th></tr>';
-				$panel .= '<tr>'
-					. '<td style="background:#bf0014;color:white"><b>' . htmlspecialchars($parser[1]) . '</b></td>'
-					. '<td style="background:#bf0014;color:white">Can not find. Please use command <b>index.php&nbsp;o:s:u&nbsp;-f</b></td>'
-					. '</tr>';
-
-				foreach ($tableList as $tableName) {
-					$panel .= '<tr>'
-						. '<td>' . htmlspecialchars($tableName) . '</td>'
-						. '<td>' . htmlspecialchars($panelMeta[$tableName]['className'] ?? '???') . '</td>'
-						. '</tr>';
-				}
-
-				$panel .= '</table>';
-			} catch (\Throwable) {
-				// Silence is golden.
-			}
+			$panel .= self::renderTableList();
 		}
 
 		return [
-			'tab' => $tab ?? 'Driver error',
-			'panel' => $panel ?? '<p>' . htmlspecialchars($e->getMessage()) . '</p>',
+			$tab ?? 'Driver error',
+			$panel ?? '<p>' . htmlspecialchars($e->getMessage()) . '</p>',
 		];
 	}
 
@@ -233,5 +217,153 @@ final class TracyBlueScreenDebugger
 		}
 
 		return '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+	}
+
+
+	private static function renderTableList(): string
+	{
+		if (self::$entityManager === null) {
+			return '<i>Not available.</i>';
+		}
+		try {
+			$tableList = array_map(
+				static fn(array $item): string => (string) (array_values($item)[0] ?? ''),
+				self::$entityManager->getConnection()->executeQuery('show tables')->fetchAllAssociative(),
+			);
+
+			$panelMeta = [];
+			foreach (self::$entityManager->getMetadataFactory()->getAllMetadata() as $metaData) {
+				$metaTableName = $metaData->getTableName();
+				$panelMeta[$metaTableName] = [
+					'tableName' => $metaTableName,
+					'className' => $metaData->getName(),
+				];
+			}
+
+			$return = '';
+			foreach ($tableList as $tableName) {
+				$return .= '<tr>'
+					. '<td>' . htmlspecialchars($tableName) . '</td>'
+					. '<td>' . htmlspecialchars($panelMeta[$tableName]['className'] ?? '???') . '</td>'
+					. '</tr>';
+			}
+
+			return '<table><tr><th>Table name</th><th>Entity class name</th></tr>' . $return . '</table>';
+		} catch (\Throwable $e) {
+			return '<i>' . htmlspecialchars($e->getMessage()) . '</i>';
+		}
+	}
+
+
+	private static function renderQueries(): string
+	{
+		if (self::$panel === null) {
+			return '<i>Panel has not been defined.</i>';
+		}
+		$events = self::$panel->getEvents();
+		if ($events === []) {
+			return '<h1>No queries</h1>';
+		}
+
+		$isTransaction = false;
+		$select = 0;
+		$insert = 0;
+		$update = 0;
+		$delete = 0;
+		$other = 0;
+		$timeBlocks = [];
+
+		$tableContent = '';
+		foreach ($events as $event) {
+			$background = null;
+			if ($event->getSql() === '"START TRANSACTION"') {
+				$isTransaction = true;
+				$background = 'rgb(204,255,204)';
+			} elseif ($event->getSql() === '"COMMIT"' || $event->getSql() === '"ROLLBACK"') {
+				$isTransaction = false;
+				$background = 'rgb(253,169,157)';
+			}
+			if ($isTransaction === true && $background === null) {
+				$background = 'rgb(255,244,204)';
+			}
+
+			$queryParser = explode(' ', strtoupper(trim($event->getSql())), 2);
+			$durationMs = $event->getDuration() !== null ? $event->getDuration() * 1000 : null;
+
+			if (isset($queryParser[1])) {
+				switch ($queryParser[0]) {
+					case 'SELECT':
+						$select++;
+						break;
+					case 'INSERT':
+						$insert++;
+						break;
+					case 'UPDATE':
+						$update++;
+						break;
+					case 'DELETE':
+						$delete++;
+						break;
+					default:
+						$other++;
+						break;
+				}
+			}
+
+			$durationColor = QueryPanel::getPanelDurationColor($durationMs);
+			$renderedQuery = '<tr>'
+				. '<td' . ($durationColor !== null ? ' style="' . $durationColor . '"' : '') . '>'
+				. ($durationMs !== null
+					? '<span title="' . number_format($durationMs, 8, '.', ' ') . ' ms">'
+					. number_format($durationMs, 2, '.', ' ')
+					. '</span>'
+					: '<span style="color:white;background:#bf0014;padding:2px 6px;border-radius:4px">Error</span>'
+				)
+				. '<br><i title="Request runtime delay time">' . number_format($event->getDelayTime(), 2, '.', '') . '</i>'
+				. ($isTransaction ? '<br><span style="color:#bf0014">•</span>' : '')
+				. '</td>'
+				. '<td class="tracy-dbal-sql" ' . ($background ? ' style="background:' . $background . ' !important"' : '') . '>'
+				. ($event->getDuration() === null
+					? '<div style="color:white;background:#bf0014;text-align:center;padding:2px 6px;margin:8px 0;border-radius:4px">Error with processing this query!</div>'
+					: '')
+				. '<div style="background:white;padding:4px 8px">' . QueryUtils::highlight($event->getSql()) . '</div>'
+				. ($event->getLocation() !== null
+					? '<hr>' . Helpers::editorLink($event->getLocation()['file'], $event->getLocation()['line'])
+					: ''
+				) . '</td></tr>';
+			$timeBlocks[] = '<td style="text-align:center;padding:0;' . ($durationColor !== null ? '' . $durationColor . '' : 'width:15px') . '">'
+				. ((int) round($durationMs))
+				. '</td>';
+
+			if ($event->getDuration() !== null) {
+				$tableContent .= $renderedQuery;
+			}
+		}
+
+		$return = '<p>[';
+		$return .= trim(
+			($select > 0 ? $select . '&times;select ' : '')
+			. ($update > 0 ? $update . '&times;update ' : '')
+			. ($insert > 0 ? $insert . '&times;insert ' : '')
+			. ($delete > 0 ? $delete . '&times;delete ' : '')
+			. ($other > 0 ? $other . '&times;other</span>' : '')
+		);
+		$return .= ']</p>';
+		if ($timeBlocks !== []) {
+			$return .= '<table><tr>' . implode('', $timeBlocks) . '</tr></table>';
+		}
+
+		return sprintf('
+		%s
+		<table>
+			<tr>
+				<th style="max-width:48px !important">ms</th>
+				<th>Query</th>
+			</tr>
+			%s
+		</table>',
+			$return,
+			$tableContent,
+		);
 	}
 }

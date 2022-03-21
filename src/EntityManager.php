@@ -40,6 +40,9 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		if (\class_exists(Debugger::class) === true) {
 			Debugger::getBlueScreen()->addPanel([TracyBlueScreenDebugger::class, 'render']);
 			TracyBlueScreenDebugger::setEntityManager($this);
+			if ($panel !== null) {
+				TracyBlueScreenDebugger::setPanel($panel);
+			}
 		}
 		parent::__construct(
 			$connection,
