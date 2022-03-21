@@ -47,7 +47,7 @@ final class TracyBlueScreenDebugger
 	 */
 	public static function render(?\Throwable $e): ?array
 	{
-		if (!$e instanceof ORMException) {
+		if ($e === null) {
 			return null;
 		}
 		if ($e instanceof DriverException) {
@@ -58,9 +58,11 @@ final class TracyBlueScreenDebugger
 		} elseif ($e instanceof MappingException) {
 			$tab = 'MappingException';
 			$content = self::renderMapping($e);
-		} else {
+		} elseif ($e instanceof ORMException) {
 			$tab = 'ORM error';
 			$content = '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+		} else {
+			return null;
 		}
 
 		return [
@@ -322,7 +324,7 @@ final class TracyBlueScreenDebugger
 				. '<br><i title="Request runtime delay time">' . number_format($event->getDelayTime(), 2, '.', '') . '</i>'
 				. ($isTransaction ? '<br><span style="color:#bf0014">•</span>' : '')
 				. '</td>'
-				. '<td class="tracy-dbal-sql" ' . ($background ? ' style="background:' . $background . ' !important"' : '') . '>'
+				. '<td class="tracy-dbal-sql" ' . ($background !== null ? ' style="background:' . $background . ' !important"' : '') . '>'
 				. ($event->getDuration() === null
 					? '<div style="color:white;background:#bf0014;text-align:center;padding:2px 6px;margin:8px 0;border-radius:4px">Error with processing this query!</div>'
 					: '')
@@ -332,7 +334,7 @@ final class TracyBlueScreenDebugger
 					: ''
 				) . '</td></tr>';
 			$timeBlocks[] = '<td style="text-align:center;padding:0;' . ($durationColor !== null ? '' . $durationColor . '' : 'width:15px') . '">'
-				. ((int) round($durationMs))
+				. ((int) round((float) $durationMs))
 				. '</td>';
 
 			if ($event->getDuration() !== null) {
@@ -349,9 +351,7 @@ final class TracyBlueScreenDebugger
 			. ($other > 0 ? $other . '&times;other</span>' : '')
 		);
 		$return .= ']</p>';
-		if ($timeBlocks !== []) {
-			$return .= '<table><tr>' . implode('', $timeBlocks) . '</tr></table>';
-		}
+		$return .= '<table><tr>' . implode('', $timeBlocks) . '</tr></table>';
 
 		return sprintf('
 		%s
