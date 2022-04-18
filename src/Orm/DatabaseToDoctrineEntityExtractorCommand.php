@@ -115,9 +115,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$showTablesStatement = $connection->executeQuery('SHOW TABLES');
 
-		$tableMapper = static function (array $item): string {
-			return (string) (array_values($item)[0] ?? '');
-		};
+		$tableMapper = static fn(array $item): string => (string) (array_values($item)[0] ?? '');
 
 		$tables = array_map(
 			$tableMapper,

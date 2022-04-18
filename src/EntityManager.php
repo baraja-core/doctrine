@@ -11,7 +11,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
