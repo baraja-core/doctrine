@@ -24,7 +24,6 @@ use function preg_match_all;
 use const PREG_OFFSET_CAPTURE;
 use function sprintf;
 use function strlen;
-use function strpos;
 use function substr;
 
 final class SqlParserUtils
@@ -195,7 +194,7 @@ final class SqlParserUtils
 		string $token,
 		callable $collector,
 	): array {
-		if (strpos($statement, $match) === false) {
+		if (!str_contains($statement, $match)) {
 			return [];
 		}
 

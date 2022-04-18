@@ -67,7 +67,8 @@ final class TracyBlueScreenDebugger
 
 		return [
 			'tab' => $tab,
-			'panel' => sprintf('
+			'panel' => sprintf(
+				'
 				<div class="tracy-tabs">
 					<ul class="tracy-tab-bar">
 						<li class="tracy-tab-label tracy-active"><a href="#">%s</a></li>
@@ -86,7 +87,7 @@ final class TracyBlueScreenDebugger
 				$content,
 				self::renderQueries(),
 				self::renderTableList(),
-				self::$entityManager !== null ? Dumper::toHtml(self::$entityManager) : '<i>Not set.</i>'
+				self::$entityManager !== null ? Dumper::toHtml(self::$entityManager) : '<i>Not set.</i>',
 			),
 		];
 	}
@@ -348,12 +349,13 @@ final class TracyBlueScreenDebugger
 			. ($update > 0 ? $update . '&times;update ' : '')
 			. ($insert > 0 ? $insert . '&times;insert ' : '')
 			. ($delete > 0 ? $delete . '&times;delete ' : '')
-			. ($other > 0 ? $other . '&times;other</span>' : '')
+			. ($other > 0 ? $other . '&times;other</span>' : ''),
 		);
 		$return .= ']</p>';
 		$return .= '<table><tr>' . implode('', $timeBlocks) . '</tr></table>';
 
-		return sprintf('
+		return sprintf(
+			'
 		%s
 		<table>
 			<tr>

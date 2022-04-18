@@ -17,7 +17,6 @@ use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Persistence\Mapping\MappingException;
-use Nette\Utils\FileSystem;
 use Tracy\Debugger;
 
 /**
