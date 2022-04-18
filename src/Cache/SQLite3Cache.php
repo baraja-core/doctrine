@@ -18,13 +18,10 @@ use function unserialize;
 final class SQLite3Cache extends CacheProvider
 {
 	/** The ID field will store the cache key. */
-	public const ID_FIELD = 'k';
-
-	/** The data field will store the serialized PHP value. */
-	public const DATA_FIELD = 'd';
-
-	/** The expiration field will store a date value indicating when the cache entry should expire. */
-	public const EXPIRATION_FIELD = 'e';
+	public const
+		FieldId = 'k', // The ID field will store the cache key.
+		FieldData = 'd', // The data field will store the serialized PHP value.
+		FieldExpiration = 'e'; // The expiration field will store a date value indicating when the cache entry should expire.
 
 	private \SQLite3 $sqlite;
 
@@ -80,11 +77,11 @@ final class SQLite3Cache extends CacheProvider
 	protected function doFetch($id)
 	{
 		$item = $this->findById($id);
-		if (!$item) {
+		if ($item === null) {
 			return false;
 		}
 
-		return unserialize($item[self::DATA_FIELD]);
+		return unserialize($item[self::FieldData]);
 	}
 
 
@@ -165,9 +162,9 @@ final class SQLite3Cache extends CacheProvider
 			sprintf(
 				'CREATE TABLE IF NOT EXISTS %s(%s TEXT PRIMARY KEY NOT NULL, %s BLOB, %s INTEGER)',
 				$this->table,
-				static::ID_FIELD,
-				static::DATA_FIELD,
-				static::EXPIRATION_FIELD,
+				self::FieldId,
+				self::FieldData,
+				self::FieldExpiration,
 			),
 		);
 	}
@@ -176,14 +173,15 @@ final class SQLite3Cache extends CacheProvider
 	/**
 	 * Find a single row by ID.
 	 *
-	 * @return mixed[]|null
+	 * @return array{k: string, d: string, e: int}|null
 	 */
-	private function findById(mixed $id, bool $includeData = true): ?array
+	private function findById(string $id, bool $includeData = true): ?array
 	{
-		[$idField] = $fields = $this->getFields();
+		$fields = $this->getFields();
+		[$idField] = $fields;
 
 		if (!$includeData) {
-			$key = array_search(static::DATA_FIELD, $fields, true);
+			$key = array_search(self::FieldData, $fields, true);
 			unset($fields[$key]);
 		}
 
@@ -200,6 +198,8 @@ final class SQLite3Cache extends CacheProvider
 		$statement->bindValue(':id', $id, SQLITE3_TEXT);
 
 		$result = $statement->execute();
+
+		/** @var array{k: string, d: string, e: int}|false $item */
 		$item = $result === false ? false : $result->fetchArray(SQLITE3_ASSOC);
 
 		if ($item === false) {
@@ -218,23 +218,21 @@ final class SQLite3Cache extends CacheProvider
 	/**
 	 * Gets an array of the fields in our table.
 	 *
-	 * @phpstan-return array{string, string, string}
+	 * @return array{string, string, string}
 	 */
 	private function getFields(): array
 	{
-		return [self::ID_FIELD, self::DATA_FIELD, self::EXPIRATION_FIELD];
+		return [self::FieldId, self::FieldData, self::FieldExpiration];
 	}
 
 
 	/**
 	 * Check if the item is expired.
 	 *
-	 * @param mixed[] $item
+	 * @param array{e?: int} $item
 	 */
 	private function isExpired(array $item): bool
 	{
-		return isset($item[self::EXPIRATION_FIELD])
-			&& $item[self::EXPIRATION_FIELD] !== null
-			&& $item[self::EXPIRATION_FIELD] < time();
+		return isset($item[self::FieldExpiration]) && $item[self::FieldExpiration] < time();
 	}
 }

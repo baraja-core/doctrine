@@ -7,3 +7,5 @@ parameters:
 	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
 		- '#PHPDoc tag \@return with type void is incompatible with native type Baraja\\Doctrine\\EntityManager\.#'
+		- '#^Short ternary operator is not allowed#'
+		- '#deprecated (class|interface|method)#'

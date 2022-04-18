@@ -229,10 +229,15 @@ final class TracyBlueScreenDebugger
 			return '<i>Not available.</i>';
 		}
 		try {
-			$tableList = array_map(
-				static fn(array $item): string => (string) (array_values($item)[0] ?? ''),
-				self::$entityManager->getConnection()->executeQuery('show tables')->fetchAllAssociative(),
-			);
+			/** @var array<int, non-empty-array<string, string>> $tableListResult */
+			$tableListResult = self::$entityManager->getConnection()->executeQuery('show tables')->fetchAllAssociative();
+
+			$mapper = static function (array $item): string {
+				return (string) (array_values($item)[0] ?? '');
+			};
+
+			/** @var array<int, string> $tableList */
+			$tableList = array_map($mapper, $tableListResult);
 
 			$panelMeta = [];
 			foreach (self::$entityManager->getMetadataFactory()->getAllMetadata() as $metaData) {

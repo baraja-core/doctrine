@@ -24,19 +24,10 @@ abstract class FileCache extends CacheProvider
 
 
 	/**
-	 * @param string $directory The cache directory.
-	 * @param string $extension The cache file extension.
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct(string $directory, string $extension = '', int $umask = 0002)
 	{
-		// YES, this needs to be *before* createPathIfNeeded()
-		if (!is_int($umask)) {
-			throw new \InvalidArgumentException(
-				'The umask parameter is required to be integer, was: ' . get_debug_type($umask),
-			);
-		}
-
 		$this->umask = $umask;
 
 		if (!$this->createPathIfNeeded($directory)) {

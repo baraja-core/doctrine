@@ -33,7 +33,7 @@ class ApcuCache extends CacheProvider
 	 */
 	protected function doSave($id, $data, $lifeTime = 0)
 	{
-		return apcu_store($id, $data, (int) $lifeTime);
+		return apcu_store($id, $data, $lifeTime);
 	}
 
 
@@ -54,7 +54,7 @@ class ApcuCache extends CacheProvider
 	{
 		$result = apcu_delete($keys);
 
-		return $result !== false && count($result) !== count($keys);
+		return count($result) !== count($keys);
 	}
 
 
@@ -72,6 +72,7 @@ class ApcuCache extends CacheProvider
 	 */
 	protected function doFetchMultiple(array $keys)
 	{
+		/** @phpstan-ignore-next-line */
 		return apcu_fetch($keys) ?: [];
 	}
 
@@ -81,7 +82,7 @@ class ApcuCache extends CacheProvider
 	 */
 	protected function doSaveMultiple(array $keysAndValues, $lifetime = 0)
 	{
-		$result = apcu_store($keysAndValues, null, (int) $lifetime);
+		$result = apcu_store($keysAndValues, null, $lifetime);
 
 		/** @phpstan-ignore-next-line */
 		return empty($result);

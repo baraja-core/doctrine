@@ -25,10 +25,18 @@ class GeoDistanceFunction extends FunctionNode
 
 	public function getSql(SqlWalker $sqlWalker): string
 	{
-		$lat1 = $sqlWalker->walkSimpleArithmeticExpression($this->lat1);
-		$lat2 = $sqlWalker->walkSimpleArithmeticExpression($this->lat2);
-		$lng1 = $sqlWalker->walkSimpleArithmeticExpression($this->lng1);
-		$lng2 = $sqlWalker->walkSimpleArithmeticExpression($this->lng2);
+		/**
+		 * @var SimpleArithmeticExpression $lat1
+		 * @var SimpleArithmeticExpression $lat2
+		 * @var SimpleArithmeticExpression $lng1
+		 * @var SimpleArithmeticExpression $lng2
+		 */
+		[$lat1, $lat2, $lng1, $lng2] = [$this->lat1, $this->lat2, $this->lng1, $this->lng2];
+
+		$lat1 = $sqlWalker->walkSimpleArithmeticExpression($lat1);
+		$lat2 = $sqlWalker->walkSimpleArithmeticExpression($lat2);
+		$lng1 = $sqlWalker->walkSimpleArithmeticExpression($lng1);
+		$lng2 = $sqlWalker->walkSimpleArithmeticExpression($lng2);
 		$kmPerLat2 = 6_372.795;
 		$kmPerLng2 = 6_372.795;
 

@@ -16,6 +16,7 @@ use Doctrine\ORM\Tools\EntityGenerator;
 use InvalidArgumentException;
 use Nette\Utils\FileSystem;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -79,6 +80,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		$output->writeln("\n");
 
 		$helper = $this->getHelper('question');
+		assert($helper instanceof QuestionHelper);
 		$questionNamespace = new ConfirmationQuestion(
 			'Given namespace is "<comment>' . $namespace . '</comment>", '
 			. 'so entity class-name should be "<comment>' . $entityNamespace . '\User</comment>" for example?',
@@ -103,7 +105,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 			return 1;
 		}
-		$realPath .= $helper->ask($input, $output, $questionEntityDir) ? '/Entity' : '';
+		$realPath .= ((bool) $helper->ask($input, $output, $questionEntityDir)) ? '/Entity' : '';
 
 		FileSystem::createDir($realPath);
 		$output->writeln("\n\n" . '<comment>Scaning your database...</comment>' . "\n\n");
@@ -113,8 +115,12 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 
 		$showTablesStatement = $connection->executeQuery('SHOW TABLES');
 
+		$tableMapper = static function (array $item): string {
+			return (string) (array_values($item)[0] ?? '');
+		};
+
 		$tables = array_map(
-			static fn(array $item): ?string => array_values($item)[0] ?? null,
+			$tableMapper,
 			$showTablesStatement->fetchAllAssociative(),
 		);
 

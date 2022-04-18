@@ -37,6 +37,9 @@ final class UuidType extends Type
 		if ($value instanceof UuidInterface) {
 			return $value->toString();
 		}
+		if (!is_string($value)) {
+			throw new \LogicException(sprintf('UUID value must be a string, but "%s" given.', get_debug_type($value)));
+		}
 		try {
 			return Uuid::fromString($value)->toString();
 		} catch (\InvalidArgumentException) {

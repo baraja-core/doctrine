@@ -57,7 +57,7 @@ final class ArrayCache extends CacheProvider
 
 		$expiration = $this->data[$id][1];
 
-		if ($expiration && $expiration < time()) {
+		if ($expiration > 0 && $expiration < time()) {
 			$this->doDelete($id);
 
 			return false;
@@ -72,7 +72,7 @@ final class ArrayCache extends CacheProvider
 	 */
 	protected function doSave($id, $data, $lifeTime = 0)
 	{
-		$this->data[$id] = [$data, $lifeTime ? time() + $lifeTime : false];
+		$this->data[$id] = [$data, $lifeTime > 0 ? time() + $lifeTime : false];
 
 		return true;
 	}

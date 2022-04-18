@@ -7,7 +7,6 @@ namespace Baraja\Doctrine\ORM\DI;
 
 use Baraja\Doctrine\DBAL\DI\DbalConsoleExtension;
 use Baraja\Doctrine\EntityManager;
-use Baraja\Doctrine\ORM\EntityManagerDecorator;
 use Baraja\Doctrine\ORM\Mapping\ContainerEntityListenerResolver;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -18,8 +17,7 @@ use Nette\InvalidArgumentException;
 
 final class OrmExtension extends CompilerExtension
 {
-	private const DEFAULT_CONFIGURATION = [
-		'entityManagerDecoratorClass' => EntityManagerDecorator::class,
+	private const DefaultConfiguration = [
 		'configurationClass' => Configuration::class,
 		'entityManagerClass' => EntityManager::class,
 		'configuration' => [
@@ -61,10 +59,7 @@ final class OrmExtension extends CompilerExtension
 	public function loadDoctrineConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		assert(is_array($this->config));
-		$config = array_replace(self::DEFAULT_CONFIGURATION['configuration'], $this->config);
-		$config = Helpers::expand($config, $builder->parameters);
-
+		$config = $this->getConfig();
 		$configurationClass = $config['configurationClass'] ?? Configuration::class;
 
 		if (!is_a($configurationClass, Configuration::class, true)) {
@@ -72,21 +67,17 @@ final class OrmExtension extends CompilerExtension
 		}
 
 		$configuration = $builder->addDefinition($this->prefix('configuration'))
-			->setType(is_object($configurationClass) ? $configurationClass::class : $configurationClass);
+			->setType($configurationClass);
 
-		if ($config['proxyDir'] !== null) {
-			$configuration->addSetup('setProxyDir', [$config['proxyDir']]);
-		}
+		$configuration->addSetup('setProxyDir', [$config['proxyDir']]);
+		$configuration->addSetup('setProxyNamespace', [$config['proxyNamespace']]);
 		if ($config['autoGenerateProxyClasses'] !== null) {
 			$configuration->addSetup('setAutoGenerateProxyClasses', [$config['autoGenerateProxyClasses']]);
-		}
-		if ($config['proxyNamespace'] !== null) {
-			$configuration->addSetup('setProxyNamespace', [$config['proxyNamespace']]);
 		}
 		if ($config['metadataDriverImpl'] !== null) {
 			$configuration->addSetup('setMetadataDriverImpl', [$config['metadataDriverImpl']]);
 		}
-		if ($config['entityNamespaces']) {
+		if ($config['entityNamespaces'] !== []) {
 			$configuration->addSetup('setEntityNamespaces', [$config['entityNamespaces']]);
 		}
 
@@ -95,21 +86,19 @@ final class OrmExtension extends CompilerExtension
 			->addSetup('setCustomStringFunctions', [$config['customStringFunctions']])
 			->addSetup('setCustomNumericFunctions', [$config['customNumericFunctions']])
 			->addSetup('setCustomDatetimeFunctions', [$config['customDatetimeFunctions']])
-			->addSetup('setCustomHydrationModes', [$config['customHydrationModes']]);
+			->addSetup('setCustomHydrationModes', [$config['customHydrationModes']])
+			->addSetup('setNamingStrategy', [new Statement(
+				$config['namingStrategy'],
+				$config['namingStrategy'] === UnderscoreNamingStrategy::class
+					? [CASE_LOWER, true]
+					: [],
+			)]);
 
 		if ($config['classMetadataFactoryName'] !== null) {
 			$configuration->addSetup('setClassMetadataFactoryName', [$config['classMetadataFactoryName']]);
 		}
 		if ($config['defaultRepositoryClassName'] !== null) {
 			$configuration->addSetup('setDefaultRepositoryClassName', [$config['defaultRepositoryClassName']]);
-		}
-		if ($config['namingStrategy'] !== null) {
-			$configuration->addSetup('setNamingStrategy', [new Statement(
-				$config['namingStrategy'],
-				$config['namingStrategy'] === UnderscoreNamingStrategy::class
-					? [CASE_LOWER, true]
-					: [],
-			)]);
 		}
 		if ($config['quoteStrategy'] !== null) {
 			$configuration->addSetup('setQuoteStrategy', [$config['quoteStrategy']]);
@@ -124,8 +113,42 @@ final class OrmExtension extends CompilerExtension
 		if ($config['repositoryFactory'] !== null) {
 			$configuration->addSetup('setRepositoryFactory', [$config['repositoryFactory']]);
 		}
-		if ($config['defaultQueryHints']) {
+		if ($config['defaultQueryHints'] !== []) {
 			$configuration->addSetup('setDefaultQueryHints', [$config['defaultQueryHints']]);
 		}
+	}
+
+
+	/**
+	 * @return array{
+	 *    configurationClass?: class-string,
+	 *    entityManagerClass: class-string,
+	 *    proxyDir: string,
+	 *    autoGenerateProxyClasses: string|null,
+	 *    proxyNamespace: string,
+	 *    metadataDriverImpl: string|null,
+	 *    entityNamespaces: array<int, string>,
+	 *    customStringFunctions: array<int, string>,
+	 *    customNumericFunctions: array<int, string>,
+	 *    customDatetimeFunctions: array<int, string>,
+	 *    customHydrationModes: array<int, int>,
+	 *    classMetadataFactoryName: string|null,
+	 *    defaultRepositoryClassName: string|null,
+	 *    namingStrategy: class-string,
+	 *    quoteStrategy: string|null,
+	 *    entityListenerResolver: class-string|null,
+	 *    repositoryFactory: class-string|null,
+	 *    defaultQueryHints: mixed[],
+	 * }
+	 */
+	public function getConfig(): array
+	{
+		$builder = $this->getContainerBuilder();
+		assert(is_array($this->config));
+		$config = array_replace(self::DefaultConfiguration['configuration'], $this->config);
+		$config = Helpers::expand($config, $builder->parameters);
+
+		/** @phpstan-ignore-next-line */
+		return $config;
 	}
 }

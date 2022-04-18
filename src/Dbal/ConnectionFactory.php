@@ -15,15 +15,15 @@ use Doctrine\DBAL\Types\Type;
 
 class ConnectionFactory
 {
-	/** @var mixed[] */
+	/** @var array<int, string> */
 	private array $commentedTypes = [];
 
 	private bool $initialized = false;
 
 
 	/**
-	 * @param mixed[] $typesConfig
-	 * @param mixed[] $typesMapping
+	 * @param array<string, array{class: class-string<Type>, commented: string|null}> $typesConfig
+	 * @param array<string, class-string> $typesMapping
 	 */
 	public function __construct(
 		private array $typesConfig = [],
@@ -50,7 +50,7 @@ class ConnectionFactory
 		if ($this->typesMapping !== []) {
 			$platform = $this->getDatabasePlatform($connection);
 			foreach ($this->typesMapping as $dbType => $doctrineType) {
-				$platform->registerDoctrineTypeMapping((string) $dbType, $doctrineType);
+				$platform->registerDoctrineTypeMapping($dbType, $doctrineType);
 			}
 		}
 		if ($this->commentedTypes !== []) {
@@ -100,7 +100,7 @@ class ConnectionFactory
 			} else {
 				Type::addType($type, $typeConfig['class']);
 			}
-			if ($typeConfig['commented']) {
+			if ($typeConfig['commented'] !== null) {
 				$this->commentedTypes[] = $type;
 			}
 		}

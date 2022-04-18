@@ -118,14 +118,22 @@ class DoctrineHelper
 	 */
 	public function getDiscriminatorByEntity(string $entity): string
 	{
-		foreach ($this->entityManager->getClassMetadata($entity)->discriminatorMap ?? [] as $discriminator => $variant) {
+		/** @return array<string, string> */
+		$loadDiscriminatorMap = function (string $entity): array {
+			$map = $this->entityManager->getClassMetadata($entity)->discriminatorMap ?? [];
+			assert(is_array($map));
+
+			return $map;
+		};
+
+		foreach ($loadDiscriminatorMap($entity) as $discriminator => $variant) {
 			if ($variant === $entity) {
 				return $discriminator;
 			}
 		}
 
 		$entity = $this->getRootEntityName($entity);
-		foreach ($this->entityManager->getClassMetadata($entity)->discriminatorMap ?? [] as $discriminator => $variant) {
+		foreach ($loadDiscriminatorMap($entity) as $discriminator => $variant) {
 			if ($variant === $entity) {
 				return $discriminator;
 			}
@@ -211,6 +219,7 @@ class DoctrineHelper
 			trigger_error($e->getMessage());
 		}
 
+		/** @phpstan-ignore-next-line */
 		return $this->entityManager->getRepository($toType)->find($id);
 	}
 

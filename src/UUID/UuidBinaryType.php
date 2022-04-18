@@ -13,7 +13,7 @@ use Ramsey\Uuid\UuidInterface;
 
 class UuidBinaryType extends Type
 {
-	public const NAME = 'uuid-binary';
+	public const Name = 'uuid-binary';
 
 
 	/**
@@ -43,7 +43,7 @@ class UuidBinaryType extends Type
 			try {
 				return Uuid::fromBytes($value);
 			} catch (\InvalidArgumentException) {
-				throw ConversionException::conversionFailed($value, static::NAME);
+				throw ConversionException::conversionFailed($value, static::Name);
 			}
 		}
 
@@ -64,7 +64,7 @@ class UuidBinaryType extends Type
 			return $value->getBytes();
 		}
 		try {
-			$string = is_string($value) || method_exists($value, '__toString')
+			$string = is_string($value) || $value instanceof \Stringable
 				? (string) $value
 				: '';
 			if ($string !== '') {
@@ -74,13 +74,13 @@ class UuidBinaryType extends Type
 			// Ignore the exception and pass through.
 		}
 
-		throw ConversionException::conversionFailed((string) $value, static::NAME);
+		throw ConversionException::conversionFailed($value, static::Name);
 	}
 
 
 	public function getName(): string
 	{
-		return static::NAME;
+		return static::Name;
 	}
 
 

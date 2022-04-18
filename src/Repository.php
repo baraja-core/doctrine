@@ -10,20 +10,21 @@ use Doctrine\ORM\EntityRepository;
 final class Repository extends EntityRepository
 {
 	/**
-	 * @return mixed[]
+	 * @return array<string, mixed>
 	 */
 	public function findPairs(string $value, ?string $key = null): array
 	{
 		$return = [];
 		$key ??= 'id';
 
+		/** @var array<int, array<string, string|int>> $categories */
 		$categories = $this->createQueryBuilder('e')
 			->select('e.' . $key, 'e.' . $value)
 			->getQuery()
 			->getArrayResult();
 
 		foreach ($categories as $category) {
-			$return[$category[$key]] = $category[$value];
+			$return[(string) $category[$key]] = $category[$value];
 		}
 
 		return $return;
@@ -37,14 +38,21 @@ final class Repository extends EntityRepository
 	public function findByConditions(string $value = 'id', array $conditions = [], ?string $key = 'id'): array
 	{
 		$selection = $this->createQueryBuilder('e')
-			->select('e.' . $key, 'e.' . $value);
+			->select('e.' . $value);
+
+		if ($key !== null) {
+			$selection->addSelect('e.' . $key);
+		}
 
 		foreach ($conditions as $condition) {
 			$selection->andWhere($condition);
 		}
 
+		/** @var array<string|int, array<non-empty-string, mixed>> $result */
+		$result = $selection->getQuery()->getArrayResult();
+
 		$return = [];
-		foreach ($selection->getQuery()->getArrayResult() as $item) {
+		foreach ($result as $item) {
 			if ($key === null) {
 				$return[] = $item[$value];
 			} else {

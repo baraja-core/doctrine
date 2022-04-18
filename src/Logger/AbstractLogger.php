@@ -10,6 +10,7 @@ use Baraja\Doctrine\EntityManagerException;
 use Baraja\Doctrine\Logger\Event;
 use Baraja\Doctrine\Utils;
 use Doctrine\DBAL\Logging\SQLLogger;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Tracy\Debugger;
 use Tracy\ILogger;
@@ -44,8 +45,8 @@ abstract class AbstractLogger implements SQLLogger
 
 
 	/**
-	 * @param mixed[] $params
-	 * @param mixed[] $types
+	 * @param array<int|string, mixed>|null $params
+	 * @param array<int, Type|int|string|null>|array<string, Type|int|string|null>|null $types
 	 */
 	public function startQuery($sql, ?array $params = null, ?array $types = null): void
 	{

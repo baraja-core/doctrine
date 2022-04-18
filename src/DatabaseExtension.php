@@ -26,6 +26,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\LoggerChain;
 use Doctrine\DBAL\Portability\Connection as PortabilityConnection;
 use Doctrine\DBAL\Tools\Console\ConnectionProvider\SingleConnectionProvider;
+use Doctrine\DBAL\Types\Type;
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
 use Nette\DI\Definitions\ServiceDefinition;
@@ -35,17 +36,54 @@ use Nette\Schema\Schema;
 use Nette\Utils\Validators;
 use Tracy\Debugger;
 
+/**
+ * @method array{
+ *     connection: array{
+ *        host: string|null,
+ *        dbname: string|null,
+ *        user: string|null,
+ *        password: string|null,
+ *        url: string|null,
+ *        pdo: string|null,
+ *        memory: string|null,
+ *        driver: non-empty-string,
+ *        driverClass: class-string|null,
+ *        driverOptions: array<string, mixed>,
+ *        unix_socket: string|null,
+ *        port: int|null,
+ *        servicename: string|null,
+ *        charset: non-empty-string,
+ *        portability: int,
+ *        fetchCase: int,
+ *        persistent: bool,
+ *        types: array<string, array{class: class-string<Type>, commented: string|null}>,
+ *        typesMapping: array<string, class-string>,
+ *        wrapperClass: string|null,
+ *        serverVersion: string|null,
+ *     },
+ *     configuration: array{
+ *        sqlLogger: string|null,
+ *        resultCacheImpl: string|null,
+ *        filterSchemaAssetsExpression: string|null,
+ *        autoCommit: bool,
+ *     },
+ *     cache?: string,
+ *     types: array<string, class-string>,
+ *     customNumericFunctions: array<string, class-string>,
+ *     propertyIgnoreAnnotations: array<int, string>
+ * } getConfig()
+ */
 final class DatabaseExtension extends CompilerExtension
 {
 	public const TAG_DOCTRINE_SUBSCRIBER = 'doctrine.subscriber';
 
-	/** @var array<string, string> (type => typeClass) */
+	/** @var array<string, class-string> (type => typeClass) */
 	private static array $customTypes = [
 		'uuid' => UuidType::class,
 		'uuid-binary' => UuidBinaryType::class,
 	];
 
-	/** @var array<string, string> (name => typeClass) */
+	/** @var array<string, class-string> (name => typeClass) */
 	private static array $customNumericFunctions = [
 		'RAND' => RandFunction::class,
 		'ROUND' => RoundFunction::class,
@@ -66,10 +104,15 @@ final class DatabaseExtension extends CompilerExtension
 	public static function addCustomType(string $type, string $typeClass): void
 	{
 		if ((self::$customTypes[$type] ?? $typeClass) !== $typeClass) {
-			throw new \InvalidArgumentException(
-				'Database type "' . $type . '" already exist. '
-				. 'Previous type "' . self::$customTypes[$type] . '", but type class "' . $typeClass . '" given.',
-			);
+			throw new \InvalidArgumentException(sprintf(
+				'Database type "%s" already exist. Previous type "%s", but type class "%s" given.',
+				$type,
+				self::$customTypes[$type],
+				$typeClass,
+			));
+		}
+		if (!class_exists($typeClass)) {
+			throw new \InvalidArgumentException(sprintf('Type "%s" is not valid class.', $typeClass));
 		}
 		self::$customTypes[$type] = $typeClass;
 	}
@@ -77,6 +120,9 @@ final class DatabaseExtension extends CompilerExtension
 
 	public static function addCustomNumericFunction(string $name, string $type): void
 	{
+		if (!class_exists($type)) {
+			throw new \InvalidArgumentException(sprintf('Type "%s" is not valid class.', $type));
+		}
 		self::$customNumericFunctions[$name] = $type;
 	}
 
@@ -120,7 +166,7 @@ final class DatabaseExtension extends CompilerExtension
 				)->castTo('array'),
 				'cache' => Expect::string(),
 				'types' => Expect::arrayOf(Expect::string())->default([]),
-				'customNumericFunctions' => Expect::arrayOf(Expect::string()),
+				'customNumericFunctions' => Expect::arrayOf(Expect::string())->default([]),
 				'propertyIgnoreAnnotations' => Expect::arrayOf(Expect::string())->default([]),
 			],
 		)->castTo('array')->otherItems(Expect::mixed());
@@ -144,7 +190,6 @@ final class DatabaseExtension extends CompilerExtension
 
 	public function beforeCompile(): void
 	{
-		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
@@ -178,11 +223,9 @@ final class DatabaseExtension extends CompilerExtension
 		}
 
 		$types = [];
-		foreach (array_merge(self::$customTypes, $config['types'] ?? []) as $type => $typeClass) {
+		foreach (array_merge(self::$customTypes, $config['types']) as $type => $typeClass) {
 			if (\class_exists($typeClass) === false) {
-				throw new ConfiguratorException(
-					'Doctrine type "' . $type . '" does not exist, because class "' . $typeClass . '" is not defined.',
-				);
+				throw new ConfiguratorException(sprintf('Doctrine type "%s" does not exist, because class "%s" is not defined.', $type, $typeClass));
 			}
 			$types[$type] = $typeClass;
 		}
@@ -191,16 +234,13 @@ final class DatabaseExtension extends CompilerExtension
 		foreach (
 			array_merge(
 				self::$customNumericFunctions,
-				$config['customNumericFunctions'] ?? [],
+				$config['customNumericFunctions'],
 			) as $functionName => $functionType
 		) {
-			if (\class_exists($functionType) === false) {
-				throw new ConfiguratorException(
-					'Doctrine function definition "' . $functionName . '" does not exist, '
-					. 'because class "' . $functionType . '" is not defined.',
-				);
+			if (class_exists($functionType) === false) {
+				throw new ConfiguratorException(sprintf('Doctrine function definition "%s" does not exist, because class "%s" is not defined.', $functionName, $functionType));
 			}
-			$functionsCode .= ($functionsCode ? "\n\t" : '')
+			$functionsCode .= ($functionsCode !== '' ? "\n\t" : '')
 				. '$entityManager->getConfiguration()->addCustomNumericFunction(\'' . strtoupper($functionName) . '\', '
 				. $functionType . '::class);';
 		}
@@ -239,7 +279,7 @@ final class DatabaseExtension extends CompilerExtension
 						'endpointName',
 						'editable',
 					],
-					$config['propertyIgnoreAnnotations'] ?? [],
+					$config['propertyIgnoreAnnotations'],
 				),
 			],
 		);
@@ -302,7 +342,6 @@ final class DatabaseExtension extends CompilerExtension
 	 */
 	private function loadDoctrineConfiguration(): void
 	{
-		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
@@ -342,11 +381,9 @@ final class DatabaseExtension extends CompilerExtension
 
 	private function loadConnectionConfiguration(): void
 	{
-		/** @var mixed[] $config */
 		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
 
-		/** @var array<string, mixed> $connection */
 		$connection = $config['connection'];
 		if (isset($connection['host'], $connection['dbname'], $connection['user'])) {
 			$host = $connection['host'];
@@ -376,8 +413,8 @@ final class DatabaseExtension extends CompilerExtension
 					. "\n" . 'Hint: Check if your current IP "' . Ip::get() . '" is allowed for connection.',
 				);
 			}
-		} elseif ($connection['url']) {
-			if (preg_match('/^[a-z-]+:\/{2,}/', (string) $connection['url']) !== 1) {
+		} elseif ($connection['url'] !== null) {
+			if (preg_match('/^[a-z-]+:\/{2,}/', $connection['url']) !== 1) {
 				throw new \RuntimeException(
 					'Connection URL is invalid. '
 					. 'Please read configuration notes: https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html',
@@ -395,7 +432,7 @@ final class DatabaseExtension extends CompilerExtension
 				$connectionString = 'mysql://' . $connectionString;
 			}
 			$dbName = getenv('DB_NAME');
-			if ($dbName) {
+			if ($dbName !== false && $dbName !== '') {
 				$config['connection']['dbname'] = $dbName;
 			}
 			if (
@@ -405,6 +442,7 @@ final class DatabaseExtension extends CompilerExtension
 					$connectionStringParser,
 				) === 1
 			) {
+				assert(is_array($connectionStringParser));
 				$config['connection']['user'] = $connectionStringParser['user'];
 				$config['connection']['password'] = $connectionStringParser['password'];
 				$config['connection']['host'] = $connectionStringParser['host'];

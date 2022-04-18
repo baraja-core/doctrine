@@ -46,6 +46,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 		];
 		if ($storage !== null) {
 			$cache = new Cache($storage, 'doctrine-annotation-driver');
+			/** @var array<string, int>|null $classList */
 			$classList = $cache->load('entityToDriver');
 			if ($classList === null) {
 				$classList = $this->computeClassList();

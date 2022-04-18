@@ -44,9 +44,9 @@ final class SqlParserUtils
 	 * For a positional query this method can rewrite the sql statement with regard to array parameters.
 	 *
 	 * @param string $query SQL query
-	 * @param mixed[] $params Query parameters
+	 * @param array<int|string, mixed> $params Query parameters
 	 * @param array<int, Type|int|string|null>|array<string, Type|int|string|null> $types Parameter types
-	 * @return mixed[]
+	 * @return array{string, array<int, string|mixed>, array<int, Type|int|string|null>|array<string, Type|int|string|null>|array<int, mixed>}
 	 */
 	public static function expandListParameters(string $query, array $params, array $types): array
 	{
@@ -71,6 +71,7 @@ final class SqlParserUtils
 			$arrayPositions[$name] = false;
 		}
 		if ($arrayPositions === [] && $isPositional) {
+			/** @phpstan-ignore-next-line */
 			return [$query, $params, $types];
 		}
 		if ($isPositional) {
@@ -85,11 +86,13 @@ final class SqlParserUtils
 
 				$needle += $paramOffset;
 				$needlePos += $queryOffset;
-				$count = count($params[$needle]);
+				$positionalValue = $params[$needle];
+				assert(is_array($positionalValue));
+				$count = count($positionalValue);
 
 				$params = array_merge(
 					array_slice($params, 0, $needle),
-					$params[$needle],
+					$positionalValue,
 					array_slice($params, $needle + 1),
 				);
 
@@ -128,6 +131,7 @@ final class SqlParserUtils
 				continue;
 			}
 
+			assert(is_array($value));
 			$count = count($value);
 			$expandStr = $count > 0 ? implode(', ', array_fill(0, $count, '?')) : 'NULL';
 			foreach ($value as $val) {
@@ -151,7 +155,8 @@ final class SqlParserUtils
 	 */
 	private static function getPositionalPlaceholderPositions(string $statement): array
 	{
-		return self::collectPlaceholders(
+		/** @var array<int, int> $return */
+		$return = self::collectPlaceholders(
 			$statement,
 			'?',
 			self::POSITIONAL_TOKEN,
@@ -159,17 +164,20 @@ final class SqlParserUtils
 				$carry[] = $placeholderPosition + $fragmentPosition;
 			},
 		);
+
+		return $return;
 	}
 
 
 	/**
 	 * Returns a map of placeholder positions to their parameter names.
 	 *
-	 * @return array<int,string>
+	 * @return array<int, string>
 	 */
 	private static function getNamedPlaceholderPositions(string $statement): array
 	{
-		return self::collectPlaceholders(
+		/** @var array<int, string> $return */
+		$return = self::collectPlaceholders(
 			$statement,
 			':',
 			self::NAMED_TOKEN,
@@ -182,11 +190,13 @@ final class SqlParserUtils
 				$carry[$placeholderPosition + $fragmentPosition] = substr($placeholder, 1);
 			},
 		);
+
+		return $return;
 	}
 
 
 	/**
-	 * @return mixed[]
+	 * @return array<int, int|string>
 	 */
 	private static function collectPlaceholders(
 		string $statement,
@@ -200,8 +210,10 @@ final class SqlParserUtils
 
 		$carry = [];
 		foreach (self::getUnquotedStatementFragments($statement) as $fragment) {
-			preg_match_all('/' . $token . '/', $fragment[0], $matches, PREG_OFFSET_CAPTURE);
+			/** @phpstan-ignore-next-line */
+			preg_match_all('/' . $token . '/', (string) $fragment[0], $matches, PREG_OFFSET_CAPTURE);
 			foreach ($matches[0] as $placeholder) {
+				/** @phpstan-ignore-next-line */
 				$collector($placeholder[0], $placeholder[1], $fragment[1], $carry);
 			}
 		}
@@ -218,7 +230,7 @@ final class SqlParserUtils
 	 * 0 => matched fragment string,
 	 * 1 => offset of fragment in $statement
 	 *
-	 * @return mixed[][]
+	 * @return array<int, array{0: array{0: string, 1: int}}>
 	 */
 	private static function getUnquotedStatementFragments(string $statement): array
 	{

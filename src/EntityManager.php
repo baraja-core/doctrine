@@ -141,7 +141,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 	/**
 	 * @param string $className The class name of the object to find.
 	 * @param mixed $id The identity of the object to find.
-	 * @param int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+	 * @param 0|1|2|4|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
 	 *        or NULL if no specific lock mode should be used during the search.
 	 * @param int|null $lockVersion The version of the entity to find when using ptimistic locking.
 	 * @return object|null The found object.
@@ -162,62 +162,18 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 
 	/**
-	 * @param object $object The object instance to remove.
-	 * @phpstan-return void
-	 */
-	public function remove($object): self
-	{
-		try {
-			parent::remove($object);
-		} catch (ORMException $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
-		}
-
-		return $this;
-	}
-
-
-	/**
-	 * @param object $object
-	 * @return object
-	 * @throws EntityManagerException
-	 */
-	public function merge($object)
-	{
-		try {
-			return parent::merge($object);
-		} catch (ORMException $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
-		}
-	}
-
-
-	/**
-	 * @param string|mixed|null $objectName if given, only objects of this type will get detached.
+	 * @param string|object|null $objectName if given, only objects of this type will get detached.
 	 * @throws EntityManagerException
 	 */
 	public function clear($objectName = null): void
 	{
-		if ($objectName !== null && \is_string($objectName) === false) {
+		if (is_object($objectName)) {
 			$objectName = $objectName::class;
+			trigger_error(sprintf('Object argument with type "%s" is deprecated since 2022-04-18, please use className.', $objectName), E_USER_DEPRECATED);
 		}
 		try {
 			parent::clear($objectName);
 		} catch (MappingException $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
-		}
-	}
-
-
-	/**
-	 * @param object $object The object to refresh.
-	 * @throws EntityManagerException
-	 */
-	public function refresh($object): void
-	{
-		try {
-			parent::refresh($object);
-		} catch (ORMException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
 	}
@@ -243,21 +199,6 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 
 
 	/**
-	 * @param callable $func The function to execute transactionally.
-	 * @return mixed The non-empty value returned from the closure or true instead.
-	 * @throws EntityManagerException
-	 */
-	public function transactional($func)
-	{
-		try {
-			return parent::transactional($func);
-		} catch (\Throwable $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
-		}
-	}
-
-
-	/**
 	 * @param string $entityName The name of the entity type.
 	 * @param mixed $id The entity identifier.
 	 * @return object|null The entity reference.
@@ -272,48 +213,6 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		}
 		try {
 			return parent::getReference($entityName, $id);
-		} catch (ORMException $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
-		}
-	}
-
-
-	/**
-	 * @param object $entity The entity to copy.
-	 * @param bool $deep FALSE for a shallow copy, TRUE for a deep copy.
-	 * @return object The new entity.
-	 * @throws EntityManagerException
-	 */
-	public function copy($entity, $deep = false)
-	{
-		try {
-			return parent::copy($entity, $deep);
-		} catch (\BadMethodCallException $e) {
-			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
-		}
-	}
-
-
-	/**
-	 * @param string|int $hydrationMode
-	 * @deprecated
-	 */
-	public function getHydrator($hydrationMode): AbstractHydrator
-	{
-		trigger_error(__METHOD__ . ': Method getHydrator() is deprecated, use DIC.', E_DEPRECATED);
-
-		return parent::getHydrator($hydrationMode);
-	}
-
-
-	/**
-	 * @param string|int $hydrationMode
-	 * @throws EntityManagerException
-	 */
-	public function newHydrator($hydrationMode): AbstractHydrator
-	{
-		try {
-			return parent::newHydrator($hydrationMode);
 		} catch (ORMException $e) {
 			throw new EntityManagerException($e->getMessage(), $e->getCode(), $e);
 		}
