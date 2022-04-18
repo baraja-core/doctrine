@@ -6,6 +6,11 @@ parameters:
 			path: src/Cache/ApcuCache.php
 
 		-
+			message: "#^Method Baraja\\\\Doctrine\\\\Cache\\\\ApcuCache\\:\\:doFetchMultiple\\(\\) should return array but returns mixed\\.$#"
+			count: 1
+			path: src/Cache/ApcuCache.php
+
+		-
 			message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
 			count: 1
 			path: src/Cache/ApcuCache.php
@@ -36,9 +41,84 @@ parameters:
 			path: src/Cache/SQLite3Cache.php
 
 		-
+			message: "#^Parameter \\#1 \\$data of function unserialize expects string, mixed given\\.$#"
+			count: 1
+			path: src/Cache/SQLite3Cache.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of method Baraja\\\\Doctrine\\\\Cache\\\\SQLite3Cache\\:\\:doDelete\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: src/Cache/SQLite3Cache.php
+
+		-
 			message: "#^Strict comparison using \\!\\=\\= between mixed and null will always evaluate to true\\.$#"
 			count: 1
 			path: src/Cache/SQLite3Cache.php
+
+		-
+			message: "#^Cannot access offset 'autoCommit' on mixed\\.$#"
+			count: 2
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'dbname' on mixed\\.$#"
+			count: 2
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'filterSchemaAssetsE…' on mixed\\.$#"
+			count: 2
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'host' on mixed\\.$#"
+			count: 3
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'password' on mixed\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'port' on mixed\\.$#"
+			count: 7
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'resultCacheImpl' on mixed\\.$#"
+			count: 2
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'sqlLogger' on mixed\\.$#"
+			count: 2
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'types' on mixed\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'typesMapping' on mixed\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'url' on mixed\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot access offset 'user' on mixed\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
 
 		-
 			message: "#^Fetching class constant class of deprecated class Doctrine\\\\DBAL\\\\Logging\\\\LoggerChain\\.$#"
@@ -61,12 +141,62 @@ parameters:
 			path: src/DatabaseExtension.php
 
 		-
+			message: "#^Parameter \\#1 \\$cache of method Baraja\\\\Doctrine\\\\DatabaseExtension\\:\\:processCache\\(\\) expects string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Parameter \\#1 \\$class of function class_exists expects string, mixed given\\.$#"
+			count: 2
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
+			count: 2
+			path: src/DatabaseExtension.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$arrays of function array_merge expects array, mixed given\\.$#"
+			count: 3
+			path: src/DatabaseExtension.php
+
+		-
 			message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
 			count: 1
 			path: src/DatabaseExtension.php
 
 		-
+			message: "#^Cannot access offset 'class' on mixed\\.$#"
+			count: 2
+			path: src/Dbal/ConnectionFactory.php
+
+		-
+			message: "#^Cannot access offset 'commented' on mixed\\.$#"
+			count: 1
+			path: src/Dbal/ConnectionFactory.php
+
+		-
 			message: "#^Only booleans are allowed in an if condition, mixed given\\.$#"
+			count: 1
+			path: src/Dbal/ConnectionFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$name of static method Doctrine\\\\DBAL\\\\Types\\\\Type\\:\\:getType\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: src/Dbal/ConnectionFactory.php
+
+		-
+			message: "#^Parameter \\#2 \\$className of static method Doctrine\\\\DBAL\\\\Types\\\\Type\\:\\:addType\\(\\) expects class\\-string\\<Doctrine\\\\DBAL\\\\Types\\\\Type\\>, mixed given\\.$#"
+			count: 1
+			path: src/Dbal/ConnectionFactory.php
+
+		-
+			message: "#^Parameter \\#2 \\$className of static method Doctrine\\\\DBAL\\\\Types\\\\Type\\:\\:overrideType\\(\\) expects class\\-string\\<Doctrine\\\\DBAL\\\\Types\\\\Type\\>, mixed given\\.$#"
+			count: 1
+			path: src/Dbal/ConnectionFactory.php
+
+		-
+			message: "#^Parameter \\#2 \\$doctrineType of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:registerDoctrineTypeMapping\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: src/Dbal/ConnectionFactory.php
 
@@ -91,6 +221,26 @@ parameters:
 			path: src/Dbal/Events/ContainerAwareEventManager.php
 
 		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 2
+			path: src/DoctrineHelper.php
+
+		-
+			message: "#^Method Baraja\\\\Doctrine\\\\DoctrineHelper\\:\\:getDiscriminatorByEntity\\(\\) should return string but returns mixed\\.$#"
+			count: 2
+			path: src/DoctrineHelper.php
+
+		-
+			message: "#^Method Baraja\\\\Doctrine\\\\DoctrineHelper\\:\\:remapEntity\\(\\) should return object\\|null but returns T\\|null\\.$#"
+			count: 1
+			path: src/DoctrineHelper.php
+
+		-
+			message: "#^Cannot access constant class on mixed\\.$#"
+			count: 1
+			path: src/EntityManager.php
+
+		-
 			message: "#^Parameter \\#1 \\$hydrationMode of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getHydrator\\(\\) expects 1\\|2\\|3\\|4\\|5\\|6\\|string, int\\|string given\\.$#"
 			count: 1
 			path: src/EntityManager.php
@@ -106,9 +256,99 @@ parameters:
 			path: src/EntityManager.php
 
 		-
+			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression given\\.$#"
+			count: 4
+			path: src/Functions/GeoDistanceFunction.php
+
+		-
+			message: """
+				#^Class Baraja\\\\Doctrine\\\\DBAL\\\\Logger\\\\AbstractLogger implements deprecated interface Doctrine\\\\DBAL\\\\Logging\\\\SQLLogger\\:
+				Use \\{@see \\\\Doctrine\\\\DBAL\\\\Logging\\\\Middleware\\} or implement
+				           \\{@see \\\\Doctrine\\\\DBAL\\\\Driver\\\\Middleware\\} instead\\.$#
+			"""
+			count: 1
+			path: src/Logger/AbstractLogger.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Logger/QueryPanel.php
+
+		-
+			message: "#^Cannot access offset mixed on mixed\\.$#"
+			count: 1
+			path: src/Logger/QueryPanel.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: src/Logger/QueryPanel.php
+
+		-
+			message: "#^Parameter \\#2 \\$params of method Baraja\\\\Doctrine\\\\DBAL\\\\Logger\\\\AbstractLogger\\:\\:startQuery\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Logger/QueryPanel.php
+
+		-
+			message: "#^Parameter \\#2 \\$type of method Doctrine\\\\DBAL\\\\Connection\\:\\:quote\\(\\) expects Doctrine\\\\DBAL\\\\Types\\\\Type\\|int\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Logger/QueryPanel.php
+
+		-
+			message: "#^Parameter \\#2 \\$values of function vsprintf expects array, mixed given\\.$#"
+			count: 1
+			path: src/Logger/QueryPanel.php
+
+		-
+			message: "#^Parameter \\#3 \\$types of method Baraja\\\\Doctrine\\\\DBAL\\\\Logger\\\\AbstractLogger\\:\\:startQuery\\(\\) expects array\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Logger/QueryPanel.php
+
+		-
+			message: "#^Parameter \\#3 \\$types of static method Baraja\\\\Doctrine\\\\Logger\\\\SqlParserUtils\\:\\:expandListParameters\\(\\) expects array\\<int\\|string, Doctrine\\\\DBAL\\\\Types\\\\Type\\|int\\|string\\|null\\>, array given\\.$#"
+			count: 1
+			path: src/Logger/QueryPanel.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: src/Logger/SqlParserUtils.php
+
+		-
+			message: "#^Method Baraja\\\\Doctrine\\\\Logger\\\\SqlParserUtils\\:\\:getNamedPlaceholderPositions\\(\\) should return array\\<int, string\\> but returns array\\.$#"
+			count: 1
+			path: src/Logger/SqlParserUtils.php
+
+		-
+			message: "#^Method Baraja\\\\Doctrine\\\\Logger\\\\SqlParserUtils\\:\\:getPositionalPlaceholderPositions\\(\\) should return array\\<int, int\\> but returns array\\.$#"
+			count: 1
+			path: src/Logger/SqlParserUtils.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of function count expects array\\|Countable, mixed given\\.$#"
+			count: 2
+			path: src/Logger/SqlParserUtils.php
+
+		-
+			message: "#^Parameter \\#2 \\$subject of function preg_match_all expects string, mixed given\\.$#"
+			count: 1
+			path: src/Logger/SqlParserUtils.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$arrays of function array_merge expects array, mixed given\\.$#"
+			count: 1
+			path: src/Logger/SqlParserUtils.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
 			message: """
 				#^Call to deprecated method registerUniqueLoader\\(\\) of class Doctrine\\\\Common\\\\Annotations\\\\AnnotationRegistry\\:
-				This method is deprecated and will be removed in\n           doctrine/annotations 2\\.0\\. Annotations will be autoloaded in 2\\.0\\.$#
+				This method is deprecated and will be removed in
+				            doctrine/annotations 2\\.0\\. Annotations will be autoloaded in 2\\.0\\.$#
 			"""
 			count: 1
 			path: src/Orm/DI/OrmAnnotationsExtension.php
@@ -116,8 +356,43 @@ parameters:
 		-
 			message: """
 				#^Fetching class constant class of deprecated class Doctrine\\\\Common\\\\Annotations\\\\CachedReader\\:
-				the CachedReader is deprecated and will be removed\n           in version 2\\.0\\.0 of doctrine/annotations\\. Please use the\n           \\{@see \\\\Doctrine\\\\Common\\\\Annotations\\\\PsrCachedReader\\} instead\\.$#
+				the CachedReader is deprecated and will be removed
+				            in version 2\\.0\\.0 of doctrine/annotations\\. Please use the
+				            \\{@see \\\\Doctrine\\\\Common\\\\Annotations\\\\PsrCachedReader\\} instead\\.$#
 			"""
+			count: 1
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
+			message: """
+				#^Instantiation of deprecated class Nette\\\\PhpGenerator\\\\PhpLiteral\\:
+				use Nette\\\\PhpGenerator\\\\Literal$#
+			"""
+			count: 1
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
+			message: "#^Parameter \\#1 \\$factory of method Nette\\\\DI\\\\Definitions\\\\ServiceDefinition\\:\\:setFactory\\(\\) expects array\\|Nette\\\\DI\\\\Definitions\\\\Definition\\|Nette\\\\DI\\\\Definitions\\\\Reference\\|Nette\\\\DI\\\\Definitions\\\\Statement\\|string, mixed given\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
+			message: "#^Parameter \\#1 \\$name of static method Doctrine\\\\Common\\\\Annotations\\\\AnnotationReader\\:\\:addGlobalIgnoredName\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
+			message: "#^Parameter \\#2 \\$namespace of static method Baraja\\\\Doctrine\\\\ORM\\\\DI\\\\OrmAnnotationsExtension\\:\\:addAnnotationPathToManager\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmAnnotationsExtension.php
+
+		-
+			message: "#^Parameter \\#3 \\$directoryPath of static method Baraja\\\\Doctrine\\\\ORM\\\\DI\\\\OrmAnnotationsExtension\\:\\:addAnnotationPathToManager\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: src/Orm/DI/OrmAnnotationsExtension.php
 
@@ -126,6 +401,16 @@ parameters:
 				#^Call to deprecated method validateConfig\\(\\) of class Nette\\\\DI\\\\CompilerExtension\\:
 				use getConfigSchema\\(\\)$#
 			"""
+			count: 1
+			path: src/Orm/DI/OrmCacheExtension.php
+
+		-
+			message: "#^Parameter \\#1 \\$factory of method Nette\\\\DI\\\\Definitions\\\\ServiceDefinition\\:\\:setFactory\\(\\) expects array\\|Nette\\\\DI\\\\Definitions\\\\Definition\\|Nette\\\\DI\\\\Definitions\\\\Reference\\|Nette\\\\DI\\\\Definitions\\\\Statement\\|string, mixed given\\.$#"
+			count: 4
+			path: src/Orm/DI/OrmCacheExtension.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
 			count: 1
 			path: src/Orm/DI/OrmCacheExtension.php
 
@@ -167,11 +452,181 @@ parameters:
 			path: src/Orm/DI/OrmConsoleExtension.php
 
 		-
+			message: "#^Cannot access offset 'autoGenerateProxyCl…' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'classMetadataFactor…' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'configurationClass' on mixed\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'customDatetimeFunct…' on mixed\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'customHydrationModes' on mixed\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'customNumericFuncti…' on mixed\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'customStringFunctio…' on mixed\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'defaultQueryHints' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'defaultRepositoryCl…' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'entityListenerResol…' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'entityNamespaces' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'metadataDriverImpl' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'namingStrategy' on mixed\\.$#"
+			count: 3
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'proxyDir' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'proxyNamespace' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'quoteStrategy' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Cannot access offset 'repositoryFactory' on mixed\\.$#"
+			count: 2
+			path: src/Orm/DI/OrmExtension.php
+
+		-
 			message: "#^Only booleans are allowed in an if condition, mixed given\\.$#"
 			count: 2
 			path: src/Orm/DI/OrmExtension.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\Persistence\\\\ObjectRepository\\<T\\>\\) of method Baraja\\\\Doctrine\\\\ORM\\\\EntityManagerDecorator\\:\\:getRepository\\(\\) should be covariant with return type \\(Doctrine\\\\ORM\\\\EntityRepository\\<mixed\\>\\) of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getRepository\\(\\)$#"
+			message: "#^Parameter \\#1 \\$entity of class Nette\\\\DI\\\\Definitions\\\\Statement constructor expects array\\|Nette\\\\DI\\\\Definitions\\\\Definition\\|Nette\\\\DI\\\\Definitions\\\\Reference\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Parameter \\#1 \\$object_or_class of function is_a expects object\\|string, mixed given\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Parameter \\#3 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Orm/DI/OrmExtension.php
+
+		-
+			message: "#^Anonymous function should return string\\|null but returns mixed\\.$#"
+			count: 1
+			path: src/Orm/DatabaseToDoctrineEntityExtractorCommand.php
+
+		-
+			message: "#^Cannot call method ask\\(\\) on mixed\\.$#"
+			count: 3
+			path: src/Orm/DatabaseToDoctrineEntityExtractorCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$className \\(class\\-string\\<T of object\\>\\) of method Baraja\\\\Doctrine\\\\ORM\\\\EntityManagerDecorator\\:\\:getRepository\\(\\) should be contravariant with parameter \\$className \\(class\\-string\\<mixed\\>\\) of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getRepository\\(\\)$#"
 			count: 1
 			path: src/Orm/EntityManagerDecorator.php
+
+		-
+			message: "#^Return type \\(Doctrine\\\\Persistence\\\\ObjectRepository\\<T of object\\>\\) of method Baraja\\\\Doctrine\\\\ORM\\\\EntityManagerDecorator\\:\\:getRepository\\(\\) should be covariant with return type \\(Doctrine\\\\ORM\\\\EntityRepository\\<mixed\\>\\) of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getRepository\\(\\)$#"
+			count: 1
+			path: src/Orm/EntityManagerDecorator.php
+
+		-
+			message: """
+				#^Call to method __construct\\(\\) of deprecated class Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:
+				use ColocatedMappingDriver directly instead\\.$#
+			"""
+			count: 1
+			path: src/Orm/Mapping/AnnotationDriver.php
+
+		-
+			message: """
+				#^Class Baraja\\\\Doctrine\\\\ORM\\\\Mapping\\\\AnnotationDriver extends deprecated class Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:
+				use ColocatedMappingDriver directly instead\\.$#
+			"""
+			count: 1
+			path: src/Orm/Mapping/AnnotationDriver.php
+
+		-
+			message: "#^Property Baraja\\\\Doctrine\\\\ORM\\\\Mapping\\\\AnnotationDriver\\:\\:\\$entityToDriver \\(array\\<string, int\\>\\) does not accept mixed\\.$#"
+			count: 1
+			path: src/Orm/Mapping/AnnotationDriver.php
+
+		-
+			message: """
+				#^Return type of method Baraja\\\\Doctrine\\\\ORM\\\\Mapping\\\\AnnotationDriver\\:\\:getDriveByEntityClassName\\(\\) has typehint with deprecated class Doctrine\\\\Persistence\\\\Mapping\\\\Driver\\\\AnnotationDriver\\:
+				use ColocatedMappingDriver directly instead\\.$#
+			"""
+			count: 1
+			path: src/Orm/Mapping/AnnotationDriver.php
+
+		-
+			message: "#^Cannot access offset string on mixed\\.$#"
+			count: 5
+			path: src/Repository.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: src/TracyBlueScreenDebugger.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: src/UUID/UuidBinaryType.php
+
+		-
+			message: "#^Parameter \\#1 \\$object_or_class of function method_exists expects object\\|string, mixed given\\.$#"
+			count: 1
+			path: src/UUID/UuidBinaryType.php
+
+		-
+			message: "#^Parameter \\#1 \\$uuid of static method Ramsey\\\\Uuid\\\\Uuid\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: src/UUID/UuidType.php
+
