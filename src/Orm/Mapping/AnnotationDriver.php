@@ -6,20 +6,20 @@ namespace Baraja\Doctrine\ORM\Mapping;
 
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use Doctrine\ORM\Mapping\Driver\AttributeReader;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Nette\Caching\Cache;
 use Nette\Caching\Storage;
 
 final class AnnotationDriver extends AbstractAnnotationDriver
 {
-	/** @var AbstractAnnotationDriver[] */
+	/** @var MappingDriver[] */
 	private array $drivers;
 
-	private AbstractAnnotationDriver $defaultDriver;
+	private MappingDriver $defaultDriver;
 
 	/** @var array<string, int> */
 	private array $entityToDriver;
@@ -33,16 +33,13 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 		?array $paths = null,
 		?Storage $storage = null,
 	) {
-		$attributeReader = new AttributeReader;
 		$annotationReader = new AnnotationReader;
 		$paths ??= $annotationManager->getPaths();
 		parent::__construct($annotationReader, $paths);
 		$this->defaultDriver = new AttributeDriver($paths);
-		/** @phpstan-ignore-next-line */
-		$this->defaultDriver->reader = $attributeReader;
 		$this->drivers = [
 			$this->defaultDriver,
-			new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($annotationReader, $paths),
+			new AbstractAnnotationDriver($annotationReader, $paths),
 		];
 		if ($storage !== null) {
 			$cache = new Cache($storage, 'doctrine-annotation-driver');
@@ -129,7 +126,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 	}
 
 
-	private function getDriveByEntityClassName(string $className): AbstractAnnotationDriver
+	private function getDriveByEntityClassName(string $className): MappingDriver
 	{
 		return $this->drivers[$this->entityToDriver[$className] ?? 0] ?? $this->defaultDriver;
 	}

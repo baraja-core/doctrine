@@ -7,7 +7,6 @@ namespace Baraja\Doctrine\DBAL\Events;
 
 use Doctrine\Common\EventArgs;
 use Doctrine\Common\EventManager as DoctrineEventManager;
-use Doctrine\Common\EventSubscriber;
 use Nette\DI\Container;
 use RuntimeException;
 
@@ -16,7 +15,7 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	/** @var array<string, bool> */
 	protected array $initialized = [];
 
-	/** @var array<string, array<string, EventSubscriber>> */
+	/** @var array<string, array<string, object>> */
 	protected array $listeners = [];
 
 
@@ -32,23 +31,24 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	 */
 	public function dispatchEvent($eventName, ?EventArgs $eventArgs = null): void
 	{
-		if (isset($this->listeners[$eventName])) {
-			$eventArgs ??= EventArgs::getEmptyInstance();
-			foreach ($this->listeners[$eventName] as $hash => $listener) {
-				if (isset($this->initialized[$eventName]) === false) {
-					$this->listeners[$eventName][$hash] = $listener;
-				}
-				/** @phpstan-ignore-next-line */
-				$listener->$eventName($eventArgs);
-			}
-			$this->initialized[$eventName] = true;
+		if (isset($this->listeners[$eventName]) === false) {
+			return;
 		}
+		$eventArgs ??= EventArgs::getEmptyInstance();
+		foreach ($this->listeners[$eventName] as $hash => $listener) {
+			if (isset($this->initialized[$eventName]) === false) {
+				$this->listeners[$eventName][$hash] = $listener;
+			}
+			/** @phpstan-ignore-next-line */
+			$listener->$eventName($eventArgs);
+		}
+		$this->initialized[$eventName] = true;
 	}
 
 
 	/**
 	 * @param string|null $event
-	 * @return array<string, array<string, EventSubscriber>|EventSubscriber>
+	 * @return array<string, array<string, object>|object>
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
 	public function getListeners($event = null): array
@@ -63,8 +63,7 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 	 */
 	public function hasListeners($event): bool
 	{
-		/** @phpstan-ignore-next-line */
-		return !empty($this->listeners[$event]);
+		return isset($this->listeners[$event]);
 	}
 
 
@@ -93,7 +92,6 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 			if (is_string($listener)) {
 				$listener = $this->container->getService($listener);
 			}
-			assert($listener instanceof EventSubscriber);
 			$this->listeners[$event][$hash] = $listener;
 		}
 	}
