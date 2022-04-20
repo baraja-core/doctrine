@@ -219,7 +219,6 @@ class DoctrineHelper
 			trigger_error($e->getMessage());
 		}
 
-		/** @phpstan-ignore-next-line */
 		return $this->entityManager->getRepository($toType)->find($id);
 	}
 
