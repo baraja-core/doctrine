@@ -48,7 +48,28 @@ final class TracyBlueScreenDebugger
 	public static function render(?\Throwable $e): ?array
 	{
 		if ($e === null) {
-			return null;
+			return [
+				'bottom' => true,
+				'tab' => 'Doctrine',
+				'panel' => sprintf(
+					'
+				<div class="tracy-tabs">
+					<ul class="tracy-tab-bar">
+						<li class="tracy-tab-label tracy-active"><a href="#">Queries</a></li>
+						<li class="tracy-tab-label"><a href="#">Table list</a></li>
+						<li class="tracy-tab-label"><a href="#">EntityManager</a></li>
+					</ul>
+					<div>
+						<div class="tracy-tab-panel tracy-active">%s</div>
+						<div class="tracy-tab-panel">%s</div>
+						<div class="tracy-tab-panel">%s</div>
+					</div>
+				</div>',
+					self::renderQueries(),
+					self::renderTableList(),
+					self::$entityManager !== null ? Dumper::toHtml(self::$entityManager) : '<i>Not set.</i>',
+				),
+			];
 		}
 		if ($e instanceof DriverException) {
 			[$tab, $content] = self::renderDriver($e);
