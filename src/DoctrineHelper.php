@@ -29,21 +29,18 @@ class DoctrineHelper
 	{
 		$meta = $this->entityManager->getClassMetadata($entity);
 		$return = [];
-		if (\is_array($meta->discriminatorMap) && \count($meta->discriminatorMap) > 0) {
-			foreach ($meta->discriminatorMap as $variant) {
-				$variant = (string) $variant;
-				if (class_exists($variant) === false) {
-					throw new \LogicException(sprintf('Entity class "%s" does not exist.', $variant));
-				}
-				try {
-					$return[$variant] = (string) Utils::reflectionClassDocComment($variant, 'name');
-				} catch (\ReflectionException) {
-					$return[$variant] = (string) preg_replace_callback(
-						'/([a-z0-9])([A-Z])/',
-						static fn(array $match) => $match[1] . ' ' . strtolower($match[2]),
-						(string) preg_replace('/^.*?\\\\([^\\\\]+)$/', '$1', $variant),
-					);
-				}
+		foreach ($meta->discriminatorMap as $variant) {
+			if (class_exists($variant) === false) {
+				throw new \LogicException(sprintf('Entity class "%s" does not exist.', $variant));
+			}
+			try {
+				$return[$variant] = (string) Utils::reflectionClassDocComment($variant, 'name');
+			} catch (\ReflectionException) {
+				$return[$variant] = (string) preg_replace_callback(
+					'/([a-z0-9])([A-Z])/',
+					static fn(array $match) => $match[1] . ' ' . strtolower($match[2]),
+					(string) preg_replace('/^.*?\\\\([^\\\\]+)$/', '$1', $variant),
+				);
 			}
 		}
 
@@ -118,12 +115,9 @@ class DoctrineHelper
 	 */
 	public function getDiscriminatorByEntity(string $entity): string
 	{
-		/** @return array<string, string> */
+		/** @return array<string, class-string> */
 		$loadDiscriminatorMap = function (string $entity): array {
-			$map = $this->entityManager->getClassMetadata($entity)->discriminatorMap ?? [];
-			assert(is_array($map));
-
-			return $map;
+			return $this->entityManager->getClassMetadata($entity)->discriminatorMap;
 		};
 
 		foreach ($loadDiscriminatorMap($entity) as $discriminator => $variant) {

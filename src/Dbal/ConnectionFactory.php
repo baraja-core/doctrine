@@ -35,7 +35,7 @@ class ConnectionFactory
 	/**
 	 * Create a connection by name.
 	 *
-	 * @param mixed[] $params
+	 * @param array<string, mixed> $params
 	 */
 	public function createConnection(
 		array $params,
@@ -46,6 +46,7 @@ class ConnectionFactory
 			$this->initializeTypes();
 		}
 
+		/** @phpstan-ignore-next-line */
 		$connection = DriverManager::getConnection($params, $config, $eventManager);
 		if ($this->typesMapping !== []) {
 			$platform = $this->getDatabasePlatform($connection);
