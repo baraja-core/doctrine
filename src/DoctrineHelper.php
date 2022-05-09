@@ -115,19 +115,14 @@ class DoctrineHelper
 	 */
 	public function getDiscriminatorByEntity(string $entity): string
 	{
-		/** @return array<string, class-string> */
-		$loadDiscriminatorMap = function (string $entity): array {
-			return $this->entityManager->getClassMetadata($entity)->discriminatorMap;
-		};
-
-		foreach ($loadDiscriminatorMap($entity) as $discriminator => $variant) {
+		foreach ($this->entityManager->getClassMetadata($entity)->discriminatorMap as $discriminator => $variant) {
 			if ($variant === $entity) {
 				return $discriminator;
 			}
 		}
 
 		$entity = $this->getRootEntityName($entity);
-		foreach ($loadDiscriminatorMap($entity) as $discriminator => $variant) {
+		foreach ($this->entityManager->getClassMetadata($entity)->discriminatorMap as $discriminator => $variant) {
 			if ($variant === $entity) {
 				return $discriminator;
 			}
