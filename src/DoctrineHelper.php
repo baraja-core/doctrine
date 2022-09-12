@@ -113,7 +113,7 @@ class DoctrineHelper
 	 *
 	 * @param class-string $entity
 	 */
-	public function getDiscriminatorByEntity(string $entity): string
+	public function getDiscriminatorByEntity(string $entity): int|string
 	{
 		foreach ($this->entityManager->getClassMetadata($entity)->discriminatorMap as $discriminator => $variant) {
 			if ($variant === $entity) {

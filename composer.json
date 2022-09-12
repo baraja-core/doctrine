@@ -15,9 +15,9 @@
 		"baraja-core/url": "^1.1",
 		"baraja-core/network": "^1.0",
 		"nette/di": "^3.0",
-		"doctrine/orm": "^2.9",
+		"doctrine/orm": "^2.13",
 		"doctrine/annotations": "^1.13",
-		"ramsey/uuid": "^4.1"
+		"ramsey/uuid": "^4.4"
 	},
 	"require-dev": {
 		"baraja-core/package-manager": "^3.2",

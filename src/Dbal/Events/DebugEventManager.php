@@ -30,7 +30,6 @@ final class DebugEventManager extends DoctrineEventManager
 	/**
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 * @param string|null $event
-	 * @return object[]|object[][]
 	 */
 	public function getListeners($event = null): array
 	{

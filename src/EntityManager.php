@@ -7,7 +7,6 @@ namespace Baraja\Doctrine;
 
 use Baraja\Doctrine\DBAL\Tracy\QueryPanel\QueryPanel;
 use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
@@ -27,7 +26,6 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 		private string $cacheDir,
 		Connection $connection,
 		private Configuration $configuration,
-		EventManager $eventManager,
 		?QueryPanel $panel = null,
 	) {
 		if ($panel !== null) {
@@ -42,11 +40,7 @@ final class EntityManager extends \Doctrine\ORM\EntityManager
 				TracyBlueScreenDebugger::setPanel($panel);
 			}
 		}
-		parent::__construct(
-			$connection,
-			$configuration,
-			$eventManager,
-		);
+		parent::__construct($connection, $configuration);
 	}
 
 

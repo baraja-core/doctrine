@@ -48,7 +48,6 @@ final class ContainerAwareEventManager extends DoctrineEventManager
 
 	/**
 	 * @param string|null $event
-	 * @return array<string, array<string, object>|object>
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
 	public function getListeners($event = null): array
