@@ -20,7 +20,7 @@ use Tracy\Debugger;
 /**
  * Improved implementation of EntityManager with configure cache automatically and add data types.
  */
-final class EntityManager extends \Doctrine\ORM\EntityManager
+final class EntityManager extends \Doctrine\ORM\EntityManager // @phpstan-ignore-line
 {
 	public function __construct(
 		private string $cacheDir,
