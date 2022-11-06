@@ -195,7 +195,7 @@ abstract class AbstractLogger implements SQLLogger
 			$locationLineString = (string) $locationLine;
 
 			if (preg_match('#\w*dump(er::\w+)?\(.*\)#i', $locationLineString, $m) === 1) {
-				$snippet = (string) ($m[0] ?? '');
+				$snippet = $m[0] ?? '';
 			} else {
 				$snippet = $locationLineString;
 			}

@@ -442,7 +442,6 @@ final class DatabaseExtension extends CompilerExtension
 					$connectionStringParser,
 				) === 1
 			) {
-				assert(is_array($connectionStringParser));
 				$config['connection']['user'] = $connectionStringParser['user'];
 				$config['connection']['password'] = $connectionStringParser['password'];
 				$config['connection']['host'] = $connectionStringParser['host'];

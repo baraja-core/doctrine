@@ -242,6 +242,7 @@ final class SqlParserUtils
 		$expression = sprintf('/((.+(?i:ARRAY)\\[.+\\])|([^\'"`\\[]+))(?:%s)?/s', $literal);
 		preg_match_all($expression, $statement, $fragments, PREG_OFFSET_CAPTURE);
 
+		/** @phpstan-ignore-next-line */
 		return $fragments[1] ?? [];
 	}
 

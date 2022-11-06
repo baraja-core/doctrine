@@ -174,10 +174,10 @@ class DoctrineHelper
 		$discriminatorColumn = $fromMetaData->discriminatorColumn['fieldName'] ?? '?';
 
 		if ($fromTable !== $toTable) {
-			throw new DatabaseException(
-				'Entities for remap must be same table type, '
-				. '"' . $fromTable . '" and "' . $to . '" given.',
-			);
+			throw new DatabaseException(sprintf('Entities for remap must be same table type, "%s" and "%s" given.',
+				$fromTable,
+				$toType,
+			));
 		}
 
 		try {
