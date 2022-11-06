@@ -8,6 +8,7 @@ namespace Baraja\Doctrine;
 use Baraja\Doctrine\Cache\ArrayCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
@@ -138,7 +139,7 @@ final class DatabaseToDoctrineEntityExtractorCommand extends Command
 		$config->setProxyDir(__DIR__ . '/Proxies');
 		$config->setProxyNamespace('Proxies');
 
-		$em = \Doctrine\ORM\EntityManager::create($connection, $config);
+		$em = EntityManager::create($connection, $config);
 
 		// custom datatypes (not mapped for reverse engineering)
 		$em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');

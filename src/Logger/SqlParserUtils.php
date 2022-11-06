@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\Logger;
 
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\Type;
 use function array_fill;
 use function array_fill_keys;
 use function array_key_exists;
@@ -13,31 +16,28 @@ use function array_merge;
 use function array_slice;
 use function array_values;
 use function count;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Types\Type;
 use function implode;
 use function is_int;
 use function key;
 use function ksort;
 use function preg_match_all;
-use const PREG_OFFSET_CAPTURE;
 use function sprintf;
 use function strlen;
 use function substr;
+use const PREG_OFFSET_CAPTURE;
 
 final class SqlParserUtils
 {
 	public const
-		POSITIONAL_TOKEN = '\?',
-		NAMED_TOKEN = '(?<!:):[a-zA-Z_][a-zA-Z0-9_]*';
+		PositionalToken = '\?',
+		NamedToken = '(?<!:):[a-zA-Z_][a-zA-Z0-9_]*';
 
 	// Quote characters within string literals can be preceded by a backslash.
 	public const
-		ESCAPED_SINGLE_QUOTED_TEXT = "(?:'(?:\\\\)+'|'(?:[^'\\\\]|\\\\'?|'')*')",
-		ESCAPED_DOUBLE_QUOTED_TEXT = '(?:"(?:\\\\)+"|"(?:[^"\\\\]|\\\\"?)*")',
-		ESCAPED_BACKTICK_QUOTED_TEXT = '(?:`(?:\\\\)+`|`(?:[^`\\\\]|\\\\`?)*`)',
-		ESCAPED_BRACKET_QUOTED_TEXT = '(?<!\b(?i:ARRAY))\[(?:[^\]])*\]';
+		EscapedSingleQuotedText = "(?:'(?:\\\\)+'|'(?:[^'\\\\]|\\\\'?|'')*')",
+		EscapedDoubleQuotedText = '(?:"(?:\\\\)+"|"(?:[^"\\\\]|\\\\"?)*")',
+		EscapedBacktickQuotedText = '(?:`(?:\\\\)+`|`(?:[^`\\\\]|\\\\`?)*`)',
+		EscapedBracketQuotedText = '(?<!\b(?i:ARRAY))\[(?:[^\]])*\]';
 
 
 	/**
@@ -159,7 +159,7 @@ final class SqlParserUtils
 		$return = self::collectPlaceholders(
 			$statement,
 			'?',
-			self::POSITIONAL_TOKEN,
+			self::PositionalToken,
 			static function (string $_, int $placeholderPosition, int $fragmentPosition, array &$carry): void {
 				$carry[] = $placeholderPosition + $fragmentPosition;
 			},
@@ -180,7 +180,7 @@ final class SqlParserUtils
 		$return = self::collectPlaceholders(
 			$statement,
 			':',
-			self::NAMED_TOKEN,
+			self::NamedToken,
 			static function (
 				string $placeholder,
 				int $placeholderPosition,
@@ -234,10 +234,10 @@ final class SqlParserUtils
 	 */
 	private static function getUnquotedStatementFragments(string $statement): array
 	{
-		$literal = self::ESCAPED_SINGLE_QUOTED_TEXT . '|' .
-			self::ESCAPED_DOUBLE_QUOTED_TEXT . '|' .
-			self::ESCAPED_BACKTICK_QUOTED_TEXT . '|' .
-			self::ESCAPED_BRACKET_QUOTED_TEXT;
+		$literal = self::EscapedSingleQuotedText . '|' .
+			self::EscapedDoubleQuotedText . '|' .
+			self::EscapedBacktickQuotedText . '|' .
+			self::EscapedBracketQuotedText;
 
 		$expression = sprintf('/((.+(?i:ARRAY)\\[.+\\])|([^\'"`\\[]+))(?:%s)?/s', $literal);
 		preg_match_all($expression, $statement, $fragments, PREG_OFFSET_CAPTURE);

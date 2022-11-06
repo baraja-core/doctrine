@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Baraja\Doctrine\Cache;
 
 
-use function array_search;
 use Doctrine\Common\Cache\CacheProvider;
+use Tracy\Debugger;
+use Tracy\ILogger;
+use function array_search;
 use function implode;
 use function serialize;
 use function sprintf;
 use function time;
-use Tracy\Debugger;
-use Tracy\ILogger;
 use function unserialize;
 
 final class SQLite3Cache extends CacheProvider
