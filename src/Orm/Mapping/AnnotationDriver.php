@@ -97,13 +97,7 @@ final class AnnotationDriver extends AbstractAnnotationDriver
 	 */
 	public function isTransient($className): bool
 	{
-		foreach ($this->drivers as $driver) {
-			if ($driver->isTransient($className)) {
-				return true;
-			}
-		}
-
-		return false;
+		return $this->getDriveByEntityClassName($className)->isTransient($className);
 	}
 
 
